@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "paths": {
+			"@/*": ["./src/*"],
+			"~/*": ["./*"]
+		},
+    "typeRoots": ["@/src/typings"]
+  },
+  "files": [],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx"],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ]
+}
