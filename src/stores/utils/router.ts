@@ -4,13 +4,22 @@ const modulesRoutes = import.meta.glob(['@/views/**/*.{vue,tsx}', '!@/layouts/**
 const BasicLayout = () => import('@/layouts/index-layout.vue')
 const IframeLayout = () => import('@/layouts/iframe.vue')
 
-// 菜单的顺序，服务端已经先整理好了。当然 / 必须是第一个路由
+/**
+ * 初始化路由
+ * @param router 路由实例
+ * @param menus 菜单数据
+ * @returns 处理后的路由和菜单名称
+ */
 export default function initRoutes(router: Router, menus: Array<any>): AppRoute.InitRoutesData {
 	const tempRoutes: Array<AppRoute.Route> = []
 	const tempNames: Array<string> = []
+	
+	// 查找根路由
 	const index = menus.findIndex((item) => item.path === '/')
 
+	// 处理根路由
 	if (config.remote) {
+		// 远程模式下添加根路由
 		router.addRoute({
 			path: '/',
 			name: 'index',
@@ -19,7 +28,9 @@ export default function initRoutes(router: Router, menus: Array<any>): AppRoute.
 			children: [],
 		})
 	} else {
-		if (index == -1) {
+		// 本地模式下处理根路由
+		if (index === -1) {
+			// 如果没有根路由，添加一个
 			menus.unshift({
 				path: '/',
 				name: 'index',
@@ -27,34 +38,47 @@ export default function initRoutes(router: Router, menus: Array<any>): AppRoute.
 				redirect: () => ({ name: menus[0]?.name as string }),
 			})
 		} else {
+			// 将根路由移到第一位
 			menus = menus.splice(index, 1).concat(menus)
 		}
 	}
 
 	const layoutName = menus[0]['name']
+	
+	/**
+	 * 生成菜单和路由
+	 * @param routes 路由数组
+	 * @param menus 菜单数据
+	 * @param prefix 路径前缀
+	 */
 	function generateMenu(routes: Array<AppRoute.Route>, menus: Array<any>, prefix = '') {
 		menus.forEach((item) => {
+			// 处理路径
 			const path = prefix + item.path
+			
+			// 处理重定向
 			let redirect = item.redirect
 			if (!item.redirect && item.children && item.children.length > 0) {
-				if (path === '/') {
-					redirect = path + item.children[0]['path']
-				} else {
-					redirect = path + '/' + item.children[0]['path']
-				}
+				redirect = path === '/' 
+					? path + item.children[0]['path'] 
+					: path + '/' + item.children[0]['path']
 			}
 
+			// 处理组件
 			let component
 			if (!prefix && item.path === '/') {
+				// 根路由使用基础布局
 				component = BasicLayout
 			} else if (prefix && item.children && item.children.length > 0) {
+				// 有子菜单的中间路由不需要组件
 				component = null
 			} else {
 				if (item.iframe) {
+					// iframe类型使用iframe布局
 					component = IframeLayout
 				} else if (!item.link) {
-					// 只有最后一级，我才需要去渲染组件。如果是跟目录下组件，就包裹在 home 下边
-					if (!item.component && (!item.children || item.children.length == 0)) {
+					// 处理组件路径
+					if (!item.component && (!item.children || item.children.length === 0)) {
 						item.component = path.substring(1)
 					}
 
@@ -64,12 +88,11 @@ export default function initRoutes(router: Router, menus: Array<any>): AppRoute.
 				}
 			}
 
-			let activePath
-			if (item.active_path) {
-				activePath = item.active_path
-			} else {
-				activePath = item.children && item.children.length > 0 && prefix ? prefix : undefined
-			}
+			// 处理激活路径
+			const activePath = item.active_path || 
+				(item.children && item.children.length > 0 && prefix ? prefix : undefined)
+			
+			// 创建菜单对象
 			const menu: AppRoute.Route = {
 				path: path,
 				name: item.name,
@@ -88,13 +111,14 @@ export default function initRoutes(router: Router, menus: Array<any>): AppRoute.
 				children: []
 			}
 
-			// 非一直显示
-			if (item.children && item.children.length == 1 && !item.children[0]['always_show']) {
+			// 处理只有一个子菜单且不需要一直显示的情况
+			if (item.children && item.children.length === 1 && !item.children[0]['always_show']) {
 				item.children[0]['active_path'] = item.path
 				menu.meta.title = item.children[0]['title']
 				menu.meta.icon = item.children[0]['icon'] ?? item['icon']
 			}
 
+			// 递归处理子菜单
 			if (item.children && item.children.length > 0 && menu.children) {
 				const newPath = path === '/' ? path : path + '/'
 				generateMenu(menu.children, item.children, newPath)
@@ -102,9 +126,11 @@ export default function initRoutes(router: Router, menus: Array<any>): AppRoute.
 				delete menu.children
 			}
 
+			// 添加到路由数组
 			routes.push(menu)
 			tempNames.push(item.name)
 
+			// 处理历史路由
 			const history =
 				router && router.options && router.options.routes && router.options.routes
 					? router.options.routes[0]
@@ -116,6 +142,8 @@ export default function initRoutes(router: Router, menus: Array<any>): AppRoute.
 			) {
 				history.children.push(menu as RouteRecordRaw)
 			}
+			
+			// 添加到路由实例
 			if (config.remote) {
 				router.addRoute('index', menu as RouteRecordRaw)
 			} else {
@@ -125,12 +153,13 @@ export default function initRoutes(router: Router, menus: Array<any>): AppRoute.
 					router.addRoute(menu as RouteRecordRaw)
 				}
 			}
-			
 		})
 	}
 
+	// 生成菜单和路由
 	generateMenu(tempRoutes, menus)
 
+	// 添加404路由
 	const notFound: RouteRecordRaw = {
 		path: '/:pathMatch(.*)*',
 		name: '404',
