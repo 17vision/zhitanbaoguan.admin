@@ -77,11 +77,11 @@ interface RuleForm {
   captcha_code: string
 }
 
-const ruleFormRef = ref<FormInstance>()
 
+const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive<RuleForm>({
-    account: '',
-    password: '',
+    account:  import.meta.env.DEV ? '13671638524' : '',
+    password: import.meta.env.DEV ? '111111' : '',
     captcha_key: '',
     captcha_code: '',
 })

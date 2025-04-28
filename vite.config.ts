@@ -30,6 +30,7 @@ export default defineConfig({
           @use "@/assets/styles/main.scss";
           @use "@/assets/styles/preflight.scss";
         `,
+        silenceDeprecations: ['legacy-js-api']
       },
     },
   },
