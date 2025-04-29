@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-loading="loading" shadow="never" class="border-none">
+    <el-card v-loading="$store.loading" shadow="never" class="border-none">
       <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" :label-position="'right'" label-width="120px">
         <el-form-item label="显示名称" prop="title">
           <el-input v-model="ruleForm.title" placeholder="请输入显示名称，如超级管理员" clearable />
@@ -11,7 +11,7 @@
         </el-form-item>
 
         <el-form-item class="mt-6">
-          <el-button v-loading="loading" type="primary" @click="submitRole">提交</el-button>
+          <el-button v-loading="$store.loading" type="primary" @click="submitRole">提交</el-button>
           <el-button @click="goBack">返回</el-button>
         </el-form-item>
       </el-form>
@@ -29,8 +29,6 @@ interface RuleForm {
   title: string;
   name: string;
 }
-
-const loading = ref<boolean>(false);
 
 const initialForm = (): RuleForm => ({
   title: "",
@@ -83,18 +81,11 @@ function submitRole() {
   });
 
   function fetch() {
-    if (loading.value) {
-      return;
-    }
-
-    loading.value = true;
 
     const data = { ...ruleForm };
 
     createOrUpdateRoles(data)
       .then(() => {
-        loading.value = false;
-
         ElNotification({
           type: "success",
           title: "",
@@ -107,8 +98,6 @@ function submitRole() {
         }, 1200);
       })
       .catch(() => {
-        loading.value = false;
-
         ElNotification({
           type: "error",
           title: "",

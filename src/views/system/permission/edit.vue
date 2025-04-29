@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-loading="loading" shadow="never" class="border-none">
+    <el-card v-loading="$store.loading" shadow="never" class="border-none">
       <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" :label-position="'right'" label-width="120px">
         <el-form-item label="父节点" prop="parent_id">
           <el-select v-model="ruleForm.parent_id" placeholder="请选择父节点" @change="parentIdChange">
@@ -94,7 +94,6 @@ interface RuleForm {
   id: number;
 }
 
-const loading = ref<boolean>(false);
 
 const initialForm = (): RuleForm => ({
   title: "",
@@ -263,16 +262,10 @@ function submitPermission() {
   });
 
   function fetch() {
-    if (loading.value) {
-      return;
-    }
-
-    loading.value = true;
 
     const data = { ...ruleForm };
     createOrUpdatePermissions(data)
       .then(() => {
-        loading.value = false;
 
         ElNotification({
           type: "success",
@@ -285,9 +278,6 @@ function submitPermission() {
           window.location.reload();
         }, 1200);
       })
-      .catch(() => {
-        loading.value = false;
-      });
   }
 }
 
@@ -300,7 +290,6 @@ function parentIdChange(value: number) {
 }
 
 function initializeData() {
-  loading.value = true;
 
   getPermission(ruleForm.id)
     .then((res: Record<string, any>) => {
@@ -348,9 +337,6 @@ function runderPermissions() {
 
     permissionList.value = menus;
 
-    nextTick(() => {
-      loading.value = false;
-    });
   });
 
   function assemblyPermissions(accept: Array<PermissionItem>, source: Array<Record<string, any>>, prefix: string = "") {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-loading="loading" shadow="never" class="border-none">
+    <el-card v-loading="$store.loading" shadow="never" class="border-none">
       <div class="text-base mb-4">
         <span>给</span>
         <span class="font-medium">{{ nickname }}</span>
@@ -28,8 +28,6 @@ import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { getUserRoles, setUserRoles } from "@/api/system/user";
 import type { CheckboxValueType } from "element-plus";
 import { useUser } from "@/stores/user";
-
-const loading = ref<boolean>(false);
 
 const nickname = ref<string>("");
 
@@ -90,7 +88,6 @@ function allChangeHandler(value: CheckboxValueType) {
 }
 
 function initializeData() {
-  loading.value = true;
 
   getUserRoles({ user_id })
     .then((res: Record<string, any>) => {
@@ -102,23 +99,17 @@ function initializeData() {
 
       calcIndeterminate();
 
-      loading.value = false;
     })
     .catch(() => {});
 }
 
 function submitRole() {
-  if (loading.value) {
-    return;
-  }
 
-  loading.value = true;
 
   const data = { user_id, ids: checkedIds.value };
 
   setUserRoles(data)
     .then(() => {
-      loading.value = false;
 
       // 当前用户才需要这样
       if (user_id === user.id) {
@@ -154,9 +145,6 @@ function submitRole() {
         duration: 3000,
       });
     })
-    .catch(() => {
-      loading.value = false;
-    });
 }
 
 function goBack() {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-loading="loading" shadow="never" class="border-none">
+    <el-card v-loading="$store.loading" shadow="never" class="border-none">
       <div class="text-base mb-4">
         <span class="font-medium">编辑个人资料</span>
       </div>
@@ -77,7 +77,6 @@ interface RuleForm {
   signature: string;
 }
 
-const loading = ref<boolean>(false);
 
 const initialForm = (): RuleForm => ({
   avatar: "",
@@ -103,29 +102,21 @@ onMounted(function () {
 });
 
 function initializeData() {
-  loading.value = true;
 
   getUserProfile()
     .then((res: Record<string, any>) => {
       Object.assign(form, res);
 
-      loading.value = false;
     })
     .catch(() => {});
 }
 
 function submitProfile() {
-  if (loading.value) {
-    return;
-  }
-
-  loading.value = true;
 
   const data = { ...form };
 
   setUserProfile(data)
     .then(() => {
-      loading.value = false;
 
       user.refreshUserInfo();
 
@@ -136,20 +127,12 @@ function submitProfile() {
         duration: 3000,
       });
     })
-    .catch(() => {
-      loading.value = false;
-    });
 }
 
 function onCropperComplete(value: string) {
-  if (loading.value) {
-    return;
-  }
-  loading.value = true;
 
   uploadImage({ file: value, info: { referer: "avatar" } })
     .then((value: any) => {
-      loading.value = false;
 
       form.avatar = value;
 
@@ -162,9 +145,6 @@ function onCropperComplete(value: string) {
         duration: 3000,
       });
     })
-    .catch(() => {
-      loading.value = false;
-    });
 }
 
 function editAvatar() {

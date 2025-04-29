@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-loading="loading" shadow="never" class="border-none mb-[72px]">
+    <el-card v-loading="$store.loading" shadow="never" class="border-none mb-[72px]">
       <div class="text-base mb-4">
         <span>给</span>
         <span class="font-medium">{{ role }}</span>
@@ -42,7 +42,6 @@ import { useRoute, useRouter } from "vue-router";
 // import { ElTree } from 'element-plus'
 import { getRolePermissions, setRolePermissions } from "@/api/system/role";
 
-const loading = ref<boolean>(false);
 
 const defaultProps = {
   children: "childs",
@@ -75,7 +74,6 @@ onMounted(function () {
 });
 
 function initializeData() {
-  loading.value = true;
 
   getRolePermissions({ id: roleId.value })
     .then((res: Record<string, any>) => {
@@ -85,7 +83,6 @@ function initializeData() {
 
       checkedIds.value = res.checkedIds;
 
-      loading.value = false;
 
       nodeExpand();
     })
@@ -94,17 +91,10 @@ function initializeData() {
 
 function submitPermission() {
   if (tree.value && typeof tree.value.getCheckedKeys === "function") {
-    if (loading.value) {
-      return;
-    }
-
-    loading.value = true;
-
     const ids = tree.value.getCheckedKeys();
 
     setRolePermissions({ ids: ids, role_id: roleId.value })
       .then(() => {
-        loading.value = false;
 
         ElNotification({
           type: "success",
@@ -113,9 +103,6 @@ function submitPermission() {
           duration: 3000,
         });
       })
-      .catch(() => {
-        loading.value = false;
-      });
   }
 }
 

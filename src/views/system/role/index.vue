@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-loading="loading" shadow="never" class="border-none">
+    <el-card v-loading="$store.loading" shadow="never" class="border-none">
       <div v-if="includes(app.routeNames, ['role.create'])" class="flex items-center mb-5">
         <el-button type="primary" size="small" @click="goCreate">添加</el-button>
       </div>
@@ -50,7 +50,6 @@ import { useApp } from "@/stores/app";
 import { getRoles, deleteRoles } from "@/api/system/role";
 import { includes } from "@/utils/utils";
 
-const loading = ref<boolean>(false);
 
 const router = useRouter();
 
@@ -72,11 +71,6 @@ onBeforeMount(function () {
 });
 
 function fetchData() {
-  if (loading.value) {
-    return;
-  }
-
-  loading.value = true;
 
   const data = { ...req };
   getRoles(data)
@@ -87,11 +81,7 @@ function fetchData() {
 
       total.value = res.total;
 
-      loading.value = false;
     })
-    .catch(() => {
-      loading.value = false;
-    });
 }
 
 function goCreate() {
@@ -118,15 +108,8 @@ function goDelete(value: any): void {
       type: "warning",
     })
       .then(() => {
-        if (loading.value) {
-          return;
-        }
-
-        loading.value = true;
 
         deleteRoles({ id: value.id }).then(() => {
-          loading.value = false;
-
           fetchData();
 
           ElNotification({

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-loading="loading" shadow="never" class="border-none">
+    <el-card v-loading="$store.loading" shadow="never" class="border-none">
       <div class="text-base mb-4">
         <span class="font-medium">更新个人密码</span>
       </div>
@@ -17,7 +17,7 @@
         </el-form-item>
 
         <el-form-item class="mt-6">
-          <el-button v-loading="loading" type="primary" @click="submitPassword(ruleFormRef)">提交</el-button>
+          <el-button v-loading="$store.loading" type="primary" @click="submitPassword(ruleFormRef)">提交</el-button>
           <el-button @click="goBack">返回</el-button>
         </el-form-item>
       </el-form>
@@ -45,7 +45,6 @@ interface RuleForm {
   captcha_code: string;
 }
 
-const loading = ref<boolean>(false);
 const router: Router = useRouter();
 const user = useUser();
 const captcha = ref<string>("");
@@ -104,13 +103,6 @@ function refreshCaptcha() {
 
 function submitPassword(formEl: FormInstance | undefined) {
   if (!formEl) return;
-
-  if (loading.value) {
-    return;
-  }
-
-  loading.value = true;
-
   const data: FormData = {
     password: ruleForm.password,
     captcha_key: ruleForm.captcha_key,
@@ -119,8 +111,6 @@ function submitPassword(formEl: FormInstance | undefined) {
 
   setUserPassword(data)
     .then(() => {
-      loading.value = false;
-
       ElNotification({
         type: "success",
         title: "",
@@ -134,9 +124,6 @@ function submitPassword(formEl: FormInstance | undefined) {
         router.push({ path: "/login" });
       }, 1200);
     })
-    .catch(() => {
-      loading.value = false;
-    });
 }
 
 function goBack() {

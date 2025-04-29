@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-loading="loading" shadow="never" class="border-none">
+    <el-card v-loading="$store.loading" shadow="never" class="border-none">
       <div class="flex items-center">
         <TableColumnsController v-model:columns="tableColumns" :cacheKey="columnsCache" @reset="resetTableColumns" />
 
@@ -113,13 +113,11 @@ import { useApp } from "@/stores/app";
 import { getUsers, setUserInfo } from "@/api/system/user";
 import { includes } from "@/utils/utils";
 import { useFixed } from '@/hooks/useFixed'
-
 interface UserReq extends PaginateReq {
   phone?: number;
   role_id?: number;
 }
 
-const loading = ref<boolean>(false);
 
 const { ref:isFixed, fun:resize} = useFixed('target', 64)
 
@@ -195,11 +193,8 @@ onBeforeMount(function () {
 });
 
 function fetchData() {
-  if (loading.value) {
-    return;
-  }
 
-  loading.value = true;
+
 
   const data = { ...req };
   if (!data.phone) {
@@ -216,13 +211,9 @@ function fetchData() {
 
       roles.value = [{ id: 0, title: "所有角色" }].concat(res.roles);
 
-      loading.value = false;
 
       setTimeout(resize, 500)
     })
-    .catch(() => {
-      loading.value = false;
-    });
 }
 
 function submitPassword() {
@@ -249,14 +240,8 @@ function submitPassword() {
     return;
   }
 
-  if (loading.value) {
-    return;
-  }
-  loading.value = true;
-
   setUserInfo(data)
     .then(() => {
-      loading.value = false;
 
       dialog.visible = false;
 
@@ -267,9 +252,6 @@ function submitPassword() {
         duration: 3000,
       });
     })
-    .catch(() => {
-      loading.value = false;
-    });
 }
 
 function goSetRole(value: any): void {

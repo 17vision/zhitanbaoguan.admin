@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card v-loading="loading" shadow="never" class="border-none">
+    <el-card v-loading="$store.loading" shadow="never" class="border-none">
       <div v-if="includes(app.routeNames, ['permission.create', 'permission.edit'])" class="flex items-center mb-5">
         <el-button v-if="includes(app.routeNames, ['permission.create'])" type="primary" size="small" @click="goCreate"> 添加</el-button>
         <el-button v-if="req.parent_id" class="ml-3" type="primary" size="small" @click="goBack">返回上一级</el-button>
@@ -115,7 +115,6 @@ const app = useApp();
 
 const dragTable = ref(null);
 
-const loading = ref<boolean>(false);
 
 const total = ref<number>(0);
 
@@ -168,16 +167,10 @@ onBeforeMount(function () {
 });
 
 function fetchData() {
-  if (loading.value) {
-    return;
-  }
-
-  loading.value = true;
 
   const data = { ...req };
   getPermissions(data)
     .then((res: Record<string, any>) => {
-      loading.value = false;
 
       if (res && res.data) {
         tableData.value = res.data;
@@ -195,17 +188,9 @@ function fetchData() {
 
       nextTick(initDropTable);
     })
-    .catch(() => {
-      loading.value = false;
-    });
 }
 
 function updatePermissionsOrders() {
-  if (loading.value) {
-    return;
-  }
-
-  loading.value = true;
 
   const data: number[] = [];
   tableData.value.forEach((item: any) => {
@@ -216,8 +201,6 @@ function updatePermissionsOrders() {
 
   updateOrders({ ids: data })
     .then(() => {
-      loading.value = false;
-
       ElNotification({
         type: "success",
         title: "",
@@ -227,9 +210,6 @@ function updatePermissionsOrders() {
 
       window.location.reload();
     })
-    .catch(() => {
-      loading.value = false;
-    });
 }
 
 let initializedDropTable = false;
@@ -299,14 +279,8 @@ function goDelete(value: any): void {
       type: "warning",
     })
       .then(() => {
-        if (loading.value) {
-          return;
-        }
-
-        loading.value = true;
 
         deletePermissions({ id: value.id }).then(() => {
-          loading.value = false;
 
           ElNotification({
             type: "success",

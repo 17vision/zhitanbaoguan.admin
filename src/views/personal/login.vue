@@ -45,8 +45,8 @@
                 </el-form-item>
 
                 <el-form-item class="mt-6">
-                    <el-button v-if="isLogin" v-loading="loading" :class="{'w-full': isMini }" type="primary"  @click="doLogin(ruleFormRef)">登录</el-button>
-                    <el-button v-else v-loading="loading" :class="{'w-full': isMini }" type="primary" @click="doRegister(ruleFormRef)">注册</el-button>
+                    <el-button v-if="isLogin" v-loading="$store.loading" :class="{'w-full': isMini }" type="primary"  @click="doLogin(ruleFormRef)">登录</el-button>
+                    <el-button v-else v-loading="$store.loading" :class="{'w-full': isMini }" type="primary" @click="doRegister(ruleFormRef)">注册</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -133,7 +133,6 @@ const route:RouteLocationNormalizedLoaded = useRoute()
 const router: Router = useRouter()
 const user = useUser()
 const captcha = ref<string>('')
-const loading = ref<boolean>(false)
 const isLogin = ref<boolean>(true)
 const isMini = ref<boolean>(false)
 const way = ref<Number>(1)
@@ -191,11 +190,7 @@ function doLogin(formEl: FormInstance | undefined) {
     })
 
     function fetch() {
-        if (loading.value) {
-            return
-        }
 
-        loading.value = true
         const data:FormData = {
             password: ruleForm.password,
             captcha_key: ruleForm.captcha_key,
@@ -220,8 +215,6 @@ function doLogin(formEl: FormInstance | undefined) {
                 redirect = '/'
             }
             router.push({'path': redirect })
-        }).catch(() => {
-            loading.value = false
         })
     }
 }
@@ -243,11 +236,7 @@ function doRegister(formEl: FormInstance | undefined) {
     })
 
     function fetch() {
-        if (loading.value) {
-            return
-        }
 
-        loading.value = true
         const data:FormData = {
             password: ruleForm.password,
             captcha_key: ruleForm.captcha_key,
@@ -268,21 +257,13 @@ function doRegister(formEl: FormInstance | undefined) {
                 redirect = route.query.redirect as string
             }
             router.push({'path': redirect })
-        }).catch(() => {
-            loading.value = false
         })
     }
 }
 
 function buildQrcode() {
-    if (loading.value) {
-        return
-    }
-
-    loading.value = true
 
     getLoginQrcode(null).then((res:Record<string, any>) => {
-        loading.value = false
 
         qrcode.key = res.key
         qrcode.path = res.path
@@ -291,8 +272,6 @@ function buildQrcode() {
         if (qrcode.key && qrcode.path) {
             runTimer()
         }
-    }).catch(() => {
-        loading.value = false
     })
 }
 
@@ -321,18 +300,11 @@ function clearTimer() {
 
 function reToken() {
     if (qrcode.ttl % 3 === 0) {
-        if (loading.value) {
-            return
-        }
-
-        loading.value = true
 
         user.qrcodeLogin({key: qrcode.key}).then(() => {
 
             clearTimer()
 
-            loading.value = false
-            
             let redirect:string = '/'
             if (Array.isArray(route.query.redirect)) {
                 redirect = route.query.redirect[0] as string
@@ -340,8 +312,6 @@ function reToken() {
                 redirect = route.query.redirect as string
             }
             router.push({'path': redirect })
-        }).catch(() => {
-            loading.value = false
         })
     }
     
