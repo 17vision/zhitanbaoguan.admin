@@ -19,8 +19,7 @@ export default defineConfig({
     },
     server: {
         host: true,
-        port: 1111,
-        open: true,
+        open: false,
         hmr: {
             overlay: false,
         },
@@ -30,19 +29,7 @@ export default defineConfig({
             '@': pathSrc
         }
     },
-    css: {
-        preprocessorOptions: {
-            scss: {
-                additionalData: `
-          @use "@/assets/styles/element.scss";
-          @use "@/assets/styles/element-dark.scss";
-          @use "@/assets/styles/main.scss";
-          @use "@/assets/styles/preflight.scss";
-        `,
-                silenceDeprecations: ['legacy-js-api']
-            },
-        },
-    },
+    
     plugins: [
         vue(),
         AutoImport({

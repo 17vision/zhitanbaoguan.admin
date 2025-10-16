@@ -37,8 +37,4 @@ function doCollapse() {
   height: 100vh;
   overflow: hidden;
 }
-
-.main-container{
-  
-}
 </style>

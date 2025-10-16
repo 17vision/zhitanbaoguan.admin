@@ -110,7 +110,6 @@ router.beforeEach(async (to: AppRoute.ToRoute, _from, next) => {
                 } catch (error) {
                     console.error('Route initialization failed:', error)
                     toRedirect()
-                    toRedirect()
                 }
             }
         }

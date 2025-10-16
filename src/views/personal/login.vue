@@ -7,12 +7,12 @@
                 <el-link v-if="isLogin" class="text-[17px] text-white" type="info">注册</el-link>
                 <el-link v-else class="text-[17px] text-white" type="info">登录</el-link>
             </div> -->
-
+<!-- 
             <div class="flex justify-center items-end absolute pb-1 pl-4 right-[-60px] top-[-78px] rotate-[30deg] bg-blue-500 text-white cursor-pointer w-[150px] h-[120px] switch-btn" @click="changeWay">
                 <el-icon v-if="way == 1" size="30"><SvgIcon :icon="'desktop'" /></el-icon>
 
                 <el-icon v-if="way == 2" size="30"><SvgIcon :icon="'qrcode'" /></el-icon>
-            </div>
+            </div> -->
             <div v-if="way == 1" class="flex flex-col items-center mb-5">
                 <div class="text-lg text-black/75 mb-4">微信扫码  安全登录</div>
                 <div class="flex relative w-[156px] h-[156px]">
@@ -135,7 +135,7 @@ const user = useUser()
 const captcha = ref<string>('')
 const isLogin = ref<boolean>(true)
 const isMini = ref<boolean>(false)
-const way = ref<Number>(1)
+const way = ref<Number>(2)
 const qrcode = reactive({
     key: '',
     path: '',
@@ -154,7 +154,7 @@ onMounted(function() {
     
     resizeHandler()
 
-    buildQrcode()
+    // buildQrcode()
 })
 
 onUnmounted(() => {

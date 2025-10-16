@@ -11,6 +11,7 @@
     --side-bar-item-hover-bg-color: #001528;
     --side-bar-text-color: #bfcbd9;
     --el-menu-base-level-padding: 12px;
+    --el-menu-bg-color: var(--side-bar-bg-color) !important;
 
     .sidebar-collapse {
         --side-bar-width: 72px; 
@@ -141,7 +142,6 @@ html, body, #app {
 
         .app-main {
             width: 100%;
-            height: 100%;
         }
     }
 }
@@ -161,7 +161,7 @@ html, body, #app {
 
     .el-menu-item {
         color: var( --side-bar-text-color);
-        background-color: var(--side-bar-item-bg-color);
+        // background-color: var(--side-bar-item-bg-color);
 
         &.is-active {
             color: #409eff;
@@ -169,7 +169,7 @@ html, body, #app {
         }
 
         &.only-grade {
-            background-color: var(--side-bar-bg-color);
+            background-color: var(---el-menu-bg-color); 
         }
     }
 

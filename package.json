@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "@vue/runtime-core": "^3.5.13",
     "axios": "^1.4.0",
     "cropperjs": "2.0.0-beta.4",
