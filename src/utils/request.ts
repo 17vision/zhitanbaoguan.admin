@@ -39,14 +39,16 @@ axios.interceptors.request.use(
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`
         }
-        if(config.isFormData) {
+        if (config.isFormData) {
             config.headers['Content-Type'] = 'multipart/form-data'
             const formData = new FormData()
             for (const key in config.data) {
                 if (config.data[key] instanceof File) {
                     formData.append(key, config.data[key])
-                } else {
+                } else if (typeof config.data[key] === 'object') {
                     formData.append(key, JSON.stringify(config.data[key]))
+                } else {
+                    formData.append(key, config.data[key])
                 }
             }
             config.data = formData
@@ -114,7 +116,7 @@ function showError(value: Error) {
     }
 }
 
-const request = async(config: AxiosRequestConfig) => {
+const request = async (config: AxiosRequestConfig) => {
     const { loading } = config
     const Loading = loading ?? true
     const $store = useLoading()
@@ -129,16 +131,16 @@ const request = async(config: AxiosRequestConfig) => {
 }
 
 request.get = (url: string, params?: any, config?: AxiosRequestConfig) => {
-	return request({ ...config, url, method: 'get', params })
+    return request({ ...config, url, method: 'get', params })
 }
 request.post = (url: string, data?: any, config?: AxiosRequestConfig) => {
-	return request({ ...config, url, method: 'post', data })
+    return request({ ...config, url, method: 'post', data })
 }
 request.put = (url: string, data?: any, config?: AxiosRequestConfig) => {
-	return request({ ...config, url, method: 'put', data })
+    return request({ ...config, url, method: 'put', data })
 }
 request.delete = (url: string, data?: any, config?: AxiosRequestConfig) => {
-	return request({ ...config, url, method: 'delete', data })
+    return request({ ...config, url, method: 'delete', data })
 }
 
 declare module 'axios' {
@@ -150,6 +152,7 @@ declare module 'axios' {
         isFormData?: boolean
     }
     interface AxiosResponse<T = any> {
+        [key: string]: any
         total?: number
         url?: string
     }

@@ -138,7 +138,7 @@ function onCropperComplete(value: string) {
     uploadImage({ file: value, info: { referer: "avatar" } })
         .then((value: any) => {
 
-            form.avatar = value;
+            form.avatar = value.url;
 
             user.setUserInfo({ avatar: value });
 

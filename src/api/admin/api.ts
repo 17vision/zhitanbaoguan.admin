@@ -3,19 +3,22 @@ import request from '@/utils/request'
 export default {
 
     // 获取课程列表
-    getCourses(params: any) {
+    getCourses(params?: any) {
         return request({
             url: '/courses',
             method: 'get',
-            params
+            params: {
+                page: 1,
+                limit: 10,
+                ...params
+            }
         })
     },
     // 获取课程详情
-    getCoursesDetail(params: any) {
+    getCoursesDetail(id: string) {
         return request({
-            url: '/courses',
+            url: '/courses/' + id,
             method: 'get',
-            params
         })
     },
     // 创建课程
@@ -69,13 +72,25 @@ export default {
             data
         })
     },
+    // 更新课程章节
+    updateCoursesChapters(data: any) {
+        return request({
+            url: '/course_chapters',
+            method: 'put',
+            data
+        })
+    },
 
     // 获取导师列表
-    getTutors(params: any) {
+    getTutors(params?: any) {
         return request({
             url: '/tutors',
             method: 'get',
-            params
+            params: {
+                page: 1,
+                limit: 10,
+                ...params
+            }
         })
     },
 

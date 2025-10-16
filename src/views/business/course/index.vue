@@ -11,33 +11,31 @@
                 <el-button type="primary" @click="handleSearch">搜索</el-button>
             </div>
             <div class="flex items-center space-x-2">
-                <el-button type="danger" @click="handleBatchDelete">批量删除</el-button>
+                <!-- <el-button type="danger" @click="handleBatchDelete">批量删除</el-button> -->
                 <el-button type="primary" @click="handleAdd">新增课程</el-button>
             </div>
         </div>
 
         <!-- 表格区域 -->
-        <el-table v-loading="loading" :data="tableData" border style="width: 100%"
-            @selection-change="handleSelectionChange">
+        <el-table v-loading="loading" :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" />
-            <el-table-column prop="id" label="ID" width="80" />
             <el-table-column label="封面" width="120">
                 <template #default="{ row }">
-                    <el-image :src="row.cover" fit="cover" class="w-20 h-20 rounded" />
+                    <el-image v-if="row.cover" :src="row.cover" fit="cover" class="w-15 h-15 rounded" />
                 </template>
             </el-table-column>
-            <el-table-column prop="title" label="标题" min-width="200" />
-            <el-table-column prop="category" label="分类" width="120" />
-            <el-table-column prop="level" label="难度" width="120" />
+            <el-table-column prop="title" label="标题" width="120" />
+            <el-table-column prop="category_str" label="分类" width="120" />
+            <el-table-column prop="difficulty_str" label="难度" width="120" />
             <el-table-column prop="duration" label="总时长" width="120" />
             <el-table-column prop="chapter_count" label="章节数" width="120" />
             <el-table-column label="发布状态" width="120">
                 <template #default="{ row }">
-                    <el-switch v-model="row.status" active-value="published" inactive-value="draft"
+                    <el-switch v-model="row.status" :active-value="1" :inactive-value="0"
                         @change="handleStatusChange(row)" />
                 </template>
             </el-table-column>
-            <el-table-column prop="created_at" label="发布时间" width="180" />
+            <el-table-column prop="created_at" label="发布时间"/>
             <el-table-column label="操作" width="150" fixed="right">
                 <template #default="{ row }">
                     <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
@@ -78,10 +76,10 @@ const total = ref(0)
 const selectedRows = ref([])
 
 // 搜索
-const handleSearch = async() => {
+const handleSearch = async () => {
     loading.value = true
     // TODO: 实现搜索逻辑
-    api.getCourses({ ...searchForm.value, page: currentPage.value, limit: pageSize.value}).then(res => {
+    api.getCourses({ ...searchForm.value, page: currentPage.value, limit: pageSize.value }).then(res => {
         tableData.value = res.data
         total.value = res.total
         loading.value = false
@@ -113,23 +111,30 @@ const handleAdd = () => {
 // 编辑课程
 const handleEdit = (row: any) => {
     // TODO: 实现编辑课程逻辑
-    router.push({ name: 'course.edit', query: { id: row.id } })
+    router.push({ name: 'course.create', query: { id: row.id } })
 }
 
 // 删除课程
 const handleDelete = (row: any) => {
     ElMessageBox.confirm('确定要删除该课程吗？', '提示', {
         type: 'warning'
-    }).then(() => {
+    }).then(async () => {
         // TODO: 实现删除逻辑
+        await api.deleteCourse({ id: row.id })
         ElMessage.success('删除成功')
+        // TODO: 刷新数据
+        handleSearch()
     })
 }
 
 // 修改发布状态
 const handleStatusChange = (row: any) => {
-    console.log('修改状态：', row)
     // TODO: 实现状态修改逻辑
+    api.updateCourse({ id: row.id, status: row.status }).then((res) => {
+        if (res.status === 1) {
+            ElMessage.success('发布成功')
+        }
+    })
 }
 
 // 表格选择

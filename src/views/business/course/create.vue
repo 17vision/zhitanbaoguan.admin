@@ -3,8 +3,9 @@
         <div class="p-4 relative">
             <!-- 页面标题 -->
             <div class="flex justify-between items-center mb-6 py-4 sticky top-0 bg-white z-10">
-                <h2 class="text-xl font-bold">新增课程</h2>
+                <h2 class="text-xl font-bold">{{ formData.id ? '编辑课程' : '新增课程' }}</h2>
                 <div class="space-x-2">
+                    <el-button @click="handleBack">返回列表</el-button>
                     <el-button @click="handleSaveDraft">保存草稿</el-button>
                     <el-button type="primary" @click="handlePublish">发布课程</el-button>
                 </div>
@@ -46,22 +47,22 @@
 
             <!-- 基础信息 -->
             <div v-if="activeStep === 0">
-                <OneVue :form="formData" ref="nextRef"></OneVue>
+                <OneVue :formData="formData" ref="nextRef"></OneVue>
             </div>
 
             <!-- 场景设置 -->
             <div v-if="activeStep === 1">
-                <TwoVue :form="formData" ref="nextRef"></TwoVue>
+                <TwoVue :formData="formData" ref="nextRef"></TwoVue>
             </div>
 
             <!-- 章节内容 -->
             <div v-if="activeStep === 2">
-                <ThreeVue :form="formData" ref="nextRef"></ThreeVue>
+                <ThreeVue :formData="formData" ref="nextRef"></ThreeVue>
             </div>
 
             <!-- 课后作业 -->
             <div v-if="activeStep === 3">
-                <FourVue :form="formData" ref="nextRef"></FourVue>
+                <FourVue :formData="formData" ref="nextRef"></FourVue>
             </div>
         </div>
 
@@ -77,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { InfoFilled, Picture, Document, EditPen } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
@@ -85,17 +86,13 @@ import OneVue from './components/one.vue'
 import TwoVue from './components/two.vue'
 import ThreeVue from './components/three.vue'
 import FourVue from './components/four.vue'
+import api from '@/api/admin/api'
 const router = useRouter()
 // 当前步骤
 const activeStep = ref(0)
 const nextRef = ref<InstanceType<typeof OneVue | typeof TwoVue | typeof ThreeVue | typeof FourVue>>(null)
 // 表单数据
-const formData = reactive<any>({})
-
-
-
-
-
+const formData = ref<any>({})
 // 上一步
 const handlePrev = () => {
     if (activeStep.value > 0) {
@@ -106,33 +103,36 @@ const handlePrev = () => {
 // 下一步
 const handleNext = () => {
     if (nextRef.value) {
-        nextRef.value?.validate().then(() => {
+        nextRef.value?.validate().then((res: any) => {
+            formData.value = { ...formData.value, ...res }
             activeStep.value++
         })
     }
 }
 
+// 返回列表
+const handleBack = () => {
+    router.push({ name: 'course.index' })
+}
 // 保存草稿
 const handleSaveDraft = () => {
     ElMessage.success('保存草稿成功')
     if (nextRef.value) {
         nextRef.value?.validate().then(() => {
-            router.go(-1)
-
+            router.push({ name: 'course.index' })
         })
     }
 }
 
 // 发布课程
-const handlePublish = () => {
-    ElMessage.success('发布课程成功')
-    router.go(-1)
-
-
+const handlePublish = async () => {
+    if (nextRef.value) {
+        const res = await nextRef.value?.validate() as any
+        await api.updateCourse({ id: res.id, status: 1 })
+        ElMessage.success('发布课程成功')
+        router.push({ name: 'course.index' })
+    }
 }
-
-
-
 </script>
 
 <style scoped></style>

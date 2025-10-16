@@ -18,7 +18,7 @@
                     <el-image v-if="row.avatar" :src="row.avatar" fit="cover" class="w-20 h-20 rounded" />
                 </template>
             </el-table-column>
-            <el-table-column prop="username" label="导师名称" />
+            <el-table-column prop="username" label="导师名称"  width="200"/>
             <el-table-column prop="introduction" label="介绍" />
             <el-table-column label="操作" width="150" fixed="right">
                 <template #default="{ row }">

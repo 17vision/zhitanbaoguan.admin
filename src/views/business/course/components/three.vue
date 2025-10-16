@@ -1,96 +1,170 @@
 <template>
     <div>
         <div class="mb-4 flex justify-between items-center">
-            <h3 class="text-lg font-medium">课程列表</h3>
+            <h3 class="text-lg font-medium">章节列表</h3>
             <el-button type="primary" size="small" @click="handleAddChapter">
                 <el-icon class="mr-1">
                     <Plus />
                 </el-icon>添加
             </el-button>
         </div>
-
+        <el-table :data="tableData" style="width: 100%">
+            <el-table-column prop="title" label="标题" width="200" />
+            <el-table-column label="背景" width="140">
+                <template #default="{ row }">
+                    <el-image v-if="row.background" :src="row.background" fit="cover" class="w-20 h-20 rounded" />
+                </template>
+            </el-table-column>
+            <el-table-column prop="duration" label="时长" width="100" />
+            <el-table-column prop="description" label="内容" show-overflow-tooltip />
+            <el-table-column label="操作" width="150" fixed="right">
+                <template #default="{ row }">
+                    <el-button link type="primary" @click="handleEditChapter(row)">编辑</el-button>
+                    <!-- <el-button link type="danger" @click="handleDelete(row)">删除</el-button> -->
+                </template>
+            </el-table-column>
+        </el-table>
         <!-- 章节列表 -->
-        <div v-for="(chapter, index) in chapters" :key="index" class="mb-6 bg-white p-4 rounded-lg">
-            <div class="flex justify-between items-center mb-4">
-                <h4 class="text-base font-medium">第{{ index + 1 }}节</h4>
-                <div class="space-x-2">
-                    <el-button type="primary" link @click="handleEditChapter(index)">
-                        <el-icon>
-                            <Edit />
-                        </el-icon>
-                    </el-button>
-                    <el-button type="danger" link @click="handleDeleteChapter(index)">
-                        <el-icon>
-                            <Delete />
-                        </el-icon>
-                    </el-button>
-                </div>
-            </div>
-
-            <el-form label-width="100px">
+        <el-dialog :title="chapter.id ? '编辑章节' : '添加章节'" v-model="chapterDialogVisible" width="50%">
+            <el-form label-width="100px" :model="chapter" ref="chapterFormRef" :rules="rules">
                 <el-row :gutter="24">
                     <el-col :span="12">
-                        <el-form-item label="课程标题">
+                        <el-form-item label="课程标题" prop="title">
                             <el-input v-model="chapter.title" placeholder="请输入课程标题" />
                         </el-form-item>
-
+                        <el-form-item label="课程时长" prop="duration">
+                            <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />
+                        </el-form-item>
+                        <el-form-item label="音频" prop="audio">
+                            <el-select v-model="chapter.audio" placeholder="请选择音频">
+                                <el-option v-for="item in audioList" :key="item.id" :label="item.title"
+                                    :value="item.id" />
+                            </el-select>
+                        </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="课程时长">
-                            <el-input v-model="chapter.timePoints" placeholder="请输入课程时长" />
+                        <el-form-item label="图片" prop="background">
+                            <div class="avatar-uploader">
+                                <div v-if="chapter.background" class="relative ">
+                                    <img :src="toURL(chapter.background)" class="cover-image" />
+                                    <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
+                                        <el-icon :size="24" class="text-red-500 " @click="chapter.background = ''">
+                                            <Close />
+                                        </el-icon>
+                                    </div>
+                                </div>
+                                <label for="coverInput" v-else
+                                    class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
+                                    <el-icon class="text-gray-400 text-32px mb-3">
+                                        <Upload />
+                                    </el-icon>
+                                    <span class="text-gray-500 text-sm">点击上传</span>
+                                </label>
+                                <input type="file" name="cover" id="coverInput" @change="handleCoverSuccess"
+                                    accept="image/*" style="display: none;">
+                            </div>
                         </el-form-item>
                     </el-col>
                 </el-row>
-
                 <el-form-item label="课程内容">
-                    <el-input v-model="chapter.content" type="textarea" placeholder="请输入课程内容" :rows="4" />
-                </el-form-item>
-                <el-form-item label="图片">
-                    <div class="avatar-uploader">
-                        <div v-if="chapter.cover" class="relative ">
-                            <img :src="toURL(chapter.cover)" class="cover-image" />
-                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" class="text-red-500 " @click="chapter.cover = ''">
-                                    <Close />
-                                </el-icon>
-                            </div>
-                        </div>
-                        <label for="coverInput" v-else
-                            class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
-                            <el-icon class="text-gray-400 text-32px mb-3">
-                                <Upload />
-                            </el-icon>
-                            <span class="text-gray-500 text-sm">点击上传</span>
-                        </label>
-                        <input type="file" name="cover" id="coverInput" @change="handleCoverSuccess($event, index)"
-                            accept="image/*" style="display: none;">
-                    </div>
-                </el-form-item>
-                <el-form-item label="音频">
-                    <div class="flex items-center space-x-2">
-                        <el-upload class="upload-demo" action="#" :auto-upload="false">
-                            <el-button type="primary" link>上传音频</el-button>
-                        </el-upload>
-                    </div>
+                    <el-input v-model="chapter.description" type="textarea" placeholder="请输入课程内容" :rows="4" />
                 </el-form-item>
             </el-form>
-        </div>
+            <template #footer>
+                <el-button type="danger" @click="chapterDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleSubmit">保存</el-button>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
 <script lang='ts' setup>
 import { ref } from 'vue'
-import { Plus, Edit, Delete, Close, Upload} from '@element-plus/icons-vue'
+import { Plus, Close, Upload } from '@element-plus/icons-vue'
+import api from '@/api/admin/api'
+import { uploadImage } from '@/api/utils'
+const route = useRoute()
 
-const chapters = ref([])
+const audioList = ref([])
+const tableData = ref([])
+const chapterDialogVisible = ref(false)
+const chapter = ref<any>({})
+const chapterFormRef = ref<any>(null)
+
+const rules = {
+    title: [
+        { required: true, message: '请输入课程标题', trigger: 'blur' },
+    ],
+    duration: [
+        { required: true, message: '请输入课程时长', trigger: 'blur' },
+    ],
+    background: [
+        { required: true, message: '请上传课程图片', trigger: 'blur' },
+    ],
+}
 // 添加章节
 const handleAddChapter = () => {
-    chapters.value.push({
-        title: '',
-        audio: '',
-        timePoints: []
+    chapter.value = {}
+    chapterDialogVisible.value = true
+}
+
+const handleEditChapter = (row: any) => {
+    chapter.value = { ...row }
+    chapterDialogVisible.value = true
+}
+
+// 处理封面上传
+const handleCoverSuccess = (e: any) => {
+    const file = e.target.files[0]
+    chapter.value.background = file
+    e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件
+}
+
+const handleSubmit = async () => {
+    if (chapter.value.background instanceof File) {
+        const res = await uploadImage({
+            file: chapter.value.background,
+            info: { referer: "course_chapter" }
+        })
+        chapter.value.background = res.url
+    }
+    for (const key in chapter.value) {
+        if (!chapter.value[key] && chapter.value[key] !== 0) {
+            delete chapter.value[key]
+        }
+    }
+    if (chapter.value.id) {
+        await api.updateCoursesChapters(chapter.value)
+    } else {
+        chapter.value.course_id = route.query.id
+        await api.createCoursesChapters(chapter.value)
+    }
+    chapterDialogVisible.value = false
+    getList()
+}
+
+const validate = () => {
+    return new Promise((resolve, reject) => {
+        if (tableData.value.length === 0) {
+            ElMessage.warning('请添加课程章节')
+            reject('请添加课程章节')
+        } else {
+            resolve({})
+        }
     })
 }
+defineExpose({
+    validate
+})
+
+const getList = async () => {
+    const res = await api.getCoursesChapters(route.query.id as string)
+    tableData.value = res as unknown as any[]
+}
+onMounted(async () => {
+    getList()
+})
+
 const toURL = (file: File | string) => {
     if (!file) return ''
     if (file instanceof File) {
@@ -98,36 +172,6 @@ const toURL = (file: File | string) => {
     }
     return file
 }
-
-// 处理封面上传
-const handleCoverSuccess = (e: any, index: number) => {
-    const file = e.target.files[0]
-    chapters.value[index].cover = file
-    e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件
-}
-// 编辑章节
-const handleEditChapter = (index: number) => {
-    // 可以添加编辑逻辑
-}
-
-// 删除章节
-const handleDeleteChapter = (index: number) => {
-    chapters.value.splice(index, 1)
-}
-
-const validate = () => {
-    return new Promise((resolve, reject) => {
-        if (chapters.value.length === 0) {
-            ElMessage.warning('请添加课程章节')
-            reject('请添加课程章节')
-        } else {
-            resolve(true)
-        }
-    })
-}
-defineExpose({
-    validate
-})
 </script>
 
 <style lang='scss' scoped>

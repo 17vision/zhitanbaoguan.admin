@@ -9,103 +9,60 @@
                     </el-icon>
                     课程基本信息
                 </h3>
-                <el-form-item label="课程标题" prop="title" class="mb-6">
-                    <el-input v-model="form.title" placeholder="请输入课程标题" maxlength="50" show-word-limit />
-                </el-form-item>
-                <el-form-item label="课程描述" prop="description" class="mb-6">
-                    <el-input v-model="form.description" type="textarea" :rows="4" placeholder="请输入课程描述" maxlength="500"
-                        show-word-limit />
-                </el-form-item>
-                <div class="grid grid-cols-2 gap-6">
-                    <el-form-item label="所属分类" prop="category">
-                        <el-select v-model="form.category" placeholder="请选择分类" class="w-full">
-                            <el-option label="睡眠" value="sleep" />
-                            <el-option label="冥想" value="meditation" />
-                            <el-option label="专注" value="focus" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="难度级别" prop="level">
-                        <el-select v-model="form.level" placeholder="请选择难度" class="w-full">
-                            <el-option label="初级" value="beginner" />
-                            <el-option label="中级" value="intermediate" />
-                            <el-option label="高级" value="advanced" />
-                        </el-select>
-                    </el-form-item>
-                </div>
-            </div>
 
-            <!-- 导师信息 -->
-            <div class="bg-white p-6 rounded-lg shadow-sm mb-6">
-                <h3 class="text-lg font-medium mb-6 flex items-center">
-                    <el-icon class="mr-2">
-                        <User />
-                    </el-icon>
-                    导师信息
-                </h3>
-                <div class="grid grid-cols-2 gap-6 mb-6">
+
+                <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <el-form-item label="导师名称" prop="teacher">
-                            <el-input v-model="form.teacher" placeholder="请输入导师名称" maxlength="20" show-word-limit />
+                        <el-form-item label="课程标题" prop="title" class="mb-6">
+                            <el-input v-model="form.title" placeholder="请输入课程标题" maxlength="50" show-word-limit />
+                        </el-form-item> <el-form-item label="所属分类" prop="category">
+                            <el-select v-model="form.category" placeholder="请选择分类" class="w-full">
+                                <el-option label="睡眠" :value="1" />
+                                <el-option label="专注" :value="2" />
+                                <el-option label="减压" :value="3" />
+                            </el-select>
                         </el-form-item>
-                        <el-form-item label="导师介绍" prop="teacherDescription" class="mb-6">
-                            <el-input v-model="form.teacherDescription" type="textarea" :rows="3" placeholder="请输入导师介绍"
-                                maxlength="200" show-word-limit />
+                        <el-form-item label="难度级别" prop="difficulty">
+                            <el-select v-model="form.difficulty" placeholder="请选择难度" class="w-full">
+                                <el-option label="初级" :value="1" />
+                                <el-option label="中级" :value="2" />
+                                <el-option label="高级" :value="3" />
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="选择导师" prop="tutor_id">
+                            <el-select v-model="form.tutor_id" placeholder="请选择导师" class="w-full">
+                                <el-option v-for="item in tutor_list" :key="item.id" :label="item.username"
+                                    :value="item.id" />
+                            </el-select>
                         </el-form-item>
                     </div>
-
-                    <el-form-item label="导师图片" prop="teacherAvatar">
+                    <el-form-item prop="cover" label="课程封面">
                         <div class="avatar-uploader">
-                            <div v-if="form.teacherAvatar" class="relative w-full h-full">
-                                <img :src="toURL(form.teacherAvatar)" class="cover-image" />
+                            <div v-if="form.cover" class="relative ">
+                                <img :src="toURL(form.cover)" class="cover-image" />
                                 <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                    <el-icon :size="24" @click="form.teacherAvatar = ''">
+                                    <el-icon :size="24" class="text-red-500 " @click="form.cover = ''">
                                         <Close />
                                     </el-icon>
                                 </div>
                             </div>
-                            <label for="teacherAvatarInput" v-else
+                            <label for="coverInput" v-else
                                 class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
                                 <el-icon class="text-gray-400 text-32px mb-3">
                                     <Upload />
                                 </el-icon>
                                 <span class="text-gray-500 text-sm">点击上传</span>
                             </label>
-                            <input type="file" name="teacherAvatar" id="teacherAvatarInput"
-                                @change="handleTeacherAvatarSuccess" accept="image/*" style="display: none;">
+                            <input type="file" name="cover" id="coverInput" @change="handleCoverSuccess"
+                                accept="image/*" style="display: none;">
                         </div>
                     </el-form-item>
                 </div>
 
-            </div>
 
-            <!-- 课程封面 -->
-            <div class="bg-white p-6 rounded-lg shadow-sm">
-                <h3 class="text-lg font-medium mb-6 flex items-center">
-                    <el-icon class="mr-2">
-                        <Picture />
-                    </el-icon>
-                    课程封面
-                </h3>
-                <el-form-item prop="cover">
-                    <div class="avatar-uploader">
-                        <div v-if="form.cover" class="relative ">
-                            <img :src="toURL(form.cover)" class="cover-image" />
-                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" class="text-red-500 " @click="form.cover = ''">
-                                    <Close />
-                                </el-icon>
-                            </div>
-                        </div>
-                        <label for="coverInput" v-else
-                            class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
-                            <el-icon class="text-gray-400 text-32px mb-3">
-                                <Upload />
-                            </el-icon>
-                            <span class="text-gray-500 text-sm">点击上传</span>
-                        </label>
-                        <input type="file" name="cover" id="coverInput" @change="handleCoverSuccess" accept="image/*"
-                            style="display: none;">
-                    </div>
+                <el-form-item label="课程描述" class="mb-6">
+                    <el-input v-model="form.description" type="textarea" :rows="4" placeholder="请输入课程描述" maxlength="500"
+                        show-word-limit />
                 </el-form-item>
             </div>
         </el-form>
@@ -114,10 +71,16 @@
 
 <script lang='ts' setup>
 import { ElMessage } from 'element-plus'
-import { User, Upload, Picture, Close, Document } from '@element-plus/icons-vue'
+import { Upload, Close, Document } from '@element-plus/icons-vue'
 import { ref } from 'vue'
+import api from '@/api/admin/api'
+import { uploadImage } from '@/api/utils'
+
 // 表单引用
 const formRef = ref()
+const route = useRoute()
+const router = useRouter()
+const tutor_list = ref<any>([])
 // 表单校验规则
 const rules = ref<any>({
     title: [
@@ -131,37 +94,13 @@ const rules = ref<any>({
     category: [
         { required: true, message: '请选择课程分类', trigger: 'change' }
     ],
-    level: [
+    difficulty: [
         { required: true, message: '请选择难度级别', trigger: 'change' }
     ],
-    teacher: [
-        { required: true, message: '请输入导师名称', trigger: 'blur' },
-        { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
-    ],
-    teacherAvatar: [
-        { required: true, message: '请上传导师图片', trigger: 'change' }
-    ],
-    teacherDescription: [
-        { required: true, message: '请输入导师介绍', trigger: 'blur' },
-        { min: 10, max: 200, message: '长度在 10 到 200 个字符', trigger: 'blur' }
-    ]
 })
 const form = ref<any>({
-    category: '',
-    level: '',
-    teacher: '',
-    teacherAvatar: '',
-    teacherDescription: '',
-    cover: '',
 })
 
-// 处理导师头像上传
-const handleTeacherAvatarSuccess = (e: any) => {
-    const file = e.target.files[0]
-    form.value.teacherAvatar = file
-    e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件
-    formRef.value?.validateField('teacherAvatar')
-}
 
 const toURL = (file: File | string) => {
     if (!file) return ''
@@ -181,9 +120,26 @@ const handleCoverSuccess = (e: any) => {
 
 const validate = () => {
     return new Promise((resolve, reject) => {
-        formRef.value?.validate((valid: boolean) => {
+        formRef.value?.validate(async (valid: boolean) => {
             if (valid) {
-                resolve(form.value)
+                // 处理文件上传
+                if (form.value.cover instanceof File) {
+                    const res = await uploadImage({ file: form.value.cover, info: { referer: 'course' } })
+                    form.value.cover = res.url
+                }
+                if (form.value.id) {
+                    for (const key in form.value) {
+                        if (!form.value[key]) {
+                            delete form.value[key]
+                        }
+                    }
+                    const res = await api.updateCourse(form.value)
+                    resolve(res)
+                    return
+                }
+                const res = await api.createCourse(form.value)
+                resolve(res)
+                router.push({ name: 'course.create', query: { id: res.id } })
             } else {
                 reject(new Error('校验失败'))
             }
@@ -192,6 +148,25 @@ const validate = () => {
 }
 defineExpose({
     validate
+})
+
+const getTutorList = async () => {
+    const res = await api.getTutors({
+        limit: 100,
+    })
+    tutor_list.value = res.data
+}
+
+onMounted(() => {
+    getTutorList()
+    if (route.query.id) {
+        api.getCoursesDetail(
+            route.query.id as string
+        ).then((res: any) => {
+            form.value = res
+        })
+    }
+
 })
 </script>
 
