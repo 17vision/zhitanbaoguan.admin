@@ -20,7 +20,7 @@
             <el-table-column label="操作" width="150" fixed="right">
                 <template #default="{ row }">
                     <el-button link type="primary" @click="handleEditChapter(row)">编辑</el-button>
-                    <!-- <el-button link type="danger" @click="handleDelete(row)">删除</el-button> -->
+                    <el-button link type="danger" @click="handleDeleteChapter(row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -35,9 +35,9 @@
                         <el-form-item label="课程时长" prop="duration">
                             <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />
                         </el-form-item>
-                        <el-form-item label="音频" prop="audio">
-                            <el-select v-model="chapter.audio" placeholder="请选择音频">
-                                <el-option v-for="item in audioList" :key="item.id" :label="item.title"
+                        <el-form-item label="音频资源" prop="audio">
+                            <el-select v-model="chapter.audio" placeholder="请选择音频资源">
+                                <el-option v-for="item in audioList" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
                         </el-form-item>
@@ -112,7 +112,11 @@ const handleEditChapter = (row: any) => {
     chapter.value = { ...row }
     chapterDialogVisible.value = true
 }
-
+const handleDeleteChapter = async (row: any) => {
+    await api.deleteCoursesChapters(row.id)
+    ElMessage.success('删除成功')
+    getList()
+}
 // 处理封面上传
 const handleCoverSuccess = (e: any) => {
     const file = e.target.files[0]
@@ -163,6 +167,7 @@ const getList = async () => {
 }
 onMounted(async () => {
     getList()
+    getAudioList()
 })
 
 const toURL = (file: File | string) => {
@@ -171,6 +176,10 @@ const toURL = (file: File | string) => {
         return URL.createObjectURL(file)
     }
     return file
+}
+const getAudioList = async () => {
+    const res = await api.getResources({ type: 3, limit: 1000 })
+    audioList.value = res.data
 }
 </script>
 

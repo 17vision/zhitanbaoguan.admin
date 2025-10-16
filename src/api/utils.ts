@@ -10,6 +10,17 @@ export function uploadImage(data: {
          * course_chapter 课程章节封面
          */
         referer: string,
+        /**
+         * 资源类型
+         * image 图片
+         * video 视频
+         * audio 音频
+         */
+        type?: string,
+        /**
+         * 是否返回缩略图
+         */
+        both?: boolean,
     }
 }) {
     return request({
