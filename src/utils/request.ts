@@ -39,6 +39,13 @@ axios.interceptors.request.use(
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`
         }
+        if(config.isFormData) {
+            const formData = new FormData()
+            for (const key in config.data) {
+                formData.append(key, config.data[key])
+            }
+            config.data = formData
+        }
         return config
     },
     (error) => {
@@ -132,6 +139,10 @@ request.delete = (url: string, data?: any, config?: AxiosRequestConfig) => {
 declare module 'axios' {
     interface AxiosRequestConfig {
         loading?: boolean
+        /**
+         * 是否需要转换为 FormData 格式
+         */
+        isFormData?: boolean
     }
 }
 export default request

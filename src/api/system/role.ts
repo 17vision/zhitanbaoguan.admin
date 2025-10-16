@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getRoles(data:any) {
     return request({
-        url: '/roles',
+        url: '/admin/api/roles',
         method: 'get',
         params: data
     })

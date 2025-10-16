@@ -48,6 +48,8 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElTransfer: typeof import('element-plus/es')['ElTransfer']
     ElUpload: typeof import('element-plus/es')['ElUpload']
+    IconEdit: typeof import('~icons/ep/edit')['default']
+    ImageCanvas: typeof import('./../components/ImageCanvas/ImageCanvas.vue')['default']
     ImageCropper: typeof import('./../components/ImageCropper/ImageCropper.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
