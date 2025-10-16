@@ -40,9 +40,14 @@ axios.interceptors.request.use(
             config.headers['Authorization'] = `Bearer ${token}`
         }
         if(config.isFormData) {
+            config.headers['Content-Type'] = 'multipart/form-data'
             const formData = new FormData()
             for (const key in config.data) {
-                formData.append(key, config.data[key])
+                if (config.data[key] instanceof File) {
+                    formData.append(key, config.data[key])
+                } else {
+                    formData.append(key, JSON.stringify(config.data[key]))
+                }
             }
             config.data = formData
         }
@@ -143,6 +148,10 @@ declare module 'axios' {
          * 是否需要转换为 FormData 格式
          */
         isFormData?: boolean
+    }
+    interface AxiosResponse<T = any> {
+        total?: number
+        url?: string
     }
 }
 export default request

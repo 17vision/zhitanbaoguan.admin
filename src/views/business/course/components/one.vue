@@ -181,8 +181,6 @@ const handleCoverSuccess = (e: any) => {
 
 const validate = () => {
     return new Promise((resolve, reject) => {
-        resolve(form.value)
-
         formRef.value?.validate((valid: boolean) => {
             if (valid) {
                 resolve(form.value)

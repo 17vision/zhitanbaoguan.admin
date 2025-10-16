@@ -100,7 +100,9 @@ export default {
         return request({
             url: '/tutors',
             method: 'delete',
-            data
+            data: {
+                id: data
+            }
         })
     },
 

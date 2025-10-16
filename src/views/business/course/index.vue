@@ -3,19 +3,10 @@
         <!-- 顶部操作区 -->
         <div class="mb-4 flex justify-between items-center">
             <div class="flex items-center space-x-2 w-[50%]">
-                <el-input v-model="searchForm.keyword" placeholder="搜索课程名称" class="w-64" clearable />
-                <el-select v-model="searchForm.category" placeholder="全部分类" clearable class="w-32">
-                    <el-option label="睡眠" value="睡眠" />
-                    <el-option label="冥想" value="冥想" />
-                </el-select>
-                <el-select v-model="searchForm.level" placeholder="全部难度" clearable class="w-32">
-                    <el-option label="初级" value="初级" />
-                    <el-option label="中级" value="中级" />
-                    <el-option label="高级" value="高级" />
-                </el-select>
+                <el-input v-model="searchForm.title" placeholder="搜索课程名称" class="w-64" clearable />
                 <el-select v-model="searchForm.status" placeholder="全部状态" clearable class="w-32">
-                    <el-option label="已发布" value="published" />
-                    <el-option label="未发布" value="draft" />
+                    <el-option label="已发布" :value="1" />
+                    <el-option label="未发布" :value="0" />
                 </el-select>
                 <el-button type="primary" @click="handleSearch">搜索</el-button>
             </div>
@@ -65,16 +56,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
+import api from '@/api/admin/api'
 const router = useRouter()
 // 搜索表单
-const searchForm = reactive({
-    keyword: '',
-    category: '',
-    level: '',
-    status: ''
+const searchForm = ref<any>({
 })
 
 // 表格数据
@@ -90,10 +78,16 @@ const total = ref(0)
 const selectedRows = ref([])
 
 // 搜索
-const handleSearch = () => {
-    console.log('搜索条件：', searchForm)
+const handleSearch = async() => {
+    loading.value = true
     // TODO: 实现搜索逻辑
-    
+    api.getCourses({ ...searchForm.value, page: currentPage.value, limit: pageSize.value}).then(res => {
+        tableData.value = res.data
+        total.value = res.total
+        loading.value = false
+    }).catch(err => {
+        loading.value = false
+    })
 }
 
 // 批量删除
@@ -118,8 +112,8 @@ const handleAdd = () => {
 
 // 编辑课程
 const handleEdit = (row: any) => {
-    console.log('编辑课程：', row)
     // TODO: 实现编辑课程逻辑
+    router.push({ name: 'course.edit', query: { id: row.id } })
 }
 
 // 删除课程
@@ -156,4 +150,5 @@ const handleCurrentChange = (val: number) => {
     // TODO: 重新加载数据
     handleSearch()
 }
+handleSearch()
 </script>
