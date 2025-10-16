@@ -79,7 +79,7 @@ function fetchData() {
         tableData.value = res.data;
       }
 
-      total.value = res.total;
+      total.value = res.total || 0;
 
     })
 }

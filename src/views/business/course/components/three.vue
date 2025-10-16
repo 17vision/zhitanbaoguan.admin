@@ -85,8 +85,8 @@ import api from '@/api/admin/api'
 import { uploadImage } from '@/api/utils'
 const route = useRoute()
 
-const audioList = ref([])
-const tableData = ref([])
+const audioList = ref<any[]>([])
+const tableData = ref<any[]>([])
 const chapterDialogVisible = ref(false)
 const chapter = ref<any>({})
 const chapterFormRef = ref<any>(null)

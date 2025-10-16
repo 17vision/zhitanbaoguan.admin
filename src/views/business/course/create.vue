@@ -90,7 +90,7 @@ import api from '@/api/admin/api'
 const router = useRouter()
 // 当前步骤
 const activeStep = ref(0)
-const nextRef = ref<InstanceType<typeof OneVue | typeof TwoVue | typeof ThreeVue | typeof FourVue>>(null)
+const nextRef = ref<InstanceType<typeof OneVue | typeof TwoVue | typeof ThreeVue | typeof FourVue >>()
 // 表单数据
 const formData = ref<any>({})
 // 上一步

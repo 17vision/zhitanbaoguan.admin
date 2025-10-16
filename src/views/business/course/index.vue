@@ -73,7 +73,7 @@ const pageSize = ref(10)
 const total = ref(0)
 
 // 选中的行
-const selectedRows = ref([])
+const selectedRows = ref<any[]>([])
 
 // 搜索
 const handleSearch = async () => {
@@ -81,7 +81,7 @@ const handleSearch = async () => {
     // TODO: 实现搜索逻辑
     api.getCourses({ ...searchForm.value, page: currentPage.value, limit: pageSize.value }).then(res => {
         tableData.value = res.data
-        total.value = res.total
+        total.value = res.total || 0
         loading.value = false
     }).catch(err => {
         loading.value = false

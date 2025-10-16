@@ -184,7 +184,7 @@ function fetchData() {
         });
       }
 
-      total.value = res.total;
+      total.value = res.total || 0;
 
       nextTick(initDropTable);
     })

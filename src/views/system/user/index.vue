@@ -207,7 +207,7 @@ function fetchData() {
         tableData.value = res.data;
       }
 
-      total.value = res.total;
+      total.value = res.total || 0;
 
       roles.value = [{ id: 0, title: "所有角色" }].concat(res.roles);
 
