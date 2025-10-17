@@ -101,12 +101,13 @@ html, body, #app {
         transition: left 0.3s;
 
         .logo {
+            height: var(--nav-bar-height);
             display: flex;
             align-items: center;
 
             img {
-                width: calc(var(--nav-bar-height) - 10px);
-                height: calc(var(--nav-bar-height) - 10px);
+                width: calc(var(--nav-bar-height) - 15px);
+                height: calc(var(--nav-bar-height) - 15px);
             }
 
             .title {

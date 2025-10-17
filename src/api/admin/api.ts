@@ -58,13 +58,11 @@ export default {
      * @param id 课程ID
      * @returns 
      */
-    deleteCourse(id: any) {
+    deleteCourse(data: any) {
         return request({
             url: '/courses',
             method: 'delete',
-            data: {
-                id
-            }
+            data
         })
     },
     /**
