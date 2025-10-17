@@ -35,8 +35,8 @@
                         <el-form-item label="课程时长" prop="duration">
                             <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />
                         </el-form-item>
-                        <el-form-item label="音频资源" prop="audio">
-                            <el-select v-model="chapter.audio" placeholder="请选择音频资源">
+                        <el-form-item label="音频资源" prop="resource_id">
+                            <el-select v-model="chapter.resource_id" placeholder="请选择音频资源">
                                 <el-option v-for="item in audioList" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
