@@ -1,6 +1,7 @@
 <template>
     <el-dialog :title="form.id ? '编辑导师' : '新增导师'" v-model="dialogVisible" width="600px">
-        <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+        <el-form ref="formRef" :model="form" :rules="rules" label-width="100px"
+            style="overflow-y: auto; max-height: 600px;">
             <el-form-item label="资源名称" prop="name">
                 <el-input v-model="form.name" placeholder="请输入资源名称" maxlength="20" show-word-limit />
             </el-form-item>
@@ -51,10 +52,10 @@
 
 <script lang='ts' setup>
 import { ElMessage } from 'element-plus'
-import {  Close } from '@element-plus/icons-vue'
+import { Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/api'
-import { uploadImage } from '@/api/utils'
+import { uploadImage, uploadFiles } from '@/api/utils'
 // 对话框是否可见
 const dialogVisible = ref(false)
 // 表单引用
@@ -110,14 +111,20 @@ const handleSubmit = async () => {
     try {
         await validate()
         if (form.value.path instanceof File) {
-            const res = await uploadImage({
-                file: form.value.path,
-                info: form.value.type === 1 ? { referer: 'resource', type: 'image', both: true } : { referer: 'resource', type: 'video', both: true }
-            })
-            if (res.thumbnail) {
+            if (form.value.type === 1) {
+                const res = await uploadImage({
+                    file: form.value.path,
+                    info: { referer: 'resource', type: 'image', both: true }
+                })
                 form.value.thumbnail = res.thumbnail
+                form.value.path = res.url
+            } else {
+                const res = await uploadFiles({
+                    file: form.value.path,
+                    info: { referer: 'resource', type: form.value.type === 2 ? 'video' : 'audio' }
+                })
+                form.value.path = res
             }
-            form.value.path = res.url
         }
         if (form.value.id) {
             for (const key in form.value) {
