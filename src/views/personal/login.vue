@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center justify-center w-screen h-screen body-bg min-w-[888px]">
         <div class="flex flex-col items-center mb-[120px] md:mr-0 lg:mr-[-160px] xl:mr-[-320px] ">
-            <span class="text-white text-[40px] font-semibold">后台管理系统</span>
+            <span class="text-white text-[40px] font-semibold">观息空间</span>
             <div class="w-[850px] h-[468px] form-bg mt-5">
                 <div class="h-[468px] flex flex-col items-center w-[360px] ml-[470px] justify-center">
                     <el-form v-if="way == 2" ref="ruleFormRef"  :model="ruleForm" :rules="rules"
