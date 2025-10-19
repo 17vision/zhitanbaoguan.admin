@@ -290,5 +290,57 @@ export default {
                 id
             }
         })
-    }
+    },
+    /**
+     * 获取课程作业
+     * @param params 查询参数
+     * @returns 
+     */
+    getCourseHomeworks(params?: any) {
+        return request({
+            url: '/course_homework',
+            method: 'get',
+            params: {
+                ...params
+            }
+        })
+    },
+    /**
+     * 添加作业
+     * @param data 作业数据
+     * @returns 
+     */
+    createCourseHomeworks(data: any) {
+        return request({
+            url: '/course_homework',
+            method: 'post',
+            data
+        })
+    },
+    /**
+     * 更新作业
+     * @param data 作业数据
+     * @returns 
+     */
+    updateCourseHomeworks(data: any) {
+        return request({
+            url: '/course_homework',
+            method: 'put',
+            data
+        })
+    },
+    /**
+     * 删除作业
+     * @param id 作业ID
+     * @returns 
+     */
+    deleteCourseHomeworks(id: any) {
+        return request({
+            url: '/course_homework',
+            method: 'delete',
+            data: {
+                id
+            }
+        })
+    },
 }

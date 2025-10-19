@@ -1,64 +1,203 @@
 <template>
-    <div>
-        <el-form ref="formRef" :model="form" label-width="100px">
+  <div>
+    <div class="flex justify-end w-full mb-4">
+      <el-button type="primary" @click="goAddWorkflow">添加</el-button>
+    </div>
+
+    <div v-for="(item, index) in homeworks" :key="index">
+      <template v-if="item.isEdit">
+        <el-form ref="formRef" label-width="100px">
+          <el-form-item label="作业标题">
+            <el-input v-model="item.title" placeholder="请输入作业标题" />
+          </el-form-item>
+
+          <el-form-item label="作业描述">
+            <el-input
+              v-model="item.content"
+              type="textarea"
+              :rows="4"
+              placeholder="请输入作业描述"
+            />
+          </el-form-item>
+
+          <el-form-item label="作业配置">
+            <div class="flex justify-end w-full mb-4">
+              <el-button @click="goAddConfig(item)">添加</el-button>
+            </div>
+
+            <div class="w-full" v-for="(configItem, configIndex) in item.config" :key="configIndex">
+              <div class="flex items-center gap-2 w-full mb-2">
+                <el-input v-model="configItem.label" placeholder="请输入标题" />
+                <el-input v-model="configItem.placeholder" placeholder="请输入占位符" />
+                <el-icon @click="item.config.splice(configIndex, 1)"><Remove /></el-icon>
+              </div>
+            </div>
+          </el-form-item>
+        </el-form>
+        <div class="flex justify-end w-full mb-4">
+            <el-button type="primary" size="small" @click="goSave(item)">保存</el-button>
+        </div>
+      </template>
+
+      <template v-else>
+        <div class="flex justify-end w-full mb-4">
+            <el-button type="primary" size="small" @click="goEditHomework(item)">编辑</el-button>
+            <el-button type="danger" size="small" @click="goDeleteHomework(item)">删除</el-button>
+        </div>
+        <div>
+          <el-form ref="formRef" label-width="100px">
             <el-form-item label="作业标题">
-                <el-input v-model="form.homework.title" placeholder="请输入作业标题" />
+              <el-input :value="item.title" readonly />
             </el-form-item>
 
             <el-form-item label="作业描述">
-                <el-input v-model="form.homework.description" type="textarea" :rows="4" placeholder="请输入作业描述" />
+              <el-input :value="item.content" readonly />
             </el-form-item>
 
-            <el-form-item label="作业类型">
-                <el-select v-model="form.homework.type" placeholder="请选择作业类型">
-                    <el-option label="每日" value="daily" />
-                    <el-option label="每周" value="weekly" />
-                    <el-option label="每月" value="monthly" />
-                </el-select>
+            <el-form-item label="作业配置">
+              <div
+                class="w-full"
+                v-for="(configItem, configIndex) in item.config"
+                :key="configIndex"
+              >
+                <div class="flex gap-2 w-full mb-2">
+                  <el-input :value="configItem.label" />
+                  <el-input :value="configItem.placeholder" />
+                </div>
+              </div>
             </el-form-item>
-
-            <div class="grid grid-cols-2 gap-8">
-                <el-form-item label="开始时间">
-                    <el-date-picker v-model="form.homework.startTime" type="datetime" placeholder="选择开始时间"
-                        format="YYYY/MM/DD HH:mm" value-format="YYYY-MM-DD HH:mm:ss" />
-                </el-form-item>
-
-                <el-form-item label="截止时间">
-                    <el-date-picker v-model="form.homework.endTime" type="datetime" placeholder="选择截止时间"
-                        format="YYYY/MM/DD HH:mm" value-format="YYYY-MM-DD HH:mm:ss" />
-                </el-form-item>
-            </div>
-        </el-form>
+          </el-form>
+        </div>
+      </template>
     </div>
+  </div>
 </template>
 
-<script lang='ts' setup>
-import { ref } from 'vue'
-// 表单引用
-const formRef = ref()
-const form = ref({
-    homework: {
-        title: '',
-        description: '',
-        type: '',
-        startTime: '',
-        endTime: ''
-    }
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import api from '@/api/admin/api'
+import { Remove } from '@element-plus/icons-vue'
+
+interface ConfigItem {
+  label: string
+  placeholder: string
+}
+
+interface Homewrok {
+  isEdit: boolean
+  id?: number
+  title: string
+  content: string
+  config: ConfigItem[]
+}
+
+const course_id = ref(0)
+
+const homeworks = ref<Homewrok[]>([])
+
+const route = useRoute()
+
+const loading = ref(false)
+
+onMounted(async () => {
+  getList()
 })
-const validate = () => {
-    return new Promise((resolve, reject) => {
-        formRef.value?.validate((valid: boolean) => {
-            if (valid) {
-                resolve(form.value)
-            } else {
-                reject(new Error('校验失败'))
-            }
+
+async function getList() {
+  course_id.value = parseInt(route.query.id as string)
+  const res = await api.getCourseHomeworks({ course_id: course_id.value })
+  homeworks.value = res as unknown as Homewrok[]
+}
+
+function goEditHomework(value: Homewrok) {
+    value.isEdit = true
+}
+
+function goDeleteHomework(value: Homewrok) {
+    ElMessageBox.confirm('确定要删除作业吗')
+    .then(() => {
+        if (loading.value) {
+            return
+        }
+        loading.value = true
+        api.deleteCourseHomeworks(value.id).then(() => {
+            loading.value = false
+
+            getList()
+        }).catch(() => {
+            loading.value = false
         })
     })
+    .catch(() => {
+      
+    })
+}
+
+function goAddWorkflow() {
+  homeworks.value.push({
+    isEdit: true,
+    id: 0,
+    title: '',
+    content: '',
+    config: []
+  })
+
+  console.log(homeworks.value)
+}
+
+function goAddConfig(value: Homewrok) {
+  value.config.push({
+    label: '',
+    placeholder: ''
+  })
+}
+
+function goSave(value:Homewrok) {
+    if (loading.value) {
+        return
+    }
+    loading.value = true
+
+    const data = {
+        id: value.id,
+        course_id: course_id.value,
+        title: value.title,
+        content: value.content,
+        config: JSON.stringify(value.config)
+    }
+
+    if (value.id) {
+        api.updateCourseHomeworks(data).then(() => {
+            value.isEdit = false
+            loading.value = false
+        }).catch(() => {
+            loading.value = false
+        })
+    } else {
+        api.createCourseHomeworks(data).then(() => {
+            value.isEdit = false
+            loading.value = false
+        }).catch(() => {
+            loading.value = false
+        })
+    }
+}
+
+const validate = () => {
+  return new Promise((resolve, reject) => {
+    const item = homeworks.value.find((item) => item.isEdit == true)
+    if (item) {
+      ElMessage.warning('请保存作业')
+      reject('请保存作业')
+    } else {
+      resolve({})
+    }
+  })
 }
 defineExpose({
-    validate
+  validate
 })
 </script>
 
-<style lang='scss' scoped></style>
+<style lang="scss" scoped></style>
