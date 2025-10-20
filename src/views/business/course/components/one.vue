@@ -139,7 +139,7 @@ const validate = () => {
                 }
                 const res = await api.createCourse(form.value)
                 resolve(res)
-                router.push({ name: 'course.create', query: { id: res.id } })
+                router.replace({ name: 'course.create', query: { id: res.id } })
             } else {
                 reject(new Error('校验失败'))
             }
