@@ -130,8 +130,8 @@ async function goSave() {
         return
     }
     for (const item of form.value.config) {
-        if (!item.label || !item.placeholder) {
-            ElNotification.error('请输入标题和占位符')
+        if (!item.label ) {
+            ElNotification.error('请输入标题')
             loading.value = false
             return
         }
