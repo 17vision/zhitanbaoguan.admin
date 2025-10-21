@@ -39,6 +39,9 @@
                         <el-form-item label="分组名称">
                             <el-input v-model="dialog.name" placeholder="请输入分组名称" maxlength="12" clearable />
                         </el-form-item>
+                        <el-form-item label="描述">
+                            <el-input v-model="dialog.description" placeholder="请输入分组描述" maxlength="12" clearable />
+                        </el-form-item>
                     </el-form>
                     <template #footer>
                         <el-button class="ml-auto" @click="dialog.visible = false">取消</el-button>
@@ -102,6 +105,7 @@ const groups = ref<Tree[]>()
 const dialog = reactive({
     visible: false,
     title: '新增分组',
+    description: '',
     name: '',
     id: 0,
     parent_id: 0
@@ -109,10 +113,26 @@ const dialog = reactive({
 
 const emits = defineEmits(['onGroupSelect'])
 
+const getGroup = (id: number): Tree | undefined => {
+    function findGroup(groups: Tree[] = [], id: number): Tree | undefined {
+        for (const item of groups) {
+            if (item.id === id) {
+                return item
+            }
+            if (item.childs && item.childs.length > 0) {
+                const found = findGroup(item.childs, id)
+                if (found) return found
+            }
+        }
+        return undefined
+    }
+
+    return findGroup(groups.value, id)
+}
 watchEffect(() => {
     if (props.groupId) {
         groupTree.value?.setCurrentKey(props.groupId)
-        const data = groups.value?.find((item: Tree) => item.id === props.groupId)
+        const data = getGroup(props.groupId)
         if (data) {
             onNodeClick(data)
         }
@@ -143,12 +163,14 @@ function goCreate(value: number) {
     dialog.parent_id = value
     dialog.visible = true
     dialog.name = ''
+    dialog.description = ''
     dialog.id = 0
 }
 
 function goEdit(value: Record<string, any>) {
     dialog.visible = true
     dialog.name = value.name
+    dialog.description = value.description
     dialog.id = value.id
     dialog.parent_id = 0
 }
@@ -200,7 +222,7 @@ function doCreate() {
     }
     loading.value = true
 
-    const data: Record<string, any> = { name: dialog.name }
+    const data: Record<string, any> = { name: dialog.name, description: dialog.description }
     if (dialog.parent_id) {
         data.parent_id = dialog.parent_id
     }
