@@ -1,6 +1,8 @@
 <template>
     <div class="container mx-auto p-5">
-
+        <div class="flex justify-end w-full mb-4">
+            <!-- <el-button type="primary" @click="goAddWorkflow">添加</el-button> -->
+        </div>
 
         <el-form ref="formRef" label-width="100px" :model="form" :rules="rules">
             <el-form-item label="作业标题" prop="title">
@@ -24,41 +26,22 @@
             <el-form-item label="作业描述">
                 <el-input v-model="form.content" type="textarea" :rows="4" placeholder="请输入作业描述" />
             </el-form-item>
-            <div class="flex justify-end w-full mb-4">
-                <el-button type="primary" @click="addGroup">添加分组</el-button>
-            </div>
-            <div v-for="(group, gIndex) in group_config" :key="gIndex"
-                class="w-full mb-4 p-4 border border-gray-200 rounded-md shadow-sm">
-                <!-- 分组标题 -->
-                <el-form-item label="名称" :prop="`group_config.${gIndex}.title`">
-                    <el-input v-model="group.title" placeholder="请输入名称" class="w-[300px]" />
-                </el-form-item>
 
-                <!-- 作业配置 -->
-                <el-form-item label="作业配置" :prop="`group_config.${gIndex}.config`">
-                    <div class="flex justify-end mb-3">
-                        <el-button type="primary" @click="addConfig(group)">添加配置</el-button>
-                    </div>
+            <el-form-item label="作业配置" prop="config">
+                <div class="flex justify-end w-full mb-4">
+                    <el-button @click="goAddConfig(form)">添加</el-button>
+                </div>
 
-                    <!-- 配置项列表 -->
-                    <div v-for="(config, cIndex) in group.config" :key="cIndex"
-                        class="flex items-center gap-2 w-full mb-2">
-                        <el-input v-model="config.label" placeholder="请输入标题" class="flex-1" />
-                        <el-input v-model="config.placeholder" placeholder="请输入占位符" class="flex-1" />
-                        <el-icon size="18" class="cursor-pointer text-gray-500 hover:text-red-500"
-                            @click="removeConfig(group, cIndex)">
+                <div class="w-full" v-for="(configItem, configIndex) in form.config" :key="configIndex">
+                    <div class="flex items-center gap-2 w-full mb-2">
+                        <el-input v-model="configItem.label" placeholder="请输入标题" />
+                        <el-input v-model="configItem.placeholder" placeholder="请输入占位符" />
+                        <el-icon @click="form.config.splice(configIndex, 1)">
                             <Remove />
                         </el-icon>
                     </div>
-                </el-form-item>
-
-                <!-- 删除组 -->
-                <div class="flex justify-end">
-                    <el-button type="danger" plain size="small" @click="removeGroup(gIndex)">
-                        删除组
-                    </el-button>
                 </div>
-            </div>
+            </el-form-item>
         </el-form>
         <div class="flex justify-end w-full mb-4">
             <el-button @click="router.go(-1)">取消</el-button>
@@ -101,37 +84,6 @@ const rules = reactive({
     homework_group_id: [{ required: true, message: '请选择分组', trigger: 'blur' }],
 })
 
-const group_config = ref<{
-    title: string
-    config: ConfigItem[]
-}[]>([])
-
-
-
-// 添加组
-const addGroup = () => {
-    group_config.value.push({
-        title: '',
-        config: [{ label: '', placeholder: '' }]
-    })
-}
-
-// 删除组
-const removeGroup = (index: number) => {
-    group_config.value.splice(index, 1)
-    ElMessage.success('已删除分组')
-}
-
-// 添加配置项
-const addConfig = (group: { title: string, config: ConfigItem[] }) => {
-    group.config.push({ label: '', placeholder: '' })
-}
-
-// 删除配置项
-const removeConfig = (group: { title: string, config: ConfigItem[] }, index: number) => {
-    group.config.splice(index, 1)
-}
-
 const form = ref<Homewrok>({
     title: '',
     content: '',
@@ -154,12 +106,11 @@ async function getList() {
     if (homework_id.value) {
         const res = await api.getHomeworkDetail(homework_id.value)
         form.value = res as unknown as Homewrok
-        group_config.value = res.config as unknown as any[]
     }
 }
 
 
-function goAddConfig(value: { title: string, config: ConfigItem[] }) {
+function goAddConfig(value: Homewrok) {
     value.config.push({
         label: '',
         placeholder: ''
@@ -173,15 +124,25 @@ async function goSave() {
         return
     }
     loading.value = true
-
-
+    if (!form.value.config.length) {
+        ElNotification.error('请添加作业配置')
+        loading.value = false
+        return
+    }
+    for (const item of form.value.config) {
+        if (!item.label ) {
+            ElNotification.error('请输入标题')
+            loading.value = false
+            return
+        }
+    }
     const data = {
         homework_group_id: form.value.homework_group_id,
         id: form.value.id,
         title: form.value.title,
         resource_id: form.value.resource_id,
         content: form.value.content,
-        config: JSON.stringify(group_config.value)
+        config: JSON.stringify(form.value.config)
     }
     if (form.value.id) {
         api.updateHomework(data).then(() => {
