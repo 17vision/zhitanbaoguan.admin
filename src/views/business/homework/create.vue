@@ -25,7 +25,7 @@
                 <el-input v-model="form.content" type="textarea" :rows="4" placeholder="请输入作业描述" />
             </el-form-item>
             <div class="flex justify-end w-full mb-4">
-                <el-button type="primary" @click="addGroup">新增作业配置</el-button>
+                <el-button type="primary" @click="addGroup">添加分组</el-button>
             </div>
             <div v-for="(group, gIndex) in group_config" :key="gIndex"
                 class="w-full mb-4 p-4 border border-gray-200 rounded-md shadow-sm">
