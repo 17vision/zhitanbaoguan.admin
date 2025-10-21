@@ -7,11 +7,11 @@
                     <el-form v-if="way == 2" ref="ruleFormRef"  :model="ruleForm" :rules="rules"
                         :label-position="isMini ? 'top' : 'left'" label-width="62px">
                         <el-form-item label="账号" prop="account">
-                            <el-input v-model="ruleForm.account" placeholder="请输入账号（zhoulin@xiangrong.pro）" clearable />
+                            <el-input v-model="ruleForm.account" placeholder="请输入账号" clearable />
                         </el-form-item>
 
                         <el-form-item label="密码" prop="password">
-                            <el-input type="password" v-model="ruleForm.password" placeholder="请输入密码（111111）"
+                            <el-input type="password" v-model="ruleForm.password" placeholder="请输入密码"
                                 show-password />
                         </el-form-item>
 

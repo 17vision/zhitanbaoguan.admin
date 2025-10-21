@@ -46,7 +46,6 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElTree: typeof import('element-plus/es')['ElTree']
-    Group: typeof import('../components/Group/NGroup.vue')['default']
     IconEdit: typeof import('~icons/ep/edit')['default']
     ImageCanvas: typeof import('./../components/ImageCanvas/ImageCanvas.vue')['default']
     NGroup: typeof import('./../components/Group/NGroup.vue')['default']

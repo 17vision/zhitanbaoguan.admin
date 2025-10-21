@@ -62,7 +62,7 @@ const handleSearch = async () => {
     // TODO: 实现搜索逻辑
     api.getHomeworks({ ...searchForm.value, page: currentPage.value, limit: pageSize.value }).then(res => {
         tableData.value = res.data
-        total.value = res.total || 0
+        total.value = res.to || 0
         loading.value = false
     }).catch(err => {
         loading.value = false
