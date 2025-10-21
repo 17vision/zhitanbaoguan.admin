@@ -125,13 +125,13 @@ async function goSave() {
     }
     loading.value = true
     if (!form.value.config.length) {
-        ElMessage.error('请添加作业配置')
+        ElNotification.error('请添加作业配置')
         loading.value = false
         return
     }
     for (const item of form.value.config) {
         if (!item.label || !item.placeholder) {
-            ElMessage.error('请输入标题和占位符')
+            ElNotification.error('请输入标题和占位符')
             loading.value = false
             return
         }

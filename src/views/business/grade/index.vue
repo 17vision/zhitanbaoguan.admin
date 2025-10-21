@@ -3,7 +3,7 @@
         <!-- 顶部操作区 -->
         <div class="mb-4 flex justify-between items-center">
             <div class="flex items-center space-x-2 w-[25%]">
-                <el-input v-model="searchForm.username" placeholder="搜索名称" class="w-64" clearable />
+                <el-input v-model="searchForm.name" placeholder="搜索名称" class="w-64" clearable />
                 <el-button type="primary" @click="handleSearch">搜索</el-button>
             </div>
             <div class="flex items-center space-x-2">
@@ -13,16 +13,11 @@
 
         <!-- 表格区域 -->
         <el-table v-loading="loading" :data="tableData" style="width: 100%">
-            <el-table-column prop="title" label="标题" width="200" />
-            <el-table-column prop="resource" label="资源">
+            <el-table-column prop="name" label="班级名称" width="200" />
+            <el-table-column prop="description" label="班级描述" />
+            <el-table-column label="操作" width="240" fixed="right">
                 <template #default="{ row }">
-                    <a :href="row.resource.path" target="_blank">{{ row.resource.name }}</a>
-                </template>
-            </el-table-column>
-            <el-table-column prop="content" label="描述" />
-            <el-table-column label="操作" width="200" fixed="right">
-                <template #default="{ row }">
-                    <el-button link type="primary" @click="handleAssign(row)">作业分配</el-button>
+                    <el-button link type="primary" @click="viewMembers(row)">查看班级成员</el-button>
                     <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
                     <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
                 </template>
@@ -35,18 +30,21 @@
                 :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper"
                 @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
+        <createVue ref="createVueRef" @submit="handleSearch" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import api from '@/api/admin/homework'
-import { useRouter } from 'vue-router'
+import api from '@/api/admin/grades'
+import createVue from './create.vue'
 const router = useRouter()
+const createVueRef = ref<InstanceType<typeof createVue>>()
 // 搜索表单
 const searchForm = ref<any>({
 })
+
 // 表格数据
 const loading = ref(false)
 const tableData = ref([])
@@ -60,9 +58,9 @@ const total = ref(0)
 const handleSearch = async () => {
     loading.value = true
     // TODO: 实现搜索逻辑
-    api.getHomeworks({ ...searchForm.value, page: currentPage.value, limit: pageSize.value }).then(res => {
+    api.list({ ...searchForm.value, page: currentPage.value, limit: pageSize.value }).then(res => {
         tableData.value = res.data
-        total.value = res.to || 0
+        total.value = res.total || 0
         loading.value = false
     }).catch(err => {
         loading.value = false
@@ -70,31 +68,30 @@ const handleSearch = async () => {
 }
 
 
-// 作业分配
-const handleAssign = (row: any) => {
-    // TODO: 实现作业分配逻辑
-    router.push({ name: 'homework.detail', query: { id: row.id } })
-}
-
 // 新增课程
 const handleAdd = () => {
     // TODO: 实现新增课程逻辑
-    router.push({ name: 'homework.create' })
+    createVueRef.value?.open(null)
 }
 
+const viewMembers = (row: any) => {
+    // TODO: 实现查看班级成员逻辑
+    router.push({ name: 'grade_user.index', query: { id: row.id } })
+    
+}
 // 编辑课程
 const handleEdit = (row: any) => {
     // TODO: 实现编辑课程逻辑
-    router.push({ name: 'homework.create', query: { id: row.id } })
+    createVueRef.value?.open(row)
 }
 
 // 删除课程
 const handleDelete = (row: any) => {
-    ElMessageBox.confirm('确定要删除该导师吗？', '提示', {
+    ElMessageBox.confirm('确定要删除该班级吗？', '提示', {
         type: 'warning'
     }).then(async () => {
         // TODO: 实现删除逻辑
-        await api.deleteHomework(row.id)
+        await api.delete(row.id)
         ElMessage.success('删除成功')
         handleSearch()
     })

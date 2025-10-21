@@ -46,22 +46,27 @@ defineProps({
     },
 });
 
-function onlyOneChild(children: AppRoute.Route[] = []) {
-    if (children.length === 1) {
-        if (children[0].meta.alwaysShow) {
-            return false;
-        }
+function onlyOneChild(children: AppRoute.Route[] = []): boolean {
+    if (!Array.isArray(children) || children.length === 0) {
+        // 没有子路由，认为是“只有一个子项”
         return true;
     }
 
-    if (children.length === 0) {
+    // 过滤掉隐藏的子路由
+    const visibleChildren = children.filter(child => !child.meta?.hidden);
+
+    // 如果只有一个可见子路由，且没有 alwaysShow 强制显示父级，则认为父级可折叠为子项
+    if (visibleChildren.length === 1 && !visibleChildren[0].meta?.alwaysShow) {
         return true;
     }
 
-    // 只有有一个不是隐藏的，就得渲染父级(因为把隐藏的路由信息都加入侧边栏，才这样做的，要不直接返回 false 就可以了)
-    return children.some((item) => {
-        return item.meta.hidden === true;
-    });
+    // 如果没有可见子项，也可以认为“只有一个”
+    if (visibleChildren.length === 0) {
+        return true;
+    }
+
+    // 其他情况需要显示父级菜单
+    return false;
 }
 
 function onlyGrade(path: string | undefined, children: AppRoute.Route[] = []): boolean {

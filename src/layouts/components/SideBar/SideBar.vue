@@ -40,6 +40,7 @@ const appTitle = computed((): string => {
     if (app.title) {
         return app.title;
     }
+    
     return import.meta.env.VITE_APP_TITLE;
 });
 

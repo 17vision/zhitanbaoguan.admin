@@ -35,13 +35,13 @@
                             </el-icon>
                         </template>
                     </el-step>
-                    <el-step title="课后作业" @click="handleStepChange(3)">
+                    <!-- <el-step title="课后作业" @click="handleStepChange(3)">
                         <template #icon>
                             <el-icon>
                                 <EditPen />
                             </el-icon>
                         </template>
-                    </el-step>
+                    </el-step> -->
                 </el-steps>
             </div>
 
@@ -61,9 +61,9 @@
             </div>
 
             <!-- 课后作业 -->
-            <div v-if="activeStep === 3">
+            <!-- <div v-if="activeStep === 3">
                 <FourVue :formData="formData" ref="nextRef"></FourVue>
-            </div>
+            </div> -->
         </div>
 
         <!-- 底部操作按钮 -->
@@ -71,7 +71,7 @@
             <el-button @click="handlePrev" :disabled="activeStep === 0">上一步</el-button>
             <div class="space-x-2">
                 <el-button @click="handleSaveDraft">保存草稿</el-button>
-                <el-button type="primary" @click="handleNext" v-if="activeStep < 3">下一步</el-button>
+                <el-button type="primary" @click="handleNext" v-if="activeStep < 2">下一步</el-button>
             </div>
         </div>
     </div>
