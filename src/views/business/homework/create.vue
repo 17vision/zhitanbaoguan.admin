@@ -17,7 +17,7 @@
             </el-form-item>
             <el-form-item label="资源" prop="resource_id">
                 <div class="flex items-center gap-2 w-[300px]">
-                    <el-select v-model="form.resource_id" placeholder="请选择资源">
+                    <el-select v-model="form.resource_id" placeholder="请选择资源" clearable>
                         <el-option v-for="item in resourcesList" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
                 </div>
@@ -130,13 +130,13 @@ async function goSave() {
         return
     }
     for (const item of form.value.config) {
-        if (!item.label ) {
+        if (!item.label) {
             ElNotification.error('请输入标题')
             loading.value = false
             return
         }
     }
-    const data = {
+    const data: any = {
         homework_group_id: form.value.homework_group_id,
         id: form.value.id,
         title: form.value.title,
@@ -144,10 +144,14 @@ async function goSave() {
         content: form.value.content,
         config: JSON.stringify(form.value.config)
     }
+    for (const key in data) {
+        if (!data[key]) {
+            delete data[key]
+        }
+    }
     if (form.value.id) {
         api.updateHomework(data).then(() => {
             router.go(-1)
-
             loading.value = false
         }).catch(() => {
             loading.value = false
@@ -155,7 +159,6 @@ async function goSave() {
     } else {
         api.createHomework(data).then(() => {
             router.go(-1)
-
             loading.value = false
         }).catch(() => {
             loading.value = false

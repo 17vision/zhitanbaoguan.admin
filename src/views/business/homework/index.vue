@@ -16,7 +16,7 @@
             <el-table-column prop="title" label="标题" width="200" />
             <el-table-column prop="resource" label="资源">
                 <template #default="{ row }">
-                    <a :href="row.resource.path" target="_blank">{{ row.resource.name }}</a>
+                    <a :href="row.resource?.path" target="_blank">{{ row.resource?.name }}</a>
                 </template>
             </el-table-column>
             <el-table-column prop="content" label="描述" />
