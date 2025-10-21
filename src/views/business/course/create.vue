@@ -14,28 +14,28 @@
             <!-- 步骤导航 -->
             <div class="mb-6">
                 <el-steps :active="activeStep" finish-status="success">
-                    <el-step title="基础信息">
+                    <el-step title="基础信息" @click="handleStepChange(0)">
                         <template #icon>
                             <el-icon>
                                 <InfoFilled />
                             </el-icon>
                         </template>
                     </el-step>
-                    <el-step title="场景设置">
+                    <el-step title="场景设置" @click="handleStepChange(1)">
                         <template #icon>
                             <el-icon>
                                 <Picture />
                             </el-icon>
                         </template>
                     </el-step>
-                    <el-step title="章节内容">
+                    <el-step title="章节内容" @click="handleStepChange(2)">
                         <template #icon>
                             <el-icon>
                                 <Document />
                             </el-icon>
                         </template>
                     </el-step>
-                    <el-step title="课后作业">
+                    <el-step title="课后作业" @click="handleStepChange(3)">
                         <template #icon>
                             <el-icon>
                                 <EditPen />
@@ -88,9 +88,10 @@ import ThreeVue from './components/three.vue'
 import FourVue from './components/four.vue'
 import api from '@/api/admin/api'
 const router = useRouter()
+const route = useRoute()
 // 当前步骤
 const activeStep = ref(0)
-const nextRef = ref<InstanceType<typeof OneVue | typeof TwoVue | typeof ThreeVue | typeof FourVue >>()
+const nextRef = ref<InstanceType<typeof OneVue | typeof TwoVue | typeof ThreeVue | typeof FourVue>>()
 // 表单数据
 const formData = ref<any>({})
 // 上一步
@@ -100,6 +101,11 @@ const handlePrev = () => {
     }
 }
 
+const handleStepChange = (val: number) => {
+    if (route.query.id) {
+        activeStep.value = val
+    }
+}
 // 下一步
 const handleNext = () => {
     if (nextRef.value) {
