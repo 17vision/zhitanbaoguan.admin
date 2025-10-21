@@ -40,7 +40,7 @@
                             <el-input v-model="dialog.name" placeholder="请输入分组名称" maxlength="12" clearable />
                         </el-form-item>
                         <el-form-item label="描述">
-                            <el-input v-model="dialog.description" placeholder="请输入分组描述" maxlength="12" clearable />
+                            <el-input v-model="dialog.description" type="textarea" placeholder="请输入分组描述" maxlength="12" clearable />
                         </el-form-item>
                     </el-form>
                     <template #footer>
