@@ -13,7 +13,7 @@
 
         <!-- 表格区域 -->
         <el-table v-loading="loading" :data="tableData" style="width: 100%">
-            <el-table-column prop="title" label="标题" width="200" />
+            <el-table-column prop="title" label="标题"  />
             <el-table-column prop="resource" label="资源">
                 <template #default="{ row }">
                     <a :href="row.resource?.path" target="_blank">{{ row.resource?.name }}</a>
