@@ -20,6 +20,7 @@
                                 <el-option label="睡眠" :value="1" />
                                 <el-option label="专注" :value="2" />
                                 <el-option label="减压" :value="3" />
+                                <el-option label="练习" :value="4" />
                             </el-select>
                         </el-form-item>
                         <el-form-item label="难度级别" prop="difficulty">
@@ -70,7 +71,6 @@
 </template>
 
 <script lang='ts' setup>
-import { ElMessage } from 'element-plus'
 import { Upload, Close, Document } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/api'
@@ -98,8 +98,7 @@ const rules = ref<any>({
         { required: true, message: '请选择难度级别', trigger: 'change' }
     ],
 })
-const form = ref<any>({
-})
+const form = ref<any>({})
 
 
 const toURL = (file: File | string) => {
