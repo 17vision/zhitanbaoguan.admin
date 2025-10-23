@@ -53,7 +53,7 @@ const tableData = ref([])
 
 // 分页相关
 const currentPage = ref(1)
-const pageSize = ref(10)
+const pageSize = ref(20)
 const total = ref(0)
 
 // 搜索

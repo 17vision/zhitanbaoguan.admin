@@ -16,6 +16,7 @@
             <el-table-column prop="user.nickname" label="昵称" />
             <el-table-column prop="homework.title" label="作业标题" />
             <el-table-column prop="status_str" label="状态" />
+            <el-table-column prop="end_at" label="截止日期" />
             <el-table-column label="操作" width="100" fixed="right">
                 <template #default="{ row }">
                     <el-button link type="danger" @click="handleDelete(row)">删除</el-button>

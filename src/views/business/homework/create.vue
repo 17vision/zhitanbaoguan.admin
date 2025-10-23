@@ -144,11 +144,6 @@ async function goSave() {
         content: form.value.content,
         config: JSON.stringify(form.value.config)
     }
-    for (const key in data) {
-        if (!data[key]) {
-            delete data[key]
-        }
-    }
     if (form.value.id) {
         api.updateHomework(data).then(() => {
             router.go(-1)
