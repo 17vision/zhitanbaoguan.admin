@@ -2,15 +2,10 @@
     <div>
         <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
             <!-- 课程基本信息 -->
-            <div class="bg-white p-6 rounded-lg shadow-sm mb-6">
+            <div class="bg-white p-6 rounded-lg  mb-6">
                 <h3 class="text-lg font-medium mb-6 flex items-center">
-                    <el-icon class="mr-2">
-                        <Document />
-                    </el-icon>
-                    课程基本信息
+                    课程基础信息
                 </h3>
-
-
                 <div class="grid grid-cols-2 gap-6">
                     <div>
                         <el-form-item label="课程标题" prop="title" class="mb-6">
@@ -49,10 +44,8 @@
                             </div>
                             <label for="coverInput" v-else
                                 class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
-                                <el-icon class="text-gray-400 text-32px mb-3">
-                                    <Upload />
-                                </el-icon>
-                                <span class="text-gray-500 text-sm">点击上传</span>
+                                <img :src="Icon" alt="" class="w-6 h-6">
+                                <span class="text-[#666666] text-sm mt-2">点击上传图片</span>
                             </label>
                             <input type="file" name="cover" id="coverInput" @change="handleCoverSuccess"
                                 accept="image/*" style="display: none;">
@@ -62,7 +55,7 @@
 
 
                 <el-form-item label="课程描述" class="mb-6">
-                    <el-input v-model="form.description" type="textarea" :rows="4" placeholder="请输入课程描述" maxlength="500"
+                    <el-input v-model="form.description" type="textarea" :rows="8" placeholder="请输入课程描述" maxlength="500"
                         show-word-limit />
                 </el-form-item>
             </div>
@@ -71,7 +64,8 @@
 </template>
 
 <script lang='ts' setup>
-import { Upload, Close, Document } from '@element-plus/icons-vue'
+import { Close } from '@element-plus/icons-vue'
+import Icon from '@/assets/image/course/shangchuan.png'
 import { ref } from 'vue'
 import api from '@/api/admin/api'
 import tutors from '@/api/admin/tutors'
@@ -173,8 +167,9 @@ onMounted(() => {
 
 <style lang='scss' scoped>
 .avatar-uploader {
-    width: 150px;
+    width: 200px;
     height: 150px;
+    background-color: rgba(0, 0, 0, 0.15);
     border: 1px dashed #ccc;
     border-radius: 8px;
     display: flex;

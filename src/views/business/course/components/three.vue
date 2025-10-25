@@ -1,14 +1,7 @@
 <template>
-    <div>
-        <div class="mb-4 flex justify-between items-center">
-            <h3 class="text-lg font-medium">章节列表</h3>
-            <el-button type="primary" size="small" @click="handleAddChapter">
-                <el-icon class="mr-1">
-                    <Plus />
-                </el-icon>添加
-            </el-button>
-        </div>
-        <el-table :data="tableData" style="width: 100%">
+    <div class="p-4">
+        <el-table :data="tableData" style="width: 100%" :header-cell-style="{ background: '#F5F6FA', color: '#666666' }"
+            :max-height="MaxHeight">
             <el-table-column prop="title" label="标题" width="200" />
             <el-table-column label="背景" width="140">
                 <template #default="{ row }">
@@ -25,7 +18,7 @@
             </el-table-column>
         </el-table>
         <!-- 章节列表 -->
-        <el-dialog :title="chapter.id ? '编辑章节' : '添加章节'" v-model="chapterDialogVisible" width="50%">
+        <el-dialog :title="chapter.id ? '编辑章节' : '添加章节'" v-model="chapterDialogVisible" width="60%">
             <el-form label-width="100px" :model="chapter" ref="chapterFormRef" :rules="rules">
                 <el-row :gutter="24">
                     <el-col :span="12">
@@ -67,7 +60,7 @@
                     </el-col>
                 </el-row>
                 <el-form-item label="课程内容">
-                    <el-input v-model="chapter.description" type="textarea" placeholder="请输入课程内容" :rows="4" />
+                    <el-input v-model="chapter.description" type="textarea" placeholder="请输入课程内容" :rows="8" />
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -80,10 +73,12 @@
 
 <script lang='ts' setup>
 import { ref } from 'vue'
-import { Plus, Close, Upload } from '@element-plus/icons-vue'
+import {  Close, Upload } from '@element-plus/icons-vue'
 import api from '@/api/admin/api'
 import resources from '@/api/admin/resources'
 import { uploadImage } from '@/api/utils'
+import { useWindowHeight } from '@/hooks/useWindowHeight'
+const MaxHeight = useWindowHeight(300)
 const route = useRoute()
 
 const audioList = ref<any[]>([])
@@ -104,7 +99,7 @@ const rules = {
     ],
 }
 // 添加章节
-const handleAddChapter = () => {
+const addChapter = () => {
     chapter.value = {}
     chapterDialogVisible.value = true
 }
@@ -159,7 +154,8 @@ const validate = () => {
     })
 }
 defineExpose({
-    validate
+    validate,
+    addChapter
 })
 
 const getList = async () => {

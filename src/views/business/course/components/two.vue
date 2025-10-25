@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class="p-14">
         <el-form ref="formRef" :model="form" label-width="120px">
-            <div class="grid grid-cols-2  ">
+            <div class="grid grid-cols-2 ">
                 <!-- 手机端背景图 -->
                 <el-form-item label="手机端背景图">
                     <div class="avatar-uploader">
@@ -15,14 +15,13 @@
                         </div>
                         <label for="phoneBackgroundInput" v-else
                             class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
-                            <el-icon class="text-gray-400 text-32px mb-3">
-                                <Upload />
-                            </el-icon>
-                            <div class="text-gray-500">点击上传手机端背景图</div>
-                            <div class="text-gray-400 text-sm mt-1">支持 jpg、png 格式</div>
+                            <img :src="Icon" alt="" class="w-4 h-4">
+
+                            <div class="text-[#666666]">点击上传手机端背景图</div>
+                            <div class="text-[#8A82BA] text-sm mt-1">支持 jpg、png 格式</div>
                         </label>
-                        <input type="file" name="phoneBackground" id="phoneBackgroundInput" @change="handlePhoneBackgroundSuccess"
-                            accept="image/*" style="display: none;">
+                        <input type="file" name="phoneBackground" id="phoneBackgroundInput"
+                            @change="handlePhoneBackgroundSuccess" accept="image/*" style="display: none;">
                     </div>
                 </el-form-item>
 
@@ -39,11 +38,9 @@
                         </div>
                         <label for="helmetSceneInput" v-else
                             class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
-                            <el-icon class="text-gray-400 text-32px mb-3">
-                                <Upload />
-                            </el-icon>
-                            <div class="text-gray-500">点击上传头盔端3D场景文件</div>
-                            <div class="text-gray-400 text-sm mt-1">支持 gITF、GLB 格式</div>
+                            <img :src="Icon" alt="" class="w-4 h-4">
+                            <div class="text-[#666666]">点击上传头盔端3D场景文件</div>
+                            <div class="text-[#8A82BA] text-sm mt-1">支持 gITF、GLB 格式</div>
                         </label>
                         <input type="file" name="helmetScene" id="helmetSceneInput" @change="handleHelmetSceneSuccess"
                             accept="image/*" style="display: none;">
@@ -56,6 +53,8 @@
 
 <script lang='ts' setup>
 import { ref } from 'vue'
+import Icon from '@/assets/image/course/shangchuan.png'
+
 import { Upload, Close } from '@element-plus/icons-vue'
 // 表单引用
 const formRef = ref()
