@@ -32,7 +32,7 @@
         <!-- 分页 -->
         <div class="mt-4 flex justify-end">
             <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :total="total"
-                :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper"
+                :page-sizes="[ 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper"
                 @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
     </div>

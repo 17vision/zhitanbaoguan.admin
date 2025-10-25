@@ -140,7 +140,7 @@ async function goSave() {
         homework_group_id: form.value.homework_group_id,
         id: form.value.id,
         title: form.value.title,
-        resource_id: form.value.resource_id,
+        resource_id: form.value.resource_id || null,
         content: form.value.content,
         config: JSON.stringify(form.value.config)
     }

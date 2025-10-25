@@ -28,14 +28,18 @@
             <el-table-column prop="category_str" label="分类" width="120" />
             <el-table-column prop="difficulty_str" label="难度" width="120" />
             <el-table-column prop="duration" label="总时长" width="120" />
-            <el-table-column prop="chapter_count" label="章节数" width="120" />
+            <el-table-column prop="chapters" label="章节数" width="120">
+                <template #default="{ row }">
+                    {{ row.chapters && row.chapters?.length || 0 }}
+                </template>
+            </el-table-column>
             <el-table-column label="发布状态" width="120">
                 <template #default="{ row }">
                     <el-switch v-model="row.status" :active-value="1" :inactive-value="0"
                         @change="handleStatusChange(row)" />
                 </template>
             </el-table-column>
-            <el-table-column prop="created_at" label="发布时间"/>
+            <el-table-column prop="created_at" label="发布时间" />
             <el-table-column label="操作" width="150" fixed="right">
                 <template #default="{ row }">
                     <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>

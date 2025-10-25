@@ -8,8 +8,9 @@
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="作业完成时间" prop="end_at">
-                <el-date-picker v-model="form.end_at" type="datetime"  value-format="YYYY-MM-DD HH:mm:ss" 
-                    placeholder="请选择作业完成时间" />
+                <el-date-picker v-model="form.end_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss"
+                    placeholder="请选择作业完成时间" format="YYYY-MM-DD HH:mm:ss"
+                    :default-time="new Date(0, 0, 0, 23, 59, 59)" />
             </el-form-item>
 
             <el-form-item label="用户" v-if="type === '0'" class="mb-6" prop="user_id">

@@ -77,7 +77,7 @@ const handleAdd = () => {
 const viewMembers = (row: any) => {
     // TODO: 实现查看班级成员逻辑
     router.push({ name: 'grade_user.index', query: { id: row.id } })
-    
+
 }
 // 编辑课程
 const handleEdit = (row: any) => {
