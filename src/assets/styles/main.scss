@@ -83,6 +83,7 @@ html, body, #app {
         }
 
         .el-menu {
+            border: none !important; 
             .front-icon {
                 margin-left: 10px !important;
             }
@@ -143,13 +144,16 @@ html, body, #app {
 
         .app-main {
             width: 100%;
+            background-color: #F5F6FA;
         }
     }
 }
-
+    .el-scrollbar {
+        width: 100%;
+    }
 // 左侧菜单
 .el-menu {
-    border: none;
+    border: none !important;
     background-color: var(--side-bar-bg-color);
 
     .el-sub-menu__title {

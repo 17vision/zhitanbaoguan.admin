@@ -11,13 +11,12 @@
                 <el-button type="primary" @click="handleSearch">搜索</el-button>
             </div>
             <div class="flex items-center space-x-2">
-                <!-- <el-button type="danger" @click="handleBatchDelete">批量删除</el-button> -->
                 <el-button type="primary" @click="handleAdd">新增课程</el-button>
             </div>
         </div>
 
         <!-- 表格区域 -->
-        <el-table v-loading="loading" :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table v-loading="loading" :data="tableData" style="width: 100%" max-height="600" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" />
             <el-table-column label="封面" width="120">
                 <template #default="{ row }">
