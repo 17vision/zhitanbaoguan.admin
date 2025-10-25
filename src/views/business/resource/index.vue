@@ -30,7 +30,7 @@
                     <template #default="{ row }">
                         <el-image v-if="row.thumbnail" :src="row.thumbnail" fit="cover"
                             style="width: 50px; height: 50px" />
-                        <span v-else>无</span>
+                        <span v-else>-</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="created_at" label="创建时间" />
