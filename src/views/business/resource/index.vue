@@ -13,10 +13,19 @@
 
         <!-- 表格区域 -->
         <el-table v-loading="loading" :data="tableData" style="width: 100%">
-            <el-table-column prop="name" label="资源名称"  width="120"/>
+            <el-table-column prop="name" label="资源名称" width="120" />
             <el-table-column prop="type_str" label="类型" width="100" />
-            <el-table-column prop="path" label="资源地址" />
-            <el-table-column prop="thumbnail" label="缩略图" />
+            <el-table-column prop="path" label="资源链接" width="200">
+                <template #default="{ row }">
+                    <el-link :href="row.path" target="_blank">点击查看</el-link>
+                </template>
+            </el-table-column>
+            <el-table-column prop="thumbnail" label="缩略图">
+                <template #default="{ row }">
+                    <el-image v-if="row.thumbnail" :src="row.thumbnail" fit="cover" style="width: 50px; height: 50px" />
+                    <span v-else>无</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="created_at" label="创建时间" />
             <el-table-column label="操作" width="150" fixed="right">
                 <template #default="{ row }">
@@ -32,14 +41,14 @@
                 :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper"
                 @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
-        <createVue ref="createVueRef" @submit="handleSearch"/>
+        <createVue ref="createVueRef" @submit="handleSearch" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import api from '@/api/admin/api'
+import api from '@/api/admin/resources'
 import createVue from './create.vue'
 const createVueRef = ref<InstanceType<typeof createVue>>()
 // 搜索表单
@@ -59,7 +68,7 @@ const total = ref(0)
 const handleSearch = async () => {
     loading.value = true
     // TODO: 实现搜索逻辑
-    api.getResources({ ...searchForm.value, page: currentPage.value, limit: pageSize.value }).then(res => {
+    api.list({ ...searchForm.value, page: currentPage.value, limit: pageSize.value }).then(res => {
         tableData.value = res.data
         total.value = res.total || 0
         loading.value = false
@@ -85,9 +94,9 @@ const handleEdit = (row: any) => {
 const handleDelete = (row: any) => {
     ElMessageBox.confirm('确定要删除该资源吗？', '提示', {
         type: 'warning'
-    }).then(async() => {
+    }).then(async () => {
         // TODO: 实现删除逻辑
-        await api.deleteResource(row.id)
+        await api.delete(row.id)
         ElMessage.success('删除成功')
         handleSearch()
     })

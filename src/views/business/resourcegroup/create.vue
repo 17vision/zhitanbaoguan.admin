@@ -20,7 +20,7 @@
 import { ElMessage } from 'element-plus'
 import {  Upload, Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import api from '@/api/admin/api'
+import api from '@/api/admin/resource_groups'
 // 对话框是否可见
 const dialogVisible = ref(false)
 // 表单引用
@@ -73,10 +73,10 @@ const handleSubmit = async () => {
                     delete form.value[key]
                 }
             }
-            await api.updateResource_group(form.value)
+            await api.update(form.value)
             ElMessage.success('更新成功')
         } else {
-            await api.createResource_group(form.value)
+            await api.create(form.value)
             ElMessage.success('创建成功')
         }
         emit('submit', form.value)

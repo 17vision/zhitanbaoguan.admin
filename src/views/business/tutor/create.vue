@@ -27,7 +27,7 @@
                 </div>
             </el-form-item>
             <el-form-item label="导师介绍" prop="introduction" class="mb-6">
-                <el-input v-model="form.introduction" type="textarea" :rows="3" placeholder="请输入导师介绍" maxlength="200"
+                <el-input v-model="form.introduction" type="textarea" :rows="6" placeholder="请输入导师介绍" maxlength="200"
                     show-word-limit />
             </el-form-item>
         </el-form>
@@ -46,7 +46,7 @@
 import { ElMessage } from 'element-plus'
 import {  Upload, Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import api from '@/api/admin/api'
+import api from '@/api/admin/tutors'
 import { uploadImage } from '@/api/utils'
 // 对话框是否可见
 const dialogVisible = ref(false)
@@ -114,10 +114,10 @@ const handleSubmit = async () => {
                     delete form.value[key]
                 }
             }
-            await api.updateTutor(form.value)
+            await api.update(form.value)
             ElMessage.success('更新成功')
         } else {
-            await api.createTutor(form.value)
+            await api.create(form.value)
             ElMessage.success('创建成功')
         }
         emit('submit', form.value)

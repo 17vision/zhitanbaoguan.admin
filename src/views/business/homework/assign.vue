@@ -7,14 +7,10 @@
                     <el-radio label="1">班级</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="作业完成时间" prop="end_at">
-                <el-date-picker v-model="form.end_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss"
-                    placeholder="请选择作业完成时间" format="YYYY-MM-DD HH:mm:ss"
-                    :default-time="new Date(0, 0, 0, 23, 59, 59)" />
-            </el-form-item>
+
 
             <el-form-item label="用户" v-if="type === '0'" class="mb-6" prop="user_id">
-                <el-select v-model="form.user_id" style="width: 220px;" placeholder="请选择用户">
+                <el-select v-model="form.user_id" style="width: 220px;" placeholder="请选择用户" @change="handleUserChange">
                     <el-option v-for="item in users" :key="item.id" :label="item.nickname" :value="item.id" />
                 </el-select>
             </el-form-item>
@@ -23,7 +19,11 @@
                     <el-option v-for="item in grades" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
             </el-form-item>
-
+            <el-form-item label="作业完成时间" prop="end_at">
+                <el-date-picker v-model="form.end_at" type="datetime" value-format="YYYY-MM-DD HH:mm:ss"
+                    placeholder="请选择作业完成时间" format="YYYY-MM-DD HH:mm:ss"
+                    :default-time="new Date(0, 0, 0, 23, 59, 59)" />
+            </el-form-item>
         </el-form>
         <template #footer>
             <el-button type="default" @click="dialogVisible = false">取消</el-button>
@@ -46,6 +46,7 @@ const dialogVisible = ref(false)
 // 表单引用
 const formRef = ref()
 
+const tableData = ref<any>([])
 const emit = defineEmits(['submit'])
 // 表单校验规则
 const rules = ref<any>({
@@ -62,6 +63,10 @@ const rules = ref<any>({
 const form = ref<any>({
 })
 
+const handleUserChange = (val: any) => {
+    const user = tableData.value.find((item: any) => item.user_id === val)
+    form.value.end_at = user.end_at
+}
 
 const validate = () => {
     return new Promise((resolve, reject) => {
@@ -113,7 +118,9 @@ onMounted(() => {
     api.list({ page: 1, limit: 1000 }).then(res => {
         grades.value = res.data || []
     })
-
+    user_homework.list({ page: 1, limit: 1000, homework_id: route.query.id }).then(res => {
+        tableData.value = res.data
+    })
 })
 </script>
 

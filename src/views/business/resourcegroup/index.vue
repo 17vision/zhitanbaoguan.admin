@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import api from '@/api/admin/api'
+import api from '@/api/admin/resource_groups'
 import createVue from './create.vue'
 const createVueRef = ref<InstanceType<typeof createVue>>()
 // 搜索表单
@@ -43,7 +43,7 @@ const tableData = ref<any[]>([])
 const handleSearch = async () => {
     loading.value = true
     // TODO: 实现搜索逻辑
-    api.getResource_groups({ ...searchForm.value }).then(res => {
+    api.list({ ...searchForm.value }).then(res => {
         tableData.value = res as unknown as any[] || []
         loading.value = false
     }).catch(err => {
@@ -70,7 +70,7 @@ const handleDelete = (row: any) => {
         type: 'warning'
     }).then(async () => {
         // TODO: 实现删除逻辑
-        await api.deleteResource_group(row.id)
+        await api.delete(row.id)
         ElMessage.success('删除成功')
         handleSearch()
     })

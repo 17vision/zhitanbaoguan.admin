@@ -47,8 +47,7 @@
             <el-button @click="router.go(-1)">取消</el-button>
             <el-button type="primary" @click="goSave()">保存</el-button>
         </div>
-        <n-group ref="groupTreeRef" :draggable="false" :groupId="form.homework_group_id"
-            @onGroupSelect="onGroupSelect" />
+        <n-group ref="groupTreeRef" draggable :groupId="form.homework_group_id" @onGroupSelect="onGroupSelect" />
     </div>
 </template>
 
@@ -56,7 +55,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/api/admin/homework'
-import resources from '@/api/admin/api'
+import resources from '@/api/admin/resources'
 import { Remove } from '@element-plus/icons-vue'
 import NGroup from '@/components/Group/NGroup.vue'
 const router = useRouter()
@@ -91,12 +90,11 @@ const form = ref<Homewrok>({
 })
 
 const route = useRoute()
-
 const loading = ref(false)
 const resourcesList = ref()
 onMounted(async () => {
     getList()
-    resources.getResources({ limit: 100 }).then((res) => {
+    resources.list({ page: 1, limit: 100 }).then((res) => {
         resourcesList.value = res.data
     })
 })

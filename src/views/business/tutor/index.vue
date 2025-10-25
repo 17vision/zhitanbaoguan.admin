@@ -18,8 +18,8 @@
                     <el-image v-if="row.avatar" :src="row.avatar" fit="cover" class="w-20 h-20 rounded" />
                 </template>
             </el-table-column>
-            <el-table-column prop="username" label="导师名称"  width="200"/>
-            <el-table-column prop="introduction" label="介绍" />
+            <el-table-column prop="username" label="导师名称" width="200" />
+            <el-table-column prop="introduction" label="介绍"/>
             <el-table-column label="操作" width="150" fixed="right">
                 <template #default="{ row }">
                     <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
@@ -34,14 +34,14 @@
                 :page-sizes="[10, 20, 30, 50]" layout="total, sizes, prev, pager, next, jumper"
                 @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
-        <createVue ref="createVueRef" @submit="handleSearch"/>
+        <createVue ref="createVueRef" @submit="handleSearch" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import api from '@/api/admin/api'
+import api from '@/api/admin/tutors'
 import createVue from './create.vue'
 const createVueRef = ref<InstanceType<typeof createVue>>()
 // 搜索表单
@@ -61,7 +61,7 @@ const total = ref(0)
 const handleSearch = async () => {
     loading.value = true
     // TODO: 实现搜索逻辑
-    api.getTutors({ ...searchForm.value, page: currentPage.value, limit: pageSize.value }).then(res => {
+    api.list({ ...searchForm.value, page: currentPage.value, limit: pageSize.value }).then(res => {
         tableData.value = res.data
         total.value = res.total || 0
         loading.value = false
@@ -87,9 +87,9 @@ const handleEdit = (row: any) => {
 const handleDelete = (row: any) => {
     ElMessageBox.confirm('确定要删除该导师吗？', '提示', {
         type: 'warning'
-    }).then(async() => {
+    }).then(async () => {
         // TODO: 实现删除逻辑
-        await api.deleteTutor(row.id)
+        await api.delete(row.id)
         ElMessage.success('删除成功')
         handleSearch()
     })

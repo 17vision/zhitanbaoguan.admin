@@ -62,7 +62,7 @@ import type {
     RenderContentContext,
     ElTree
 } from 'element-plus'
-import api from '@/api/admin/homework_groups'
+import api from '@/api/admin/resource_groups'
 
 
 
@@ -145,7 +145,7 @@ onMounted(() => {
 })
 
 function fetchMediaGroups() {
-    api.gethomework_groups().then((res: Record<string, any>) => {
+    api.list().then((res: Record<string, any>) => {
         groups.value = res as Tree[]
 
         nextTick(() => {
@@ -188,7 +188,7 @@ function goDelete(value: number) {
 
         loading.value = true
 
-        api.deleteHomework_group(value)
+        api.delete(value)
             .then(() => {
                 loading.value = false
 
@@ -232,7 +232,7 @@ function doCreate() {
         data.id = dialog.id
     }
     if (data.id) {
-        api.updateHomework_group(data)
+        api.update(data)
             .then(() => {
                 loading.value = false
 
@@ -259,7 +259,7 @@ function doCreate() {
             })
         return
     }
-    api.createHomework_group(data)
+    api.create(data)
         .then(() => {
             loading.value = false
 
@@ -306,41 +306,42 @@ const handleDrop = async (
     dropType: NodeDropType,
 ) => {
     // 拖拽目标节点数据
-    // const dragData = _draggingNode.data
-    // const dropData = dropNode.data
+    const dragData = _draggingNode.data
+    const dropData = dropNode.data
 
     // 初始化入参
-    // const payload: Record<string, any> = {
-    //     id: dragData.id,
-    //     name: dragData.name,
-    //     index: 0,
-    // }
-    const arr = dropNode.parent?.childNodes.map((n: any) => n.data) || []
+    const payload: Record<string, any> = {
+        id: dragData.id,
+        name: dragData.name,
+        index: 0,
+    }
 
-    const total = arr.length;
-    const alllist = arr.map((n: any, index: number) => api.updateHomework_group({ id: n.id, index: total - index - 1 }))
-
-    // if (dropType === 'before') {
-    //     // 拖到目标节点之前 → 与目标节点同级
-    //     payload.index = dropNode.parent?.childNodes.findIndex(
-    //         (n: any) => n.data.id === dropData.id
-    //     )
-    // } else if (dropType === 'after') {
-    //     // 拖到目标节点之后 → 同级，位置在目标节点后
-    //     payload.index =
-    //         dropNode.parent?.childNodes.findIndex(
-    //             (n: any) => n.data.id === dropData.id
-    //         ) + 1
-    // }
+    if (dropType === 'inner') {
+        // 拖入到某个节点内部 → 变为该节点的子节点
+        payload.parent_id = dropData.id
+        payload.index = dropNode.childNodes.length // 排在最后
+    } else if (dropType === 'before') {
+        // 拖到目标节点之前 → 与目标节点同级
+        payload.index = dropNode.parent?.childNodes.findIndex(
+            (n: any) => n.data.id === dropData.id
+        )
+    } else if (dropType === 'after') {
+        // 拖到目标节点之后 → 同级，位置在目标节点后
+        payload.index =
+            dropNode.parent?.childNodes.findIndex(
+                (n: any) => n.data.id === dropData.id
+            ) + 1
+    }
 
     try {
-        await Promise.all(alllist)
+        await api.update(payload)
         ElMessage.success('分组排序已更新')
         fetchMediaGroups()
     } catch (e) {
         ElMessage.error('更新排序失败')
     }
 }
+
 const allowDrop = (_draggingNode: Node, _dropNode: Node, dropType: NodeDropType) => {
     // 只允许拖到节点内部
     if (dropType === 'inner') {
