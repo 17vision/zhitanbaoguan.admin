@@ -88,7 +88,11 @@ export default {
         return request({
             url: '/course_chapters',
             method: 'get',
-            params
+            params: {
+                page: 1,
+                limit: 10,
+                ...params
+            }
         })
     },
     /**
@@ -139,6 +143,8 @@ export default {
             url: '/course_homework',
             method: 'get',
             params: {
+                page: 1,
+                limit: 10,
                 ...params
             }
         })

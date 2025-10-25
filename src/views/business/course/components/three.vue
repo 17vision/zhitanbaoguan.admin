@@ -82,6 +82,7 @@
 import { ref } from 'vue'
 import { Plus, Close, Upload } from '@element-plus/icons-vue'
 import api from '@/api/admin/api'
+import resources from '@/api/admin/resources'
 import { uploadImage } from '@/api/utils'
 const route = useRoute()
 
@@ -178,7 +179,7 @@ const toURL = (file: File | string) => {
     return file
 }
 const getAudioList = async () => {
-    const res = await api.getResources({ type: 3, limit: 1000 })
+    const res = await resources.list({ type: 3, limit: 1000 })
     audioList.value = res.data
 }
 </script>

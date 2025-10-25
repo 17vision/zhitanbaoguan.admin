@@ -7,6 +7,8 @@ export default {
             url: '/grade_users',
             method: 'get',
             params: {
+                page: 1,
+                limit: 10,
                 ...params
             }
         })

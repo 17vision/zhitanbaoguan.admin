@@ -7,6 +7,8 @@ export default {
             url: '/user_homework',
             method: 'get',
             params: {
+                page: 1,
+                limit: 10,
                 ...params
             }
         })

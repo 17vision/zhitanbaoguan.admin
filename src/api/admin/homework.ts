@@ -11,6 +11,8 @@ export default {
             url: '/homework',
             method: 'get',
             params: {
+                page: 1,
+                limit: 10,
                 ...params
             }
         })

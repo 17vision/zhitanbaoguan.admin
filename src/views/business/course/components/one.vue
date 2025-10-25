@@ -74,6 +74,7 @@
 import { Upload, Close, Document } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/api'
+import tutors from '@/api/admin/tutors'
 import { uploadImage } from '@/api/utils'
 
 // 表单引用
@@ -150,7 +151,8 @@ defineExpose({
 })
 
 const getTutorList = async () => {
-    const res = await api.getTutors({
+    const res = await tutors.list({
+        page: 1,
         limit: 100,
     })
     tutor_list.value = res.data
