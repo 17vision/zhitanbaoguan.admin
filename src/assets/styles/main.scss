@@ -2,231 +2,239 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
-    --side-bar-width: 220px;
-    --nav-bar-height: 60px;
-    --side-bar-bg-color: #304156;
-    --side-bar-item-bg-color: #1f2d3d;
-    --side-bar-item-hover-bg-color: #001528;
-    --side-bar-text-color: #bfcbd9;
-    --el-menu-base-level-padding: 12px;
-    --el-menu-bg-color: var(--side-bar-bg-color) !important;
+  --el-color-primary: #7b68ee !important; // 主题颜色
+  --el-color-primary-light-3: #8a7af2 !important;
+  --el-color-primary-light-5: #9a8ef5 !important;
+  --el-color-primary-light-7: #b2a8f8 !important;
+  /* active / 深色点击状态（稍深一点） */
+  --el-color-primary-dark-2: #6957cc !important;
 
-    .sidebar-collapse {
-        --side-bar-width: 72px; 
-    }
+  --side-bar-width: 220px;
+  --nav-bar-height: 60px;
+  --side-bar-bg-color: #304156;
+  --side-bar-item-bg-color: #1f2d3d;
+  --side-bar-item-hover-bg-color: #001528;
+  --side-bar-text-color: #bfcbd9;
+  --el-menu-base-level-padding: 12px;
+  --el-menu-bg-color: var(--side-bar-bg-color) !important;
+
+  .sidebar-collapse {
+    --side-bar-width: 72px;
+  }
 }
 
 html {
-    &.dark {
-        --side-bar-bg-color: #181818;
-        --side-bar-item-bg-color: #1c1c1c;
-        --side-bar-item-hover-bg-color: #2b2d2e;
-        --side-bar-text-color: #bfcbd9;
-        
-        // 暗色注意下特殊处理
-        .el-switch.is-checked .el-switch__core {
-            border-color: transparent;
-            background-color: #2b2d2e;
-        }
+  &.dark {
+    --side-bar-bg-color: #181818;
+    --side-bar-item-bg-color: #1c1c1c;
+    --side-bar-item-hover-bg-color: #2b2d2e;
+    --side-bar-text-color: #bfcbd9;
 
-        .el-switch.is-checked .el-switch__core .el-switch__action {
-            color: #4c4d4f;
-        }
-
-        .layout-container {
-            .side-bar {
-                border-right: 1px solid var(--side-bar-item-hover-bg-color);
-            }
-
-            .nav-bar {
-                border-bottom: 1px solid var(--side-bar-item-hover-bg-color);
-            }
-        }
+    // 暗色注意下特殊处理
+    .el-switch.is-checked .el-switch__core {
+      border-color: transparent;
+      background-color: #2b2d2e;
     }
+
+    .el-switch.is-checked .el-switch__core .el-switch__action {
+      color: #4c4d4f;
+    }
+
+    .layout-container {
+      .side-bar {
+        border-right: 1px solid var(--side-bar-item-hover-bg-color);
+      }
+
+      .nav-bar {
+        border-bottom: 1px solid var(--side-bar-item-hover-bg-color);
+      }
+    }
+  }
 }
 
-html, body, #app {
-    height: 100%;
+html,
+body,
+#app {
+  height: 100%;
 }
 
 .el-bg-color {
-    background-color: var(--el-bg-color);
+  background-color: var(--el-bg-color);
 }
 
 // 布局
 .layout-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background-color: var(--el-bg-color);
-    // background-color: var(--el-bg-color-page);
-    transition: background-color 0.2s ease-in-out;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--el-bg-color);
+  // background-color: var(--el-bg-color-page);
+  transition: background-color 0.2s ease-in-out;
 
-    // 小屏幕下，完全隐藏侧侧边栏
-    &.is-phone {
-        .side-bar {
-            left: 0;
-        }
-
-        .main-container {
-            margin-left: 0;
-        }
-    }
-
-    &.sidebar-collapse {
-        &.is-phone {
-            .side-bar {
-                left: calc(0px - var(--side-bar-width));
-            }
-        }
-
-        .el-menu {
-            border: none !important; 
-            .front-icon {
-                margin-left: 10px !important;
-            }
-        }
-    }
-
+  // 小屏幕下，完全隐藏侧侧边栏
+  &.is-phone {
     .side-bar {
-        display: flex;
-        width: var(--side-bar-width);
-        height: 100vh;
-        position: fixed;
-        left: 0;
-        top: 0;
-        z-index: 99;
-        background-color: var(--side-bar-bg-color);
-        transition: left 0.3s;
-
-        .logo {
-            height: var(--nav-bar-height);
-            display: flex;
-            align-items: center;
-
-            img {
-                width: calc(var(--nav-bar-height) - 15px);
-                height: calc(var(--nav-bar-height) - 15px);
-            }
-
-            .title {
-                font-size: 16px;
-                color: #ffffffdd;
-                margin-left: 8px;
-                white-space:nowrap;
-                overflow:hidden;
-                text-overflow:ellipsis;
-            }
-        }
+      left: 0;
     }
 
     .main-container {
-        position: relative;
-        min-height: 100%;
-        margin-left: var(--side-bar-width);
-        transition: all .3s cubic-bezier(.34,.69,.1,1);
-
-        .nav-bar {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            height: var(--nav-bar-height);
-            position: sticky;
-            left: 0;
-            top: 0;
-            box-shadow: 0 1px 4px rgba(0,21,41,.08);
-            background-color: var(--el-bg-color);
-            transition: background-color 0.2s cubic-bezier(1, 0.5, 0.8, 1);
-            z-index: 88;
-        }
-
-        .app-main {
-            width: 100%;
-            background-color: #F5F6FA;
-        }
+      margin-left: 0;
     }
+  }
+
+  &.sidebar-collapse {
+    &.is-phone {
+      .side-bar {
+        left: calc(0px - var(--side-bar-width));
+      }
+    }
+
+    .el-menu {
+      border: none !important;
+      .front-icon {
+        margin-left: 10px !important;
+      }
+    }
+  }
+
+  .side-bar {
+    display: flex;
+    width: var(--side-bar-width);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 99;
+    background-color: var(--side-bar-bg-color);
+    transition: left 0.3s;
+
+    .logo {
+      height: var(--nav-bar-height);
+      display: flex;
+      align-items: center;
+
+      img {
+        width: calc(var(--nav-bar-height) - 15px);
+        height: calc(var(--nav-bar-height) - 15px);
+      }
+
+      .title {
+        font-size: 16px;
+        color: #ffffffdd;
+        margin-left: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .main-container {
+    position: relative;
+    min-height: 100%;
+    margin-left: var(--side-bar-width);
+    transition: all 0.3s cubic-bezier(0.34, 0.69, 0.1, 1);
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: var(--nav-bar-height);
+      position: sticky;
+      left: 0;
+      top: 0;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      background-color: var(--el-bg-color);
+      transition: background-color 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+      z-index: 88;
+    }
+
+    .app-main {
+      width: 100%;
+      background-color: #f5f6fa;
+    }
+  }
 }
-    .el-scrollbar {
-        width: 100%;
-    }
+.el-scrollbar {
+  width: 100%;
+}
 // 左侧菜单
 .el-menu {
-    border: none !important;
-    background-color: var(--side-bar-bg-color);
+  border: none !important;
+  background-color: var(--side-bar-bg-color);
 
-    .el-sub-menu__title {
-        color: var( --side-bar-text-color);
+  .el-sub-menu__title {
+    color: var(--side-bar-text-color);
+  }
+
+  .el-sub-menu__title:hover {
+    background-color: var(--side-bar-item-bg-color);
+  }
+
+  .el-menu-item {
+    color: var(--side-bar-text-color);
+    // background-color: var(--side-bar-item-bg-color);
+
+    &.is-active {
+      color: #409eff;
+      // background-color: var(--side-bar-item-hover-bg-color) !important;
     }
 
-    .el-sub-menu__title:hover {
-        background-color: var(--side-bar-item-bg-color);
+    &.only-grade {
+      background-color: var(---el-menu-bg-color);
     }
+  }
 
-    .el-menu-item {
-        color: var( --side-bar-text-color);
-        // background-color: var(--side-bar-item-bg-color);
+  .el-menu-item:hover {
+    background-color: var(--side-bar-item-hover-bg-color);
+  }
 
-        &.is-active {
-            color: #409eff;
-            // background-color: var(--side-bar-item-hover-bg-color) !important;
-        }
-
-        &.only-grade {
-            background-color: var(---el-menu-bg-color); 
-        }
-    }
-
-    .el-menu-item:hover {
-        background-color: var(--side-bar-item-hover-bg-color);
-    }
-
-    .front-icon {
-        margin-right: 10px !important;
-    }
+  .front-icon {
+    margin-right: 10px !important;
+  }
 }
 
 // 左侧菜单(收起来的时候，文字隐藏)
 .el-menu--collapse {
-    width: var(--side-bar-width);
+  width: var(--side-bar-width);
 
-    .el-sub-menu__title {
-        span {
-            opacity: 0;
-        }
-
-        .el-sub-menu__icon-arrow {
-            opacity: 0;
-        }
+  .el-sub-menu__title {
+    span {
+      opacity: 0;
     }
+
+    .el-sub-menu__icon-arrow {
+      opacity: 0;
+    }
+  }
 }
 
 // 左侧菜单，收起时，鼠标移上去，弹出去的组件默认样式更改(这个影响太大了。必须是左侧菜单才这样)
 .el-popper:has(.el-menu) {
-    background: transparent !important;
-    border: none !important;
+  background: transparent !important;
+  border: none !important;
 
-    $radius: 4px;
+  $radius: 4px;
 
-    .el-menu--popup {
-        padding: 0 !important;
-        border-radius: $radius;
+  .el-menu--popup {
+    padding: 0 !important;
+    border-radius: $radius;
 
-        .nest-menu:first-child {
-            .el-menu-item {
-                border-top-left-radius: $radius;
-                border-top-right-radius: $radius;
-            }
-        }
-
-        .nest-menu:last-child {
-            .el-menu-item {
-                border-bottom-left-radius: $radius;
-                border-bottom-right-radius: $radius;
-            }
-        }
+    .nest-menu:first-child {
+      .el-menu-item {
+        border-top-left-radius: $radius;
+        border-top-right-radius: $radius;
+      }
     }
+
+    .nest-menu:last-child {
+      .el-menu-item {
+        border-bottom-left-radius: $radius;
+        border-bottom-right-radius: $radius;
+      }
+    }
+  }
 }
 
 /*
@@ -235,21 +243,20 @@ html, body, #app {
   持续时间和速度曲线。
 */
 .slide-fade-enter-active {
-    transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
 }
 
 .slide-fade-leave-active {
-    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
 
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-    transform: translateX(20px);
-    opacity: 0;
+  transform: translateX(20px);
+  opacity: 0;
 }
 
 #nprogress .bar {
-    height: 4px;
-    background: var(--el-color-primary);
+  height: 4px;
+  background: var(--el-color-primary);
 }
-

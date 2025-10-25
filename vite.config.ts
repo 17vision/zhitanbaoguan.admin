@@ -29,7 +29,6 @@ export default defineConfig({
             '@': pathSrc
         }
     },
-    
     plugins: [
         vue(),
         AutoImport({
