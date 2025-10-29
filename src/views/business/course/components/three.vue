@@ -9,7 +9,20 @@
                 </template>
             </el-table-column>
             <el-table-column prop="duration" label="时长" width="100" />
-            <el-table-column prop="description" label="内容" show-overflow-tooltip />
+            <el-table-column prop="resource_id" label="音频资源">
+                <template #default="{ row }">
+                    <audio controls>
+                        <source :src="row.resource.path" type="audio/mp3">
+                    </audio>
+                </template>
+            </el-table-column>
+            <el-table-column prop="description" label="内容">
+                <template #default="{ row }">
+                    <div class="desc-cell" :title="row.description">
+                        {{ row.description }}
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="150" fixed="right">
                 <template #default="{ row }">
                     <el-button link type="primary" @click="handleEditChapter(row)">编辑</el-button>
@@ -39,7 +52,10 @@
                         <el-form-item label="图片" prop="background">
                             <div class="avatar-uploader">
                                 <div v-if="chapter.background" class="relative ">
-                                    <img :src="toURL(chapter.background)" class="cover-image" />
+                                    <video v-if="is_file(chapter.background)" class="cover-image2" controls>
+                                        <source :src="toURL(chapter.background)" type="video/mp4">
+                                    </video>
+                                    <img v-else :src="toURL(chapter.background)" class="cover-image" />
                                     <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
                                         <el-icon :size="24" class="text-red-500 " @click="chapter.background = ''">
                                             <Close />
@@ -54,7 +70,7 @@
                                     <span class="text-gray-500 text-sm">点击上传</span>
                                 </label>
                                 <input type="file" name="cover" id="coverInput" @change="handleCoverSuccess"
-                                    accept="image/*" style="display: none;">
+                                    accept=".jpg,.jpeg,.png,.gif,.mp4" style="display: none;">
                             </div>
                         </el-form-item>
                     </el-col>
@@ -73,7 +89,7 @@
 
 <script lang='ts' setup>
 import { ref } from 'vue'
-import {  Close, Upload } from '@element-plus/icons-vue'
+import { Close, Upload } from '@element-plus/icons-vue'
 import api from '@/api/admin/api'
 import resources from '@/api/admin/resources'
 import { uploadImage } from '@/api/utils'
@@ -116,6 +132,11 @@ const handleDeleteChapter = async (row: any) => {
 // 处理封面上传
 const handleCoverSuccess = (e: any) => {
     const file = e.target.files[0]
+    if (!file) return
+    if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif' && file.type !== 'video/mp4' && file.type !== 'audio/mpeg') {
+        ElMessage.error('文件格式不正确')
+        return
+    }
     chapter.value.background = file
     e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件
 }
@@ -167,6 +188,19 @@ onMounted(async () => {
     getAudioList()
 })
 
+const is_file = (str: string | File) => {
+    if (!str) return false // 防止传入 null 或 undefined
+    if (str instanceof File) {
+        return str.type === 'video/mp4'
+    }
+
+    if (typeof str === 'string') {
+        return str.toLowerCase().endsWith('.mp4')
+    }
+
+    return false
+}
+
 const toURL = (file: File | string) => {
     if (!file) return ''
     if (file instanceof File) {
@@ -192,5 +226,21 @@ const getAudioList = async () => {
 .cover-image {
     width: 100%;
     height: 100%;
+}
+
+.desc-cell {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    /* 限制显示两行 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.desc-cell:hover {
+    color: #7B68EE;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 </style>

@@ -9,8 +9,11 @@
         <!-- 顶部操作区 -->
         <div class="bg-white rounded-lg shadow-md p-4">
             <div class="mb-4 flex justify-between items-center">
-                <div class=" flex  ml-auto items-center space-x-5 w-[35%]">
+                <div class=" flex  ml-auto items-center space-x-5 w-[50%]">
                     <el-input v-model="searchForm.name" placeholder="搜索名称" class="w-64" clearable />
+                    <el-select v-model="searchForm.resource_group_id" placeholder="分组"  class="w-32">
+                        <el-option :label="item.name" :value="item.id" v-for="item in statusList" :key="item.id" />
+                    </el-select>
                     <el-button type="primary" @click="handleSearch">搜索</el-button>
                     <el-button @click="handleReset">重置</el-button>
                 </div>
@@ -58,6 +61,7 @@ import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import api from '@/api/admin/resources'
+import resource_groups from '@/api/admin/resource_groups'
 import createVue from './create.vue'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 const MAX_HEIGHT = useWindowHeight(270)
@@ -69,6 +73,7 @@ const searchForm = ref<any>({
 // 表格数据
 const loading = ref(false)
 const tableData = ref([])
+const statusList = ref<any[]>([])
 
 // 分页相关
 const currentPage = ref(1)
@@ -132,4 +137,9 @@ const handleCurrentChange = (val: number) => {
     handleSearch()
 }
 handleSearch()
+onMounted(async () => {
+    resource_groups.list().then(res => {
+        statusList.value = res as unknown as any[]
+    })
+})
 </script>
