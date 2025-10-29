@@ -44,7 +44,8 @@
                             <el-input v-model="chapter.title" placeholder="请输入课程标题" />
                         </el-form-item>
                         <el-form-item label="课程时长" prop="duration">
-                            <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />分钟
+                            <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />
+                            <span class="ml-2 text-gray-600">分钟</span>
                         </el-form-item>
                         <el-form-item label="音频资源" prop="resource_id">
                             <el-select v-model="chapter.resource_id" placeholder="请选择音频资源" clearable>
