@@ -5,15 +5,20 @@
             <el-table-column prop="title" label="标题" width="200" />
             <el-table-column label="背景" width="140">
                 <template #default="{ row }">
-                    <el-image v-if="row.background" :src="row.background" fit="cover" class="w-20 h-20 rounded" />
+                    <video v-if="is_file(row.background)" class="cover-image2" controls>
+                        <source :src="row.background" type="video/mp4">
+                    </video>
+                    <img v-else :src="row.background" class="cover-image" />
+
                 </template>
             </el-table-column>
             <el-table-column prop="duration" label="时长" width="100" />
             <el-table-column prop="resource_id" label="音频资源">
                 <template #default="{ row }">
-                    <audio controls>
-                        <source :src="row.resource.path" type="audio/mp3">
+                    <audio controls v-if="row.resource">
+                        <source :src="row.resource?.path" type="audio/mp3">
                     </audio>
+                    <span v-else>-</span>
                 </template>
             </el-table-column>
             <el-table-column prop="description" label="内容">
@@ -42,7 +47,7 @@
                             <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />
                         </el-form-item>
                         <el-form-item label="音频资源" prop="resource_id">
-                            <el-select v-model="chapter.resource_id" placeholder="请选择音频资源">
+                            <el-select v-model="chapter.resource_id" placeholder="请选择音频资源" clearable>
                                 <el-option v-for="item in audioList" :key="item.id" :label="item.name"
                                     :value="item.id" />
                             </el-select>
@@ -102,7 +107,6 @@ const tableData = ref<any[]>([])
 const chapterDialogVisible = ref(false)
 const chapter = ref<any>({})
 const chapterFormRef = ref<any>(null)
-
 const rules = {
     title: [
         { required: true, message: '请输入课程标题', trigger: 'blur' },
@@ -113,6 +117,9 @@ const rules = {
     background: [
         { required: true, message: '请上传课程图片', trigger: 'blur' },
     ],
+    resource_id: [
+        { required: true, message: '请选择音频资源', trigger: 'change' },
+    ]
 }
 // 添加章节
 const addChapter = () => {
@@ -125,9 +132,15 @@ const handleEditChapter = (row: any) => {
     chapterDialogVisible.value = true
 }
 const handleDeleteChapter = async (row: any) => {
-    await api.deleteCoursesChapters(row.id)
-    ElMessage.success('删除成功')
-    getList()
+    ElMessageBox.confirm('确定要删除该章节吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        await api.deleteCoursesChapters(row.id)
+        ElMessage.success('删除成功')
+        getList()
+    })
 }
 // 处理封面上传
 const handleCoverSuccess = (e: any) => {
@@ -142,6 +155,7 @@ const handleCoverSuccess = (e: any) => {
 }
 
 const handleSubmit = async () => {
+    await chapterFormRef.value.validate()
     if (chapter.value.background instanceof File) {
         const res = await uploadImage({
             file: chapter.value.background,
