@@ -216,10 +216,10 @@ const getAudioList = async () => {
 
 <style lang='scss' scoped>
 .avatar-uploader {
-    width: 150px;
-    height: 150px;
+    width: 240px;
+    height: 240px;
     border: 1px dashed #ccc;
-    border-radius: 8px;
+    border-radius: 12px;
     display: flex;
 }
 
