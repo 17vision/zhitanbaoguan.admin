@@ -46,7 +46,7 @@
             </el-form>
             <template #footer>
                 <el-button type="default" @click="dialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="handleSubmit">提交</el-button>
+                <el-button type="primary" @click="handleSubmit" :loading="loading">提交</el-button>
             </template>
         </el-dialog>
         <GroupVue ref="groupTreeRef" :draggable="true" :groupId="form.resource_group_id"
@@ -63,6 +63,7 @@ import { uploadImage, uploadFiles } from '@/api/utils'
 import GroupVue from './Group.vue'
 // 对话框是否可见
 const dialogVisible = ref(false)
+const loading = ref(false)
 // 表单引用
 const formRef = ref()
 const emit = defineEmits(['submit'])
@@ -78,6 +79,9 @@ const rules = ref<any>({
     path: [
         { required: true, message: '请上传资源', trigger: 'change' },
     ],
+    resource_group_id: [
+        { required: true, message: '请选择分组', trigger: 'change' },
+    ]
 })
 const form = ref<any>({
     name: '',
@@ -125,6 +129,7 @@ const onGroupSelect = (group: any) => {
 const handleSubmit = async () => {
     try {
         await validate()
+        loading.value = true
         if (form.value.path instanceof File) {
             if (form.value.type === 1) {
                 const res = await uploadImage({
@@ -155,8 +160,11 @@ const handleSubmit = async () => {
         }
         emit('submit', form.value)
         dialogVisible.value = false
+        loading.value = false
+
     } catch (error) {
         console.log(error)
+        loading.value = false
     }
 }
 
