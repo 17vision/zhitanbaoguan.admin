@@ -11,7 +11,7 @@
             <div class="mb-4 flex justify-between items-center">
                 <div class=" flex  ml-auto items-center space-x-5 w-[50%]">
                     <el-input v-model="searchForm.name" placeholder="搜索名称" class="w-64" clearable />
-                    <el-select v-model="searchForm.resource_group_id" placeholder="分组"  class="w-32">
+                    <el-select v-model="searchForm.resource_group_id" placeholder="分组" class="w-32">
                         <el-option :label="item.name" :value="item.id" v-for="item in statusList" :key="item.id" />
                     </el-select>
                     <el-button type="primary" @click="handleSearch">搜索</el-button>
@@ -22,9 +22,9 @@
             <!-- 表格区域 -->
             <el-table v-loading="loading" :data="tableData" style="width: 100%"
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
-                <el-table-column prop="name" label="资源名称" width="120" />
-                <el-table-column prop="type_str" label="类型" width="100" />
-                <el-table-column prop="path" label="资源链接" width="200">
+                <el-table-column prop="name" label="资源名称" />
+                <el-table-column prop="type_str" label="类型" />
+                <el-table-column prop="path" label="资源链接">
                     <template #default="{ row }">
                         <el-link :href="row.path" target="_blank">点击查看</el-link>
                     </template>
