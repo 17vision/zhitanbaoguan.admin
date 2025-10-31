@@ -14,6 +14,11 @@
                 </div>
                 <div class=" flex  ml-auto items-center space-x-5 w-[50%]">
                     <el-input v-model="searchForm.name" placeholder="搜索名称" class="w-64" clearable />
+                    <el-select v-model="searchForm.type" placeholder="请选择类型">
+                        <el-option label="图片" :value="1" />
+                        <el-option label="视频" :value="2" />
+                        <el-option label=" 音频" :value="3" />
+                    </el-select>
                     <el-select v-model="searchForm.resource_group_id" placeholder="分组" class="w-32">
                         <el-option :label="item.name" :value="item.id" v-for="item in statusList" :key="item.id" />
                     </el-select>
