@@ -9,6 +9,9 @@
         <!-- 顶部操作区 -->
         <div class="bg-white rounded-lg shadow-md p-4">
             <div class="mb-4 flex justify-between items-center">
+                <div class="flex items-center space-x-5 w-[50%]">
+                    <el-button v-if="selectedRows.length" type="danger" @click="handleDeleteAll">批量删除</el-button>
+                </div>
                 <div class=" flex  ml-auto items-center space-x-5 w-[50%]">
                     <el-input v-model="searchForm.name" placeholder="搜索名称" class="w-64" clearable />
                     <el-select v-model="searchForm.resource_group_id" placeholder="分组" class="w-32">
@@ -21,7 +24,9 @@
 
             <!-- 表格区域 -->
             <el-table v-loading="loading" :data="tableData" style="width: 100%"
-                :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
+                :header-cell-style="{ background: '#F5F6FA', color: '#666666' }"
+                @selection-change="handleSelectionChange" :max-height="MAX_HEIGHT">
+                <el-table-column type="selection" width="55" />
                 <el-table-column prop="name" label="资源名称" />
                 <el-table-column prop="type_str" label="类型" />
                 <el-table-column prop="path" label="资源链接">
@@ -110,9 +115,25 @@ const handleEdit = (row: any) => {
     createVueRef.value?.open(row)
 }
 
+const selectedRows = ref<any[]>([])
+const handleSelectionChange = (val: any) => {
+    selectedRows.value = val
+}
+
+const handleDeleteAll = async () => {
+    ElMessageBox.confirm(`确定要删除选中的资源吗？`, '提示', {
+        type: 'warning'
+    }).then(async () => {
+        // TODO: 实现删除逻辑
+        const ids = selectedRows.value.map((item: any) => item.id).join(',')
+        await api.delete(ids)
+        ElMessage.success('删除成功')
+        handleSearch()
+    })
+}
 // 删除课程
 const handleDelete = (row: any) => {
-    ElMessageBox.confirm(`确定要删除${row.name}资源吗？`, '提示', {
+    ElMessageBox.confirm(`确定要删除资源${row.name}吗？`, '提示', {
         type: 'warning'
     }).then(async () => {
         // TODO: 实现删除逻辑
