@@ -112,7 +112,7 @@ const handleEdit = (row: any) => {
 
 // 删除课程
 const handleDelete = (row: any) => {
-    ElMessageBox.confirm('确定要删除该资源吗？', '提示', {
+    ElMessageBox.confirm(`确定要删除${row.name}资源吗？`, '提示', {
         type: 'warning'
     }).then(async () => {
         // TODO: 实现删除逻辑

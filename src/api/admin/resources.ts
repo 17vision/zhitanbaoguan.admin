@@ -37,12 +37,12 @@ export default {
         })
     },
 
-    delete(id: any) {
+    delete(ids: any) {
         return request({
             url: '/resources',
             method: 'delete',
             data: {
-                id
+                ids: String(ids)
             }
         })
     },
