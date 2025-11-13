@@ -215,9 +215,7 @@ const lineChartOptions = computed(() => ({
     tooltip: {
         trigger: 'axis',
         formatter: function (params: any) {
-            const date = lineData.value[0]?.course?.title ||params[0].axisValue;
-            console.log(date);
-            
+            const date = lineData.value[0]?.course?.title ||params[0].axisValue;            
             const value = params[0].data;
             return `${date}<br/>观看量: ${value} 次`;
         }
