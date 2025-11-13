@@ -24,9 +24,9 @@
                     <div class="flex  items-center mt-1 text-xs text-[#999999]">
                         日同比
                         <div
-                            :class="item.change > 0 ? 'text-green-500 ml-1 flex gap-1 items-center' : 'text-red-500 ml-1 gap-1 flex items-center'">
+                            :class="item.change >= 0 ? 'text-green-500 ml-1 flex gap-1 items-center' : 'text-red-500 ml-1 gap-1 flex items-center'">
                             <p> {{ Math.abs(item.change) }}</p>
-                            <img :src="item.change > 0 ? ArrowDown : ArrowUp"
+                            <img :src="item.change >= 0 ? ArrowDown : ArrowUp"
                                 class="mr-0.5 w-3 h-3 transform rotate-180" />
                             <!-- <p> {{ item.changeUnit }}</p> -->
                         </div>
@@ -39,9 +39,9 @@
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">单课数据</h2>
                 <div>
-                    <el-input placeholder="请输入课程名" v-model="from.searchText" class="w-40">
+                    <el-input placeholder="请输入课程名" v-model="searchText" class="w-40" @keyup.enter="getBarData">
                         <template #suffix>
-                            <el-icon class="cursor-pointer">
+                            <el-icon class="cursor-pointer" @click="getBarData">
                                 <Search />
                             </el-icon>
                         </template>
@@ -56,23 +56,26 @@
                 <h2 class="text-lg font-semibold text-gray-800">观看数据</h2>
                 <div class="flex items-center space-x-4">
                     <div class="w-32">
-                        <el-select placeholder="情绪感知" v-model="from.searchType" class="w-32">
-                            <el-option label="情绪感知" value="情绪感知" />
-                        </el-select>
+                        <!-- <el-select placeholder="情绪感知" v-model="from.searchType" class="w-32" clearable
+                            @change="getLineData">
+                            <el-option label="情绪感知" :value="1" />
+                        </el-select> -->
                     </div>
                     <div class="w-42">
-                        <el-input placeholder="请输入课程名" v-model="from.searchText" class="w-40">
+                        <!-- <el-input placeholder="请输入课程名" v-model="from.searchText" class="w-40"
+                            @keyup.enter="getLineData">
                             <template #suffix>
-                                <el-icon class="cursor-pointer">
+                                <el-icon class="cursor-pointer" @click="getLineData">
                                     <Search />
                                 </el-icon>
                             </template>
-                        </el-input>
+                        </el-input> -->
                     </div>
-                    <div class="flex items-center "> <el-radio-group v-model="dateRange">
-                            <el-radio-button label="日" />
-                            <el-radio-button label="周" />
-                            <el-radio-button label="月" />
+                    <div class="flex items-center ">
+                        <el-radio-group v-model="from.type" @change="getLineData">
+                            <el-radio-button label="日" :value="1" />
+                            <el-radio-button label="周" :value="2" />
+                            <el-radio-button label="月" :value="3" />
                         </el-radio-group>
                     </div>
                 </div>
@@ -83,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { Download, Search } from '@element-plus/icons-vue'
 import course from '@/assets/image/course.png'
 import ArrowDown from '@/assets/image/ArrowDown.png'
@@ -94,62 +97,12 @@ import comment from '@/assets/image/comment.png'
 import * as echarts from 'echarts'
 import BarChart from './components/BarChart.vue'
 import LineChart from './components/LineChart.vue'
-
-const dateRange = ref('月')
-
-const lineChartOptions = ref({
-    tooltip: {
-        trigger: 'axis'
-    },
-    grid: {
-        left: '1%',
-        right: '1%',
-        bottom: '1%',
-        containLabel: true
-    },
-    xAxis: {
-        type: 'category',
-        boundaryGap: false,
-        data: Array.from({ length: 30 }, (_, i) => `2024-${String(i + 1).padStart(2, '0')}`)
-    },
-    yAxis: {
-        type: 'value',
-        name: '单位(次)',
-
-    },
-    series: [
-        {
-            name: '情绪感知',
-            type: 'line',
-            smooth: true,
-            data: [
-                220, 182, 191, 234, 290, 330, 310, 280, 350, 400, 380, 360, 320, 280, 250, 230, 280, 320, 350, 380, 420, 400, 380, 350, 320, 280, 250, 260, 280, 300
-            ],
-            itemStyle: {
-                color: '#A9A9F3'
-            },
-            areaStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    {
-                        offset: 0,
-                        color: '#A9A9F3'
-                    },
-                    {
-                        offset: 1,
-                        color: '#FFFFFF'
-                    }
-                ])
-            }
-        }
-    ]
-})
+import dashboard from '@/api/admin/dashboard'
 
 
-const from = ref({
-    searchType: '',
-    searchText: ''
-})
-const barChartOptions = ref({
+const searchText = ref('')
+const courseList = ref<any[]>([])
+const barChartOptions = computed(() => ({
     tooltip: {
         trigger: 'axis',
         axisPointer: {
@@ -169,13 +122,13 @@ const barChartOptions = ref({
     grid: {
         left: '1%',
         right: '1%',
-        bottom: '1%',
+        bottom: 5,
         containLabel: true
     },
     xAxis: [
         {
             type: 'category',
-            data: ['净化身心', '缓解疲劳', '情绪感知', '克服恐惧'],
+            data: courseList.value.map(item => item.title),
             axisTick: {
                 alignWithLabel: true
             }
@@ -187,12 +140,13 @@ const barChartOptions = ref({
             name: '单位(次)',
         }
     ],
+
     series: [
         {
             name: '喜欢',
             type: 'bar',
             barWidth: '8%',
-            data: [480, 180, 400, 350],
+            data: courseList.value.map(item => item.like_count),
             itemStyle: {
                 borderRadius: [15],
                 color: {
@@ -212,10 +166,9 @@ const barChartOptions = ref({
             name: '收藏',
             type: 'bar',
             barWidth: '8%',
-            data: [380, 240, 320, 300],
+            data: courseList.value.map(item => item.collect_count),
             itemStyle: {
                 borderRadius: [15],
-
                 color: {
                     type: 'linear',
                     x: 0,
@@ -233,10 +186,9 @@ const barChartOptions = ref({
             name: '评论',
             type: 'bar',
             barWidth: '8%',
-            data: [180, 280, 250, 280],
+            data: courseList.value.map(item => item.message_count),
             itemStyle: {
                 borderRadius: [15],
-
                 color: {
                     type: 'linear',
                     x: 0,
@@ -251,14 +203,76 @@ const barChartOptions = ref({
             }
         }
     ]
+}))
+
+
+const from = ref({
+    searchType: '',
+    searchText: '',
+    type: 1
 })
+
+const lineData = ref<any[]>([])
+const lineChartOptions = computed(() => ({
+    tooltip: {
+        trigger: 'axis'
+    },
+    grid: {
+        left: '1%',
+        right: '1%',
+        bottom: 10,
+        containLabel: true
+    },
+    xAxis: {
+        type: 'category',
+        boundaryGap: true,
+        data: lineData.value.map(item => item.date || item.week || item.month),
+        axisLabel: {
+            rotate: 45,
+            interval: 0,
+            margin: 10,
+        },
+
+    },
+    yAxis: {
+        type: 'value',
+        name: '单位(次)',
+
+    },
+    series: [
+        {
+            name: '观看量',
+            type: 'line',
+            smooth: true,
+            data: lineData.value.map(item => item.count),
+            itemStyle: {
+                color: '#A9A9F3'
+            },
+            areaStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                        offset: 0,
+                        color: '#A9A9F3'
+                    },
+                    {
+                        offset: 1,
+                        color: '#FFFFFF'
+                    }
+                ])
+            }
+        }
+    ]
+}))
+
+
+
 
 const summaryData = ref([
     {
         title: '总课程数',
-        value: 4,
+        value: 0,
         unit: '课',
-        change: 1,
+        change: 0,
         changeUnit: '课',
         icon: course,
         iconBg: 'bg-blue-100',
@@ -266,9 +280,9 @@ const summaryData = ref([
     },
     {
         title: '总喜欢量',
-        value: 234,
+        value: 0,
         unit: '次',
-        change: -1,
+        change: 0,
         changeUnit: '次',
         icon: like,
         iconBg: 'bg-red-100',
@@ -276,9 +290,9 @@ const summaryData = ref([
     },
     {
         title: '总收藏量',
-        value: 443,
+        value: 0,
         unit: '次',
-        change: 22,
+        change: 0,
         changeUnit: '次',
         icon: collect,
         iconBg: 'bg-yellow-100',
@@ -286,15 +300,42 @@ const summaryData = ref([
     },
     {
         title: '总评论量',
-        value: 321,
+        value: 0,
         unit: '条',
-        change: 33,
+        change: 0,
         changeUnit: '条',
         icon: comment,
         iconBg: 'bg-purple-100',
         iconColor: '#67C23A'
     }
 ])
+
+const getBarData = async () => {
+    const res = await dashboard.single_data({ title: searchText.value })
+    courseList.value = res as unknown as any[] || []
+}
+
+const getLineData = async () => {
+    const res = await dashboard.view_data(from.value)
+    lineData.value = res as unknown as any[] || []
+}
+onMounted(async () => {
+    const res = await dashboard.basic_info()
+    const mapping = [
+        { key: 'course_count', compare: 'collect_count_compare' },
+        { key: 'like_count', compare: 'like_count_compare' },
+        { key: 'collect_count', compare: 'course_count_compare' },
+        { key: 'message_count', compare: 'message_count_compare' },
+    ];
+
+    summaryData.value = mapping.map((m, i) => ({
+        ...summaryData.value[i],
+        value: Number(res[m.key] ?? 0),
+        change: Number(res[m.compare] ?? 0),
+    }));
+    getBarData()
+    getLineData()
+})
 </script>
 
 <style scoped lang="scss"></style>

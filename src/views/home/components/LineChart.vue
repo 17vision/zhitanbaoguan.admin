@@ -28,10 +28,22 @@ const setOptions = () => {
     }
 }
 
+const resizeChart = () => {
+    if (chart) chart.resize()
+}
+
 onMounted(() => {
     initChart()
+    window.addEventListener('resize', resizeChart)
 })
-
+// 卸载时销毁
+onBeforeUnmount(() => {
+    if (chart) {
+        chart.dispose()
+        chart = null
+    }
+    window.removeEventListener('resize', resizeChart)
+})
 watch(() => props.chartData, () => {
     setOptions()
 }, { deep: true })

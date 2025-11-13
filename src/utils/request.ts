@@ -123,6 +123,12 @@ const request = async (config: AxiosRequestConfig) => {
     if (Loading && config.url) {
         $store.setRequest(config.url)
     }
+    for (const key in config.params) {
+        if (config.params[key] === undefined || config.params[key] === null || config.params[key] === '') {
+            delete config.params[key]
+        }
+    }
+
     return axios(config).finally(() => {
         if (Loading && config.url) {
             $store.removeRequest(config.url)
