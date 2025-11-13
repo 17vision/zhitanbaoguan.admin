@@ -62,14 +62,13 @@
                         </el-select> -->
                     </div>
                     <div class="w-42">
-                        <!-- <el-input placeholder="请输入课程名" v-model="from.searchText" class="w-40"
-                            @keyup.enter="getLineData">
+                        <el-input placeholder="请输入课程名" v-model="from.title" class="w-40" @keyup.enter="getLineData">
                             <template #suffix>
                                 <el-icon class="cursor-pointer" @click="getLineData">
                                     <Search />
                                 </el-icon>
                             </template>
-                        </el-input> -->
+                        </el-input>
                     </div>
                     <div class="flex items-center ">
                         <el-radio-group v-model="from.type" @change="getLineData">
@@ -207,15 +206,21 @@ const barChartOptions = computed(() => ({
 
 
 const from = ref({
-    searchType: '',
-    searchText: '',
+    title: '',
     type: 1
 })
 
 const lineData = ref<any[]>([])
 const lineChartOptions = computed(() => ({
     tooltip: {
-        trigger: 'axis'
+        trigger: 'axis',
+        formatter: function (params: any) {
+            const date = lineData.value[0]?.course?.title ||params[0].axisValue;
+            console.log(date);
+            
+            const value = params[0].data;
+            return `${date}<br/>观看量: ${value} 次`;
+        }
     },
     grid: {
         left: '1%',
