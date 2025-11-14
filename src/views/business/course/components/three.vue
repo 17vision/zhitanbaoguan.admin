@@ -2,7 +2,7 @@
     <div class="p-4">
         <el-table :data="tableData" style="width: 100%" :header-cell-style="{ background: '#F5F6FA', color: '#666666' }"
             :max-height="MaxHeight">
-            <el-table-column prop="title" label="标题" width="200" />
+            <el-table-column prop="title" label="标题" width="100" />
             <el-table-column label="背景" width="140">
                 <template #default="{ row }">
                     <video v-if="is_file(row.background)" class="cover-image2" controls>
@@ -13,7 +13,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="duration" label="时长" width="100" />
-            <el-table-column prop="resource_id" label="音频资源">
+            <el-table-column prop="resource_id" label="音频资源" width="350">
                 <template #default="{ row }">
                     <audio controls v-if="row.resource">
                         <source :src="row.resource?.path" type="audio/mp3">
@@ -28,7 +28,7 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="200" fixed="right">
+            <el-table-column label="操作" width="180" fixed="right">
                 <template #default="{ row }">
                     <el-button link type="primary" v-if="row.resource && row.description"
                         @click="audioVueFn(row)">音频标记</el-button>
@@ -92,7 +92,7 @@
                 <el-button type="primary" @click="handleSubmit">保存</el-button>
             </template>
         </el-dialog>
-        <marking ref="audioVueRef" />
+        <marking ref="audioVueRef" @save="getList"/>
     </div>
 </template>
 

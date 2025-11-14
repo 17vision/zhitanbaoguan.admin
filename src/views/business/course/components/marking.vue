@@ -64,7 +64,7 @@ const dialogVisible = ref(false)
 const paragraphs = ref([])
 const reactionOffset = ref(0.5) // 标记时间偏移，单位秒
 
-
+const emits = defineEmits(['save'])
 const markTime = (index) => {
     const audio = audioRef.value
     if (!audio) return
@@ -87,23 +87,28 @@ const formatTime = t => {
 const save = async () => {
     await api.updateCoursesChapters({ id: fromData.value.id, description_times: JSON.stringify(paragraphs.value) })
     dialogVisible.value = false
+    emits('save')
 }
+
+const updateParagraphs = (data) => {
+    if (!data) return;
+    const oldParagraphs = JSON.parse(data.description_times || '[]');
+    const newLines = (data.description || '')
+        .split(/\r?\n/)
+        .filter(line => line.trim() !== '');
+
+    paragraphs.value = newLines.map((line, index) => ({
+        text: line,
+        // 如果旧段落有对应索引，保留时间；否则为 null
+        time: oldParagraphs[index]?.time ?? null
+    }));
+
+};
+
 const openDialog = (data) => {
     fromData.value = data
     audioUrl.value = data.resource?.path || ''
-    if (data.description_times) {
-        paragraphs.value = JSON.parse(data.description_times)
-    } else {
-        paragraphs.value = (data.description || '')
-            .split(/\r?\n/)
-            .filter(line => line.trim() !== '')
-            .map((text, index) => ({
-                id: index + 1,
-                text,
-                time: null
-            }))
-    }
-
+    updateParagraphs(data);
     dialogVisible.value = true
 }
 defineExpose({
