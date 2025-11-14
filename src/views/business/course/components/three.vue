@@ -28,8 +28,10 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="150" fixed="right">
+            <el-table-column label="操作" width="200" fixed="right">
                 <template #default="{ row }">
+                    <el-button link type="primary" v-if="row.resource && row.description"
+                        @click="audioVueFn(row)">音频标记</el-button>
                     <el-button link type="primary" @click="handleEditChapter(row)">编辑</el-button>
                     <el-button link type="danger" @click="handleDeleteChapter(row)">删除</el-button>
                 </template>
@@ -90,6 +92,7 @@
                 <el-button type="primary" @click="handleSubmit">保存</el-button>
             </template>
         </el-dialog>
+        <marking ref="audioVueRef" />
     </div>
 </template>
 
@@ -100,6 +103,7 @@ import api from '@/api/admin/api'
 import resources from '@/api/admin/resources'
 import { uploadImage } from '@/api/utils'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
+import Marking from './marking.vue'
 const MaxHeight = useWindowHeight(300)
 const route = useRoute()
 
@@ -121,6 +125,12 @@ const rules = {
     resource_id: [
         { required: true, message: '请选择音频资源', trigger: 'change' },
     ]
+}
+
+const audioVueRef = ref<InstanceType<typeof Marking>>()
+
+const audioVueFn = (row: any) => {
+    audioVueRef.value?.openDialog(row)
 }
 // 添加章节
 const addChapter = () => {
