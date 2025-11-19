@@ -16,6 +16,7 @@
                                 <el-option label="专注" :value="2" />
                                 <el-option label="减压" :value="3" />
                                 <el-option label="练习" :value="4" />
+                                <el-option label="白噪音" :value="5" />
                             </el-select>
                         </el-form-item>
                         <el-form-item label="难度级别" prop="difficulty">
