@@ -86,8 +86,8 @@ const formatTime = t => {
 
 const save = async () => {
     const description_times = paragraphs.value.map(p => ({
-        text: p.text.substring(0, 10),
-        time: p.time
+        text: p.text.substring(0, 6),
+        time: Math.floor(p.time ?? 0)
     }));
     await api.updateCoursesChapters({ id: fromData.value.id, description_times: JSON.stringify(description_times) })
     dialogVisible.value = false
