@@ -17,7 +17,7 @@
             </div>
 
             <!-- 表格区域 -->
-            <el-table v-loading="loading" :data="tableData" style="width: 100%"
+            <el-table v-loading="loading" :data="tableData" 
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
                 <el-table-column prop="user.nickname" label="昵称" />
                 <el-table-column prop="homework.title" label="作业标题" />

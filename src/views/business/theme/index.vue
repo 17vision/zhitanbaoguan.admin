@@ -1,9 +1,9 @@
 <template>
     <div class="p-4">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-Medium">导师管理</h2>
+            <h2 class="text-2xl font-Medium">主题管理</h2>
             <div class="flex items-center space-x-2">
-                <el-button type="primary" :icon="Plus" @click="handleAdd">新增导师</el-button>
+                <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
             </div>
         </div>
         <!-- 顶部操作区 -->
@@ -17,15 +17,21 @@
             </div>
 
             <!-- 表格区域 -->
-            <el-table v-loading="loading" :data="tableData"
+            <el-table v-loading="loading" :data="tableData" 
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
-                <el-table-column label="头像" width="140">
+                <el-table-column label="图片" width="140">
                     <template #default="{ row }">
                         <el-image v-if="row.avatar" :src="row.avatar" fit="cover" class="w-20 h-20 rounded" />
                     </template>
                 </el-table-column>
-                <el-table-column prop="username" label="导师名称" width="200" />
-                <el-table-column prop="introduction" label="介绍" />
+                <el-table-column prop="username" label="名称" width="170" />
+                <el-table-column prop="status" label="状态" width="100" >
+                    <template #default="{ row }">
+                        <el-tag v-if="row.status === 1" type="success">启用</el-tag>
+                        <el-tag v-else type="info">禁用</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="introduction" label="签名" />
                 <el-table-column label="操作" width="120" fixed="right">
                     <template #default="{ row }">
                         <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
@@ -59,7 +65,7 @@ const searchForm = ref<any>({})
 
 // 表格数据
 const loading = ref(false)
-const tableData = ref([])
+const tableData = ref<any[]>([])
 
 // 分页相关
 const currentPage = ref(1)

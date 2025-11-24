@@ -17,7 +17,7 @@
             </div>
 
             <!-- 表格区域 -->
-            <el-table v-loading="loading" :data="tableData" style="width: 100%" :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
+            <el-table v-loading="loading" :data="tableData"  :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
                 <el-table-column prop="user.avatar" label="头像" width="100">
                     <template #default="{ row }">
                         <el-image :src="row.user.avatar" fit="cover" :preview-src-list="[row.user.avatar]" />

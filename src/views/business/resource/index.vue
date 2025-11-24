@@ -28,7 +28,7 @@
             </div>
 
             <!-- 表格区域 -->
-            <el-table v-loading="loading" :data="tableData" style="width: 100%"
+            <el-table v-loading="loading" :data="tableData" 
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }"
                 @selection-change="handleSelectionChange" :max-height="MAX_HEIGHT">
                 <el-table-column type="selection" width="55" />

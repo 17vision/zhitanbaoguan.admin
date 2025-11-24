@@ -1,6 +1,6 @@
 <template>
     <div class="p-4">
-        <el-table :data="tableData" style="width: 100%" :header-cell-style="{ background: '#F5F6FA', color: '#666666' }"
+        <el-table :data="tableData"  :header-cell-style="{ background: '#F5F6FA', color: '#666666' }"
             :max-height="MaxHeight">
             <el-table-column prop="title" label="标题" width="100" />
             <el-table-column label="背景" width="140">
