@@ -8,7 +8,7 @@
                     <el-input v-model="form.username" placeholder="请输入名称" maxlength="20" show-word-limit />
                 </el-form-item>
                 <el-form-item label="状态" prop="status">
-                    <el-switch v-model="form.status" :active-value="1" :inactive-value="0" />
+                    <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" />
                 </el-form-item>
 
                 <el-form-item label="图片" prop="cover">
