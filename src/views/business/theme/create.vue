@@ -7,6 +7,12 @@
                 <el-form-item label="名称" prop="username">
                     <el-input v-model="form.username" placeholder="请输入名称" maxlength="20" show-word-limit />
                 </el-form-item>
+                <el-form-item label="类型" prop="type">
+                    <el-select v-model="form.type" placeholder="请选择类型">
+                        <el-option label="图文" :value="1" />
+                        <el-option label="日历" :value="2" />
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="状态" prop="status">
                     <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用"
                         inactive-text="禁用" />
@@ -33,7 +39,7 @@
                             accept="image/*" style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="资源" prop="path">
+                <el-form-item label="资源" prop="path" v-if="form.type === 2">
                     <div>
                         <div v-if="form.path" class="relative ">
                             <img v-if="isPath(form.path) === 1" :src="toURL(form.path)" class="w-[100px] h-[200px]" />
@@ -54,7 +60,7 @@
                             accept="image/*,.mp4" style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="色值" prop="color">
+                <el-form-item label="色值" prop="color" v-if="form.type === 2">
                     <el-color-picker v-model="form.color" />
                 </el-form-item>
                 <el-form-item label="签名" prop="introduction" class="mb-6">
@@ -87,6 +93,12 @@ const rules = ref<any>({
     username: [
         { required: true, message: '请输入名称', trigger: 'blur' },
         { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
+    ],
+    type: [
+        { required: true, message: '请选择类型', trigger: 'change' }
+    ],
+    status: [
+        { required: true, message: '请选择状态', trigger: 'change' }
     ],
     cover: [
         { required: true, message: '请上传图片', trigger: 'change' }
