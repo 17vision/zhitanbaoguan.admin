@@ -15,7 +15,7 @@
                     </el-select>
                 </div>
                 <div class=" flex  ml-auto items-center space-x-5 ">
-                    <el-input v-model="searchForm.username" placeholder="搜索评论内容…" class="w-64" clearable />
+                    <el-input v-model="searchForm.name" placeholder="搜索评论内容…" class="w-64" clearable />
                     <div>
                         <el-date-picker v-model="searchForm.time" type="daterange" range-separator="至"
                             start-placeholder="开始时间" end-placeholder="结束时间" />

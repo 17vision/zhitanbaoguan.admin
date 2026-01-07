@@ -10,7 +10,7 @@
         <div class="bg-white rounded-lg shadow-md p-4">
             <div class="mb-4 flex justify-between items-center">
                 <div class=" flex  ml-auto items-center space-x-5 w-[35%]">
-                    <el-input v-model="searchForm.username" placeholder="搜索名称" class="w-64" clearable />
+                    <el-input v-model="searchForm.name" placeholder="搜索名称" class="w-64" clearable />
                     <el-button type="primary" @click="handleSearch">搜索</el-button>
                     <el-button @click="handleReset">重置</el-button>
                 </div>
