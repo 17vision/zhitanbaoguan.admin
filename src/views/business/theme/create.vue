@@ -1,29 +1,23 @@
 <template>
-    <el-dialog :title="form.id ? '编辑' : '新增'" v-model="dialogVisible" width="800px">
+    <el-dialog :title="form.id ? '编辑' : '新增'" v-model="dialogVisible" width="800px" :close-on-click-modal="false">
 
         <!-- 提交按钮 -->
         <div class="px-6" style="overflow-y: auto; max-height: 600px;">
             <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-                <el-form-item label="名称" prop="username">
-                    <el-input v-model="form.username" placeholder="请输入名称" maxlength="20" show-word-limit />
-                </el-form-item>
-                <el-form-item label="类型" prop="type">
-                    <el-select v-model="form.type" placeholder="请选择类型">
-                        <el-option label="图文" :value="1" />
-                        <el-option label="日历" :value="2" />
-                    </el-select>
+                <el-form-item label="名称" prop="name">
+                    <el-input v-model="form.name" placeholder="请输入名称" maxlength="20" show-word-limit />
                 </el-form-item>
                 <el-form-item label="状态" prop="status">
-                    <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用"
+                    <el-switch v-model="form.status" :active-value="1" :inactive-value="2" active-text="启用"
                         inactive-text="禁用" />
                 </el-form-item>
 
                 <el-form-item label="图片" prop="cover">
                     <div class="avatar-uploader">
-                        <div v-if="form.cover" class="relative w-full h-full">
-                            <img :src="toURL(form.cover)" class="cover-image" />
+                        <div v-if="form.head" class="relative w-full h-full">
+                            <img :src="toURL(form.head)" class="cover-image" />
                             <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" @click="form.cover = ''">
+                                <el-icon :size="24" @click="form.head = ''">
                                     <Close />
                                 </el-icon>
                             </div>
@@ -35,11 +29,11 @@
                             </el-icon>
                             <span class="text-gray-500 text-sm">点击上传</span>
                         </label>
-                        <input type="file" name="cover" id="teacherAvatarInput" @change="handleTeacherAvatarSuccess"
+                        <input type="file" name="head" id="teacherAvatarInput" @change="handleTeacherAvatarSuccess"
                             accept="image/*" style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="资源" prop="path" v-if="form.type === 2">
+                <el-form-item label="资源" prop="path">
                     <div>
                         <div v-if="form.path" class="relative ">
                             <img v-if="isPath(form.path) === 1" :src="toURL(form.path)" class="w-[100px] h-[200px]" />
@@ -56,15 +50,15 @@
                             class=" w-full h-full rounded-lg px-6 flex flex-col items-center justify-center cursor-pointer ">
                             <span class="text-gray-500 text-sm font-bold text-[#409eff]">点击上传</span>
                         </label>
-                        <input type="file" name="path" id="pathInput" @change="handleResourceSuccess"
-                            accept="image/*,.mp4" style="display: none;">
+                        <input type="file" name="path" id="pathInput" @change="handleResourceSuccess" accept=".mp4"
+                            style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="色值" prop="color" v-if="form.type === 2">
+                <el-form-item label="色值" prop="color">
                     <el-color-picker v-model="form.color" />
                 </el-form-item>
-                <el-form-item label="签名" prop="introduction" class="mb-6">
-                    <el-input v-model="form.introduction" type="textarea" :rows="6" placeholder="请输入签名" maxlength="200"
+                <el-form-item label="介绍" prop="introduction" class="mb-6">
+                    <el-input v-model="form.introduction" type="textarea" :rows="4" placeholder="请输入介绍" maxlength="200"
                         show-word-limit />
                 </el-form-item>
             </el-form>
@@ -80,7 +74,7 @@
 import { ElMessage } from 'element-plus'
 import { Upload, Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import api from '@/api/admin/tutors'
+import api from '@/api/admin/themes'
 import { uploadImage, uploadFiles } from '@/api/utils'
 
 // 对话框是否可见
@@ -90,25 +84,22 @@ const formRef = ref()
 const emit = defineEmits(['submit'])
 // 表单校验规则
 const rules = ref<any>({
-    username: [
+    name: [
         { required: true, message: '请输入名称', trigger: 'blur' },
         { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
-    ],
-    type: [
-        { required: true, message: '请选择类型', trigger: 'change' }
     ],
     status: [
         { required: true, message: '请选择状态', trigger: 'change' }
     ],
-    cover: [
+    head: [
         { required: true, message: '请上传图片', trigger: 'change' }
     ],
     path: [
         { required: true, message: '请上传资源', trigger: 'change' }
     ],
     introduction: [
-        { required: true, message: '请输入签名', trigger: 'blur' },
-        { min: 2, max: 200, message: '长度在 2 到 200 个字符', trigger: 'blur' }
+        { required: true, message: '请输入介绍', trigger: 'blur' },
+        { min: 2, max: 225, message: '长度在 2 到 225 个字符', trigger: 'blur' }
     ],
     color: [
         { required: true, message: '请选择色值', trigger: 'change' }
@@ -116,17 +107,17 @@ const rules = ref<any>({
 })
 const form = ref<any>({
     username: '',
-    cover: '',
-    status: 0,
+    head: '',
+    status: 2,
 })
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
+// const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 20 * 1024 * 1024;
 // 处理导师头像上传
 const handleTeacherAvatarSuccess = (e: any) => {
     const file = e.target.files[0]
-    form.value.cover = file
+    form.value.head = file
     e.target.value = ''
-    formRef.value?.validateField('cover')
+    formRef.value?.validateField('head')
 }
 
 const handleResourceSuccess = async (e: any) => {
@@ -135,22 +126,22 @@ const handleResourceSuccess = async (e: any) => {
 
     const resetInput = () => { e.target.value = ""; };
 
-    const isImage = file.type.startsWith("image/");
+    // const isImage = file.type.startsWith("image/");
     const isVideo = file.type === "video/mp4";
 
     // 校验文件类型和大小
-    if (isImage && file.size > MAX_IMAGE_SIZE) {
-        alert("图片大小不能超过 5MB");
-        resetInput();
-        return;
-    }
+    // if (isImage && file.size > MAX_IMAGE_SIZE) {
+    //     alert("图片大小不能超过 5MB");
+    //     resetInput();
+    //     return;
+    // }
     if (isVideo && file.size > MAX_VIDEO_SIZE) {
-        alert("视频大小不能超过 50MB");
+        alert("视频大小不能超过 20MB");
         resetInput();
         return;
     }
-    if (!isImage && !isVideo) {
-        alert("仅支持上传图片或 MP4 视频");
+    if (!isVideo) {
+        alert("仅支持上传 MP4 视频");
         resetInput();
         return;
     }
@@ -160,9 +151,7 @@ const handleResourceSuccess = async (e: any) => {
 
     try {
         let color;
-        if (isImage) {
-            color = await getImageMainColor(file);
-        } else if (isVideo) {
+        if (isVideo) {
             color = await getVideoMainColor(file);
         }
 
@@ -208,20 +197,19 @@ const validate = () => {
 const handleSubmit = async () => {
     try {
         await validate()
+        if (form.value.head instanceof File) {
+            const res = await uploadImage({
+                file: form.value.head,
+                info: { referer: 'resource', type: 'image' }
+            })
+            form.value.head = res.url
+        }
         if (form.value.path instanceof File) {
-            if (form.value.type.startsWith('image')) {
-                const res = await uploadImage({
-                    file: form.value.path,
-                    info: { referer: 'theme' }
-                })
-                form.value.path = res.url
-            } else {
-                const res = await uploadFiles({
-                    file: form.value.path,
-                    info: { referer: 'theme', type: 'video' }
-                })
-                form.value.path = res
-            }
+            const res = await uploadFiles({
+                file: form.value.path,
+                info: { referer: 'resource', type: 'video' }
+            })
+            form.value.path = res
         }
         if (form.value.id) {
             for (const key in form.value) {
@@ -245,7 +233,7 @@ const handleSubmit = async () => {
 const open = (row: any) => {
 
     form.value = {
-        status: 0,
+        status: 2,
         ...row
     }
     dialogVisible.value = true

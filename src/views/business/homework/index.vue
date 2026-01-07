@@ -104,7 +104,7 @@ const handleEdit = (row: any) => {
 
 // 删除课程
 const handleDelete = (row: any) => {
-    ElMessageBox.confirm('确定要删除该导师吗？', '提示', {
+    ElMessageBox.confirm('确定要删除该记录吗？', '提示', {
         type: 'warning'
     }).then(async () => {
         // TODO: 实现删除逻辑

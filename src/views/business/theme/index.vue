@@ -17,25 +17,28 @@
             </div>
 
             <!-- 表格区域 -->
-            <el-table v-loading="loading" :data="tableData" 
+            <el-table v-loading="loading" :data="tableData"
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
                 <el-table-column label="图片" width="140">
                     <template #default="{ row }">
-                        <el-image v-if="row.avatar" :src="row.avatar" fit="cover" class="w-20 h-20 rounded" />
+                        <el-image v-if="row.head" :src="row.head" fit="cover" class="w-20 h-20 rounded" />
                     </template>
                 </el-table-column>
-                <el-table-column prop="username" label="名称" width="170" />
-                <el-table-column prop="status" label="状态" width="100" >
+                <el-table-column prop="name" label="名称" width="170" />
+                <el-table-column prop="status" label="状态" width="100">
                     <template #default="{ row }">
                         <el-tag v-if="row.status === 1" type="success">启用</el-tag>
                         <el-tag v-else type="info">禁用</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="introduction" label="签名" />
-                <el-table-column label="操作" width="120" fixed="right">
+                <el-table-column prop="introduction" label="介绍" />
+                <el-table-column label="操作" width="160" fixed="right">
                     <template #default="{ row }">
+                        <el-button link type="primary" v-if="row.status === 1"
+                            @click="handlePublish(row)">禁用</el-button>
+                        <el-button link type="primary" v-else @click="handlePublish(row)">启用</el-button>
                         <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
-                        <!-- <el-button link type="danger" @click="handleDelete(row)">删除</el-button> -->
+                        <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -55,7 +58,7 @@
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import api from '@/api/admin/tutors'
+import api from '@/api/admin/themes'
 import createVue from './create.vue'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 const MAX_HEIGHT = useWindowHeight(270)
@@ -100,10 +103,17 @@ const handleEdit = (row: any) => {
     // TODO: 实现编辑课程逻辑
     createVueRef.value?.open(row)
 }
+const handlePublish = async (row: any) => {
+    // TODO: 实现编辑课程逻辑
+    await api.update({ id: row.id, status: row.status === 1 ? 2 : 1 })
+    ElMessage.success('操作成功')
+    handleSearch()
+
+}
 
 // 删除课程
 const handleDelete = (row: any) => {
-    ElMessageBox.confirm('确定要删除该导师吗？', '提示', {
+    ElMessageBox.confirm('确定要删除该记录吗？', '提示', {
         type: 'warning'
     }).then(async () => {
         // TODO: 实现删除逻辑

@@ -29,7 +29,7 @@
                 <el-table-column label="操作" width="120" fixed="right">
                     <template #default="{ row }">
                         <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
-                        <!-- <el-button link type="danger" @click="handleDelete(row)">删除</el-button> -->
+                        <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -97,7 +97,7 @@ const handleEdit = (row: any) => {
 
 // 删除课程
 const handleDelete = (row: any) => {
-    ElMessageBox.confirm('确定要删除该导师吗？', '提示', {
+    ElMessageBox.confirm('确定要删除该记录吗？', '提示', {
         type: 'warning'
     }).then(async () => {
         // TODO: 实现删除逻辑
