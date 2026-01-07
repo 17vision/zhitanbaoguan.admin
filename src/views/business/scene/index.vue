@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-Medium">铃声管理</h2>
+            <h2 class="text-2xl font-Medium">主题管理</h2>
             <div class="flex items-center space-x-2">
                 <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
             </div>
@@ -21,7 +21,7 @@
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
                 <el-table-column label="图片">
                     <template #default="{ row }">
-                        <el-image v-if="row.thumbnail" :src="row.thumbnail" fit="cover" class="w-20 h-20 rounded" />
+                        <el-image v-if="row.head" :src="row.head" fit="cover" class="w-20 h-20 rounded" />
                     </template>
                 </el-table-column>
                 <el-table-column prop="name" label="名称" />
@@ -58,7 +58,7 @@
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import api from '@/api/admin/ringtones'
+import api from '@/api/admin/themes'
 import createVue from './create.vue'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 const MAX_HEIGHT = useWindowHeight(270)
