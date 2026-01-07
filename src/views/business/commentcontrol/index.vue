@@ -30,8 +30,8 @@
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT"
                 @selection-change="handleSelectionChange">
                 <!-- <el-table-column type="selection" width="55" /> -->
-                <el-table-column prop="user.nickname" label="用户名称" width="170" />
-                <el-table-column prop="updated_at" label="评论时间" width="170" />
+                <el-table-column prop="user.nickname" label="用户名称" />
+                <el-table-column prop="updated_at" label="评论时间" />
                 <el-table-column prop="content" label="评论内容" />
                 <el-table-column label="操作" width="120" fixed="right">
                     <template #default="{ row }">

@@ -21,7 +21,7 @@
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
                 <el-table-column label="图片">
                     <template #default="{ row }">
-                        <el-image v-if="row.head" :src="row.head" fit="cover" class="w-20 h-20 rounded" />
+                        <el-image v-if="row.thumbnail" :src="row.thumbnail" fit="cover" class="w-20 h-20 rounded" />
                     </template>
                 </el-table-column>
                 <el-table-column prop="name" label="名称" />
@@ -58,7 +58,7 @@
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import api from '@/api/admin/themes'
+import api from '@/api/admin/ringtones'
 import createVue from './create.vue'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 const MAX_HEIGHT = useWindowHeight(270)
