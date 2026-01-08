@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-Medium">主题管理</h2>
+            <h2 class="text-2xl font-Medium">场景管理</h2>
             <div class="flex items-center space-x-2">
                 <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
             </div>
