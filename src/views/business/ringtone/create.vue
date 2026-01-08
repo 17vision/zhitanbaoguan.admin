@@ -205,6 +205,8 @@ const open = (row: any) => {
         status: 2,
         ...row
     }
+    formRef.value?.resetFields()
+
     dialogVisible.value = true
 }
 

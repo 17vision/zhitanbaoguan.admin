@@ -251,10 +251,10 @@ const open = async (row: any) => {
         }
     } else {
         form.value = {
-
+            status: 2,
         }
     }
-
+    formRef.value?.resetFields()
 
     dialogVisible.value = true
 }
