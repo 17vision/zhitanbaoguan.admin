@@ -11,13 +11,22 @@
                     <el-switch v-model="form.status" :active-value="1" :inactive-value="2" active-text="启用"
                         inactive-text="禁用" />
                 </el-form-item>
-
-                <el-form-item label="图片" prop="cover">
+                <el-form-item label="分组" prop="scene_category_id">
+                    <div class=" w-full" @click="openSelectGroup()">
+                        <el-input v-model="form.scene_category_name" readonly placeholder="请输入分组" />
+                    </div>
+                </el-form-item>
+                <el-form-item label="标签">
+                    <div class=" w-full">
+                        <el-input v-model="form.tag" readonly placeholder="请输入标签使用、分隔" />
+                    </div>
+                </el-form-item>
+                <el-form-item label="图片" prop="image">
                     <div class="avatar-uploader">
-                        <div v-if="form.head" class="relative w-full h-full">
-                            <img :src="toURL(form.head)" class="cover-image" />
+                        <div v-if="form.image" class="relative w-full h-full">
+                            <img :src="toURL(form.image)" class="cover-image" />
                             <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" @click="form.head = ''">
+                                <el-icon :size="24" @click="form.image = ''">
                                     <Close />
                                 </el-icon>
                             </div>
@@ -29,19 +38,19 @@
                             </el-icon>
                             <span class="text-gray-500 text-sm">点击上传</span>
                         </label>
-                        <input type="file" name="head" id="teacherAvatarInput" @change="handleTeacherAvatarSuccess"
+                        <input type="file" name="image" id="teacherAvatarInput" @change="handleTeacherAvatarSuccess"
                             accept="image/*" style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="资源" prop="path">
+                <el-form-item label="视频" prop="video">
                     <div>
-                        <div v-if="form.path" class="relative ">
-                            <img v-if="isPath(form.path) === 1" :src="toURL(form.path)" class="w-[100px] h-[200px]" />
-                            <video v-if="isPath(form.path) === 2" class="w-[300px] h-[300px]" controls>
-                                <source :src="toURL(form.path)" type="video/mp4">
+                        <div v-if="form.video" class="relative ">
+                            <img v-if="isPath(form.video) === 1" :src="toURL(form.video)" class="w-[100px] h-[200px]" />
+                            <video v-if="isPath(form.video) === 2" class="w-[300px] h-[300px]" controls>
+                                <source :src="toURL(form.video)" type="video/mp4">
                             </video>
                             <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" @click="form.path = ''">
+                                <el-icon :size="24" @click="form.video = ''">
                                     <Close />
                                 </el-icon>
                             </div>
@@ -50,12 +59,9 @@
                             class=" w-full h-full rounded-lg px-6 flex flex-col items-center justify-center cursor-pointer ">
                             <span class="text-gray-500 text-sm font-bold text-[#409eff]">点击上传</span>
                         </label>
-                        <input type="file" name="path" id="pathInput" @change="handleResourceSuccess" accept=".mp4"
+                        <input type="file" name="video" id="pathInput" @change="handleResourceSuccess" accept=".mp4"
                             style="display: none;">
                     </div>
-                </el-form-item>
-                <el-form-item label="色值" prop="color">
-                    <el-color-picker v-model="form.color" />
                 </el-form-item>
                 <el-form-item label="介绍" prop="introduction" class="mb-6">
                     <el-input v-model="form.introduction" type="textarea" :rows="4" placeholder="请输入介绍" maxlength="200"
@@ -68,14 +74,16 @@
             <el-button type="primary" @click="handleSubmit">提交</el-button>
         </template>
     </el-dialog>
+    <GroupVue ref="groupTreeRef" :draggable="false" :groupId="form.scene_category_id" @onGroupSelect="onGroupSelect" />
 </template>
 
 <script lang='ts' setup>
 import { ElMessage } from 'element-plus'
 import { Upload, Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import api from '@/api/admin/themes'
+import api from '@/api/admin/scenes'
 import { uploadImage, uploadFiles } from '@/api/utils'
+import GroupVue from './Group.vue'
 
 // 对话框是否可见
 const dialogVisible = ref(false)
@@ -91,33 +99,38 @@ const rules = ref<any>({
     status: [
         { required: true, message: '请选择状态', trigger: 'change' }
     ],
-    head: [
+    image: [
         { required: true, message: '请上传图片', trigger: 'change' }
     ],
-    path: [
-        { required: true, message: '请上传资源', trigger: 'change' }
+    video: [
+        { required: true, message: '请上传视频', trigger: 'change' }
     ],
     introduction: [
         { required: true, message: '请输入介绍', trigger: 'blur' },
         { min: 2, max: 225, message: '长度在 2 到 225 个字符', trigger: 'blur' }
-    ],
-    color: [
-        { required: true, message: '请选择色值', trigger: 'change' }
     ]
 })
 const form = ref<any>({
-    username: '',
-    head: '',
     status: 2,
 })
+const groupTreeRef = ref()
+const openSelectGroup = () => {
+    groupTreeRef.value.open()
+}
+
+const onGroupSelect = (group: any) => {
+    form.value.scene_category_id = group.id
+    form.value.scene_category_name = group.name
+    formRef.value?.validateField('scene_category_id')
+}
 // const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 20 * 1024 * 1024;
 // 处理导师头像上传
 const handleTeacherAvatarSuccess = (e: any) => {
     const file = e.target.files[0]
-    form.value.head = file
+    form.value.image = file
     e.target.value = ''
-    formRef.value?.validateField('head')
+    formRef.value?.validateField('image')
 }
 
 const handleResourceSuccess = async (e: any) => {
@@ -147,7 +160,7 @@ const handleResourceSuccess = async (e: any) => {
     }
 
     // 文件通过校验
-    form.value.path = file;
+    form.value.video = file;
 
     try {
         let color;
@@ -162,7 +175,7 @@ const handleResourceSuccess = async (e: any) => {
         console.error("获取主色失败:", err);
     } finally {
         resetInput();
-        formRef.value?.validateField('path');
+        formRef.value?.validateField('video');
         formRef.value?.validateField('color');
 
     }
@@ -197,19 +210,19 @@ const validate = () => {
 const handleSubmit = async () => {
     try {
         await validate()
-        if (form.value.head instanceof File) {
+        if (form.value.image instanceof File) {
             const res = await uploadImage({
-                file: form.value.head,
+                file: form.value.image,
                 info: { referer: 'resource', type: 'image' }
             })
-            form.value.head = res.url
+            form.value.image = res.url
         }
-        if (form.value.path instanceof File) {
+        if (form.value.video instanceof File) {
             const res = await uploadFiles({
-                file: form.value.path,
+                file: form.value.video,
                 info: { referer: 'resource', type: 'video' }
             })
-            form.value.path = res
+            form.value.video = res
         }
         if (form.value.id) {
             for (const key in form.value) {
@@ -230,12 +243,19 @@ const handleSubmit = async () => {
     }
 }
 
-const open = (row: any) => {
+const open = async (row: any) => {
+    if (row.id) {
+        const res = await api.detail(row.id)
+        form.value = {
+            ...res
+        }
+    } else {
+        form.value = {
 
-    form.value = {
-        status: 2,
-        ...row
+        }
     }
+
+
     dialogVisible.value = true
 }
 

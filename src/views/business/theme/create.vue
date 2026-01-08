@@ -12,7 +12,7 @@
                         inactive-text="禁用" />
                 </el-form-item>
 
-                <el-form-item label="图片" prop="cover">
+                <el-form-item label="图片" prop="head">
                     <div class="avatar-uploader">
                         <div v-if="form.head" class="relative w-full h-full">
                             <img :src="toURL(form.head)" class="cover-image" />
@@ -33,7 +33,7 @@
                             accept="image/*" style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="资源" prop="path">
+                <el-form-item label="视频" prop="path">
                     <div>
                         <div v-if="form.path" class="relative ">
                             <img v-if="isPath(form.path) === 1" :src="toURL(form.path)" class="w-[100px] h-[200px]" />
@@ -95,7 +95,7 @@ const rules = ref<any>({
         { required: true, message: '请上传图片', trigger: 'change' }
     ],
     path: [
-        { required: true, message: '请上传资源', trigger: 'change' }
+        { required: true, message: '请上传视频', trigger: 'change' }
     ],
     introduction: [
         { required: true, message: '请输入介绍', trigger: 'blur' },

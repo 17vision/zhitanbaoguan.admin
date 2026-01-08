@@ -12,7 +12,7 @@
                         inactive-text="禁用" />
                 </el-form-item>
 
-                <el-form-item label="图片" prop="cover">
+                <el-form-item label="图片" prop="thumbnail">
                     <div class="avatar-uploader">
                         <div v-if="form.thumbnail" class="relative w-full h-full">
                             <img :src="toURL(form.thumbnail)" class="cover-image" />
@@ -91,7 +91,7 @@ const rules = ref<any>({
         { required: true, message: '请上传图片', trigger: 'change' }
     ],
     path: [
-        { required: true, message: '请上传资源', trigger: 'change' }
+        { required: true, message: '请上传音频', trigger: 'change' }
     ],
     introduction: [
         { required: true, message: '请输入介绍', trigger: 'blur' },

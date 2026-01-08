@@ -21,16 +21,18 @@
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
                 <el-table-column label="图片">
                     <template #default="{ row }">
-                        <el-image v-if="row.head" :src="row.head" fit="cover" class="w-20 h-20 rounded" />
+                        <el-image v-if="row.image" :src="row.image" fit="cover" class="w-20 h-20 rounded" />
                     </template>
                 </el-table-column>
                 <el-table-column prop="name" label="名称" />
+                <el-table-column prop="scene_category.name" label="分组" />
                 <el-table-column prop="status" label="状态">
                     <template #default="{ row }">
                         <el-tag v-if="row.status === 1" type="success">启用</el-tag>
                         <el-tag v-else type="info">禁用</el-tag>
                     </template>
                 </el-table-column>
+                <el-table-column prop="tag" label="标签" />
                 <el-table-column prop="introduction" label="介绍" />
                 <el-table-column label="操作" width="160" fixed="right">
                     <template #default="{ row }">
@@ -58,7 +60,7 @@
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import api from '@/api/admin/themes'
+import api from '@/api/admin/scenes'
 import createVue from './create.vue'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 const MAX_HEIGHT = useWindowHeight(270)
