@@ -4,15 +4,15 @@
         <!-- 提交按钮 -->
         <div class="px-6" style="overflow-y: auto; max-height: 600px;">
             <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-                <el-form-item label="名称" prop="name">
+                <el-form-item label="名称">
                     <el-input v-model="form.name" placeholder="请输入名称" maxlength="20" show-word-limit />
                 </el-form-item>
-                <el-form-item label="状态" prop="status">
+                <el-form-item label="状态">
                     <el-switch v-model="form.status" :active-value="1" :inactive-value="2" active-text="启用"
                         inactive-text="禁用" />
                 </el-form-item>
 
-                <el-form-item label="图片" prop="thumbnail">
+                <el-form-item label="图片">
                     <div class="avatar-uploader">
                         <div v-if="form.thumbnail" class="relative w-full h-full">
                             <img :src="toURL(form.thumbnail)" class="cover-image" />
@@ -33,7 +33,7 @@
                             accept="image/*" style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="音频" prop="path">
+                <el-form-item label="音频">
                     <div>
                         <div v-if="form.path" class="relative ">
                             <audio v-if="form.path" class="cover-image2" controls>
@@ -53,7 +53,7 @@
                             style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="介绍" prop="introduction" class="mb-6">
+                <el-form-item label="介绍" class="mb-6">
                     <el-input v-model="form.introduction" type="textarea" :rows="4" placeholder="请输入介绍" maxlength="200"
                         show-word-limit />
                 </el-form-item>
@@ -100,6 +100,10 @@ const rules = ref<any>({
 })
 const form = ref<any>({
     status: 2,
+    name: '',
+    thumbnail: '', // 资源图片
+    path: '', // 资源文件
+    introduction: '', // 资源介绍
 })
 const MAX_VIDEO_SIZE = 10 * 1024 * 1024;
 // 处理导师头像上传
@@ -200,7 +204,6 @@ const handleSubmit = async () => {
 }
 
 const open = (row: any) => {
-
     form.value = {
         status: 2,
         ...row

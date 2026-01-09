@@ -19,11 +19,7 @@
             <!-- 表格区域 -->
             <el-table v-loading="loading" :data="tableData"
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
-                <el-table-column label="图片">
-                    <template #default="{ row }">
-                        <el-image v-if="row.head" :src="row.head" fit="cover" class="w-20 h-20 rounded" />
-                    </template>
-                </el-table-column>
+
                 <el-table-column prop="name" label="名称" />
                 <el-table-column prop="status" label="状态">
                     <template #default="{ row }">

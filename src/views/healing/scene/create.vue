@@ -4,14 +4,14 @@
         <!-- 提交按钮 -->
         <div class="px-6" style="overflow-y: auto; max-height: 600px;">
             <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-                <el-form-item label="名称" prop="name">
+                <el-form-item label="名称">
                     <el-input v-model="form.name" placeholder="请输入名称" maxlength="20" show-word-limit />
                 </el-form-item>
-                <el-form-item label="状态" prop="status">
+                <el-form-item label="状态">
                     <el-switch v-model="form.status" :active-value="1" :inactive-value="2" active-text="启用"
                         inactive-text="禁用" />
                 </el-form-item>
-                <el-form-item label="分组" prop="scene_category_id">
+                <el-form-item label="分组">
                     <div class=" w-full" @click="openSelectGroup()">
                         <el-input v-model="form.scene_category_name" readonly placeholder="请输入分组" />
                     </div>
@@ -21,7 +21,7 @@
                         <el-input v-model="form.tag" readonly placeholder="请输入标签使用、分隔" />
                     </div>
                 </el-form-item>
-                <el-form-item label="图片" prop="image">
+                <el-form-item label="图片">
                     <div class="avatar-uploader">
                         <div v-if="form.image" class="relative w-full h-full">
                             <img :src="toURL(form.image)" class="cover-image" />
@@ -42,7 +42,7 @@
                             accept="image/*" style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="视频" prop="video">
+                <el-form-item label="视频">
                     <div>
                         <div v-if="form.video" class="relative ">
                             <img v-if="isPath(form.video) === 1" :src="toURL(form.video)" class="w-[100px] h-[200px]" />
@@ -63,7 +63,7 @@
                             style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="介绍" prop="introduction" class="mb-6">
+                <el-form-item label="介绍" class="mb-6">
                     <el-input v-model="form.introduction" type="textarea" :rows="4" placeholder="请输入介绍" maxlength="200"
                         show-word-limit />
                 </el-form-item>

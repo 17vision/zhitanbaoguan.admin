@@ -4,36 +4,14 @@
         <!-- 提交按钮 -->
         <div class="px-6" style="overflow-y: auto; max-height: 600px;">
             <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-                <el-form-item label="名称" prop="name">
+                <el-form-item label="名称">
                     <el-input v-model="form.name" placeholder="请输入名称" maxlength="20" show-word-limit />
                 </el-form-item>
-                <el-form-item label="状态" prop="status">
+                <el-form-item label="状态">
                     <el-switch v-model="form.status" :active-value="1" :inactive-value="2" active-text="启用"
                         inactive-text="禁用" />
                 </el-form-item>
-
-                <el-form-item label="图片" prop="head">
-                    <div class="avatar-uploader">
-                        <div v-if="form.head" class="relative w-full h-full">
-                            <img :src="toURL(form.head)" class="cover-image" />
-                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" @click="form.head = ''">
-                                    <Close />
-                                </el-icon>
-                            </div>
-                        </div>
-                        <label for="teacherAvatarInput" v-else
-                            class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
-                            <el-icon class="text-gray-400 text-32px mb-3">
-                                <Upload />
-                            </el-icon>
-                            <span class="text-gray-500 text-sm">点击上传</span>
-                        </label>
-                        <input type="file" name="head" id="teacherAvatarInput" @change="handleTeacherAvatarSuccess"
-                            accept="image/*" style="display: none;">
-                    </div>
-                </el-form-item>
-                <el-form-item label="视频" prop="path">
+                <el-form-item label="视频">
                     <div>
                         <div v-if="form.path" class="relative ">
                             <img v-if="isPath(form.path) === 1" :src="toURL(form.path)" class="w-[100px] h-[200px]" />
@@ -54,10 +32,10 @@
                             style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="色值" prop="color">
+                <el-form-item label="色值">
                     <el-color-picker v-model="form.color" />
                 </el-form-item>
-                <el-form-item label="介绍" prop="introduction" class="mb-6">
+                <el-form-item label="介绍" class="mb-6">
                     <el-input v-model="form.introduction" type="textarea" :rows="4" placeholder="请输入介绍" maxlength="200"
                         show-word-limit />
                 </el-form-item>
@@ -72,10 +50,10 @@
 
 <script lang='ts' setup>
 import { ElMessage } from 'element-plus'
-import { Upload, Close } from '@element-plus/icons-vue'
+import { Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/themes'
-import { uploadImage, uploadFiles } from '@/api/utils'
+import { uploadFiles } from '@/api/utils'
 
 // 对话框是否可见
 const dialogVisible = ref(false)
@@ -90,9 +68,6 @@ const rules = ref<any>({
     ],
     status: [
         { required: true, message: '请选择状态', trigger: 'change' }
-    ],
-    head: [
-        { required: true, message: '请上传图片', trigger: 'change' }
     ],
     path: [
         { required: true, message: '请上传视频', trigger: 'change' }
@@ -113,12 +88,7 @@ const form = ref<any>({
 // const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 20 * 1024 * 1024;
 // 处理导师头像上传
-const handleTeacherAvatarSuccess = (e: any) => {
-    const file = e.target.files[0]
-    form.value.head = file
-    e.target.value = ''
-    formRef.value?.validateField('head')
-}
+
 
 const handleResourceSuccess = async (e: any) => {
     const file = e.target.files?.[0];
@@ -197,13 +167,7 @@ const validate = () => {
 const handleSubmit = async () => {
     try {
         await validate()
-        if (form.value.head instanceof File) {
-            const res = await uploadImage({
-                file: form.value.head,
-                info: { referer: 'resource', type: 'image' }
-            })
-            form.value.head = res.url
-        }
+
         if (form.value.path instanceof File) {
             const res = await uploadFiles({
                 file: form.value.path,
