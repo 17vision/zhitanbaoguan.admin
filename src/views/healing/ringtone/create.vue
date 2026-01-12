@@ -1,5 +1,6 @@
 <template>
-    <el-dialog :title="form.id ? '编辑' : '新增'" v-model="dialogVisible" width="800px" :close-on-click-modal="false">
+    <el-dialog :title="form.id ? '编辑' : '新增'" @close="handleClose" v-model="dialogVisible" width="800px"
+        :close-on-click-modal="false">
 
         <!-- 提交按钮 -->
         <div class="px-6" style="overflow-y: auto; max-height: 600px;">
@@ -154,7 +155,19 @@ const toURL = (file: File | string) => {
     }
     return file
 }
-
+const handleClose = () => {
+    dialogVisible.value = false
+    form.value = {
+        id: undefined,
+        name: '',
+        status: 2,
+        path: '',
+        introduction: ''
+    }
+    nextTick(() => {
+        formRef.value?.clearValidate()
+    })
+}
 const validate = () => {
     return new Promise((resolve, reject) => {
         formRef.value?.validate((valid: boolean) => {
