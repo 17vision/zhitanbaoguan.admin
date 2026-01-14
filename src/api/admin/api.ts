@@ -187,4 +187,51 @@ export default {
             }
         })
     },
+    /**
+ * 课程分析基本数据（个人）
+ * @param id 作业ID
+ * @returns 
+ */
+    courseanalysis_basic(params?: any) {
+        return request({
+            url: '/datastatistics/courseanalysis/basic',
+            method: 'GET',
+            params
+
+        })
+    },
+    /**
+ * 课程分析观看数据（个人）
+ * @returns 
+ */
+    courseanalysis_view(params?: any) {
+        return request({
+            url: '/datastatistics/courseanalysis/view',
+            method: 'GET',
+            params
+
+        })
+    },
+    /**
+ * 获取脑机接口数据
+ * @returns 
+ */
+    brain_machine_data(params: any) {
+        return request({
+            url: '/brain_machine_data',
+            method: 'GET',
+            params
+        })
+    },
+    /**
+ * 作业分析统计
+ * @returns 
+ */
+    homeworkanalysis_basic(params?: any) {
+        return request({
+            url: '/datastatistics/homeworkanalysis/basic',
+            method: 'GET',
+            params
+        })
+    },
 }

@@ -2,7 +2,7 @@
     <div class="p-6 bg-gray-50 min-h-screen">
         <!-- 标题和导出按钮 -->
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-bold text-gray-800">课程数据分析</h1>
+            <h1 class="text-xl font-bold text-gray-800">课程分析</h1>
             <!-- <el-button type="primary" :icon="Download" class="export-btn">导出数据</el-button> -->
         </div>
         <!-- 数据摘要卡片 -->
@@ -35,7 +35,7 @@
             </div>
         </div>
         <!-- 单课数据 -->
-        <div class="bg-white p-6 rounded-lg shadow-sm mb-6 ">
+        <!-- <div class="bg-white p-6 rounded-lg shadow-sm mb-6 ">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">单课数据</h2>
                 <div>
@@ -45,11 +45,11 @@
                                 <Search />
                             </el-icon>
                         </template>
-                    </el-input>
-                </div>
-            </div>
-            <BarChart :chart-data="barChartOptions" />
-        </div>
+</el-input>
+</div>
+</div>
+<BarChart :chart-data="barChartOptions" />
+</div> -->
         <!-- 观看数据 -->
         <div class="bg-white p-6 rounded-lg shadow-sm ">
             <div class="flex justify-between items-center mb-4">
@@ -96,7 +96,7 @@ import comment from '@/assets/image/comment.png'
 import * as echarts from 'echarts'
 import BarChart from './components/BarChart.vue'
 import LineChart from './components/LineChart.vue'
-import dashboard from '@/api/admin/dashboard'
+import dashboard from '@/api/admin/api'
 
 
 const searchText = ref('')
@@ -313,17 +313,12 @@ const summaryData = ref([
     }
 ])
 
-const getBarData = async () => {
-    const res = await dashboard.single_data({ title: searchText.value })
-    courseList.value = res as unknown as any[] || []
-}
-
 const getLineData = async () => {
-    const res = await dashboard.view_data(from.value)
+    const res = await dashboard.courseanalysis_view(from.value)
     lineData.value = res as unknown as any[] || []
 }
 onMounted(async () => {
-    const res = await dashboard.basic_info()
+    const res = await dashboard.courseanalysis_basic()
     const mapping = [
         { key: 'course_count', compare: 'collect_count_compare' },
         { key: 'like_count', compare: 'like_count_compare' },
@@ -336,7 +331,6 @@ onMounted(async () => {
         value: Number(res[m.key] ?? 0),
         change: Number(res[m.compare] ?? 0),
     }));
-    getBarData()
     getLineData()
 })
 </script>

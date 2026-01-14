@@ -2,7 +2,7 @@
     <div class="p-6 bg-gray-50 min-h-screen">
         <!-- 标题和导出按钮 -->
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-bold text-gray-800">课程数据分析</h1>
+            <h1 class="text-xl font-bold text-gray-800">作业分析</h1>
             <!-- <el-button type="primary" :icon="Download" class="export-btn">导出数据</el-button> -->
         </div>
         <!-- 数据摘要卡片 -->
@@ -18,26 +18,25 @@
                 </div>
                 <div class=" flex  justify-between items-center mt-4">
 
-                    <div class="w-12 h-12 flex items-center justify-center rounded ">
+                    <div class="w-30 h-30 flex items-center justify-center rounded ">
                         <img :src="item.icon" alt="">
                     </div>
                     <div class="flex  items-center mt-1 text-xs text-[#999999]">
-                        日同比
+                        <!-- 日同比
                         <div
                             :class="item.change >= 0 ? 'text-green-500 ml-1 flex gap-1 items-center' : 'text-red-500 ml-1 gap-1 flex items-center'">
                             <p> {{ Math.abs(item.change) }}</p>
                             <img :src="item.change >= 0 ? ArrowDown : ArrowUp"
                                 class="mr-0.5 w-3 h-3 transform rotate-180" />
-                            <!-- <p> {{ item.changeUnit }}</p> -->
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
         </div>
         <!-- 单课数据 -->
-        <div class="bg-white p-6 rounded-lg shadow-sm mb-6 ">
+        <!-- <div class="bg-white p-6 rounded-lg shadow-sm mb-6 ">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">单课数据</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">作业完成情况</h2>
                 <div>
                     <el-input placeholder="请输入课程名" v-model="searchText" class="w-40" @keyup.enter="getBarData">
                         <template #suffix>
@@ -45,21 +44,17 @@
                                 <Search />
                             </el-icon>
                         </template>
-                    </el-input>
-                </div>
-            </div>
-            <BarChart :chart-data="barChartOptions" />
-        </div>
+</el-input>
+</div>
+</div>
+<BarChart :chart-data="barChartOptions" />
+</div> -->
         <!-- 观看数据 -->
-        <div class="bg-white p-6 rounded-lg shadow-sm ">
+        <!-- <div class="bg-white p-6 rounded-lg shadow-sm ">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-800">观看数据</h2>
                 <div class="flex items-center space-x-4">
                     <div class="w-32">
-                        <!-- <el-select placeholder="情绪感知" v-model="from.searchType" class="w-32" clearable
-                            @change="getLineData">
-                            <el-option label="情绪感知" :value="1" />
-                        </el-select> -->
                     </div>
                     <div class="w-42">
                         <el-input placeholder="请输入课程名" v-model="from.title" class="w-40" @keyup.enter="getLineData">
@@ -80,27 +75,27 @@
                 </div>
             </div>
             <LineChart :chart-data="lineChartOptions" />
-        </div>
+        </div> -->
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { Search } from '@element-plus/icons-vue'
-import course from '@/assets/image/course.png'
-import ArrowDown from '@/assets/image/ArrowDown.png'
-import ArrowUp from '@/assets/image/ArrowUp.png'
-import like from '@/assets/image/like.png'
-import collect from '@/assets/image/collect.png'
-import comment from '@/assets/image/comment.png'
+import api from '@/api/admin/api'
 import * as echarts from 'echarts'
 import BarChart from './components/BarChart.vue'
 import LineChart from './components/LineChart.vue'
-import dashboard from '@/api/admin/dashboard'
+import IconOne from '@/assets/image/datastatistics/one.png'
+import IconTwo from '@/assets/image/datastatistics/two.png'
+import IconThree from '@/assets/image/datastatistics/three.png'
+import IconFour from '@/assets/image/datastatistics/four.png'
+import IconFive from '@/assets/image/datastatistics/five.png'
+import IconSix from '@/assets/image/datastatistics/six.png'
+
 
 
 const searchText = ref('')
-const courseList = ref<any[]>([])
+const homeworkBarList = ref<any[]>([])
 const barChartOptions = computed(() => ({
     tooltip: {
         trigger: 'axis',
@@ -127,7 +122,7 @@ const barChartOptions = computed(() => ({
     xAxis: [
         {
             type: 'category',
-            data: courseList.value.map(item => item.title),
+            data: homeworkBarList.value.map(item => item.title),
             axisTick: {
                 alignWithLabel: true
             }
@@ -136,16 +131,16 @@ const barChartOptions = computed(() => ({
     yAxis: [
         {
             type: 'value',
-            name: '单位(次)',
+            name: '单位(份)',
         }
     ],
 
     series: [
         {
-            name: '喜欢',
+            name: '按时完成',
             type: 'bar',
             barWidth: '8%',
-            data: courseList.value.map(item => item.like_count),
+            data: homeworkBarList.value.map(item => item.like_count),
             itemStyle: {
                 borderRadius: [15],
                 color: {
@@ -162,10 +157,10 @@ const barChartOptions = computed(() => ({
             }
         },
         {
-            name: '收藏',
+            name: '超时完成',
             type: 'bar',
             barWidth: '8%',
-            data: courseList.value.map(item => item.collect_count),
+            data: homeworkBarList.value.map(item => item.collect_count),
             itemStyle: {
                 borderRadius: [15],
                 color: {
@@ -182,10 +177,10 @@ const barChartOptions = computed(() => ({
             }
         },
         {
-            name: '评论',
+            name: '未完成',
             type: 'bar',
             barWidth: '8%',
-            data: courseList.value.map(item => item.message_count),
+            data: homeworkBarList.value.map(item => item.message_count),
             itemStyle: {
                 borderRadius: [15],
                 color: {
@@ -214,11 +209,6 @@ const lineData = ref<any[]>([])
 const lineChartOptions = computed(() => ({
     tooltip: {
         trigger: 'axis',
-        formatter: function (params: any) {
-            const date = lineData.value[0]?.course?.title || params[0].axisValue;
-            const value = params[0].data;
-            return `${date}<br/>观看量: ${value} 次`;
-        }
     },
     grid: {
         left: '1%',
@@ -239,12 +229,12 @@ const lineChartOptions = computed(() => ({
     },
     yAxis: {
         type: 'value',
-        name: '单位(次)',
+        name: '完成数量',
 
     },
     series: [
         {
-            name: '观看量',
+            name: '完成作业数',
             type: 'line',
             smooth: true,
             data: lineData.value.map(item => item.count),
@@ -272,63 +262,70 @@ const lineChartOptions = computed(() => ({
 
 const summaryData = ref([
     {
-        title: '总课程数',
+        title: '作业总数',
         value: 0,
-        unit: '课',
+        unit: '份',
         change: 0,
-        changeUnit: '课',
-        icon: course,
-        iconBg: 'bg-blue-100',
-        iconColor: '#409EFF'
+        icon: IconOne,
     },
     {
-        title: '总喜欢量',
+        title: '已完成',
         value: 0,
-        unit: '次',
+        unit: '人',
         change: 0,
-        changeUnit: '次',
-        icon: like,
-        iconBg: 'bg-red-100',
-        iconColor: '#F56C6C'
+        icon: IconTwo,
     },
     {
-        title: '总收藏量',
+        title: '按时完成',
         value: 0,
-        unit: '次',
+        unit: '份',
         change: 0,
-        changeUnit: '次',
-        icon: collect,
-        iconBg: 'bg-yellow-100',
-        iconColor: '#E6A23C'
+        icon: IconThree,
     },
     {
-        title: '总评论量',
+        title: '待完成',
         value: 0,
-        unit: '条',
+        unit: '份',
         change: 0,
-        changeUnit: '条',
-        icon: comment,
-        iconBg: 'bg-purple-100',
-        iconColor: '#67C23A'
+        icon: IconFour,
+    },
+    {
+        title: '超时完成',
+        value: 0,
+        unit: '份',
+        change: 0,
+        icon: IconFive,
+    },
+    {
+        title: '未完成',
+        value: 0,
+        unit: '份',
+        change: 0,
+        icon: IconSix,
     }
 ])
 
+
 const getBarData = async () => {
-    const res = await dashboard.single_data({ title: searchText.value })
-    courseList.value = res as unknown as any[] || []
+    const res = await api.homeworkanalysis_basic({ title: searchText.value })
+    console.log(res);
+
+    homeworkBarList.value = res as unknown as any[] || []
 }
 
 const getLineData = async () => {
-    const res = await dashboard.view_data(from.value)
+    const res = await api.homeworkanalysis_basic(from.value)
     lineData.value = res as unknown as any[] || []
 }
 onMounted(async () => {
-    const res = await dashboard.basic_info()
+    const res = await api.homeworkanalysis_basic()
     const mapping = [
-        { key: 'course_count', compare: 'collect_count_compare' },
-        { key: 'like_count', compare: 'like_count_compare' },
-        { key: 'collect_count', compare: 'course_count_compare' },
-        { key: 'message_count', compare: 'message_count_compare' },
+        { key: 'total', compare: 'collect_count_compare' },
+        { key: 'finished', compare: 'like_count_compare' },
+        { key: 'ontime_finished', compare: 'course_count_compare' },
+        { key: 'pending', compare: 'message_count_compare' },
+        { key: 'timeout_finished', compare: 'message_count_compare' },
+        { key: 'unfinished', compare: 'message_count_compare' },
     ];
 
     summaryData.value = mapping.map((m, i) => ({
@@ -336,8 +333,8 @@ onMounted(async () => {
         value: Number(res[m.key] ?? 0),
         change: Number(res[m.compare] ?? 0),
     }));
-    getBarData()
-    getLineData()
+    // getBarData()
+    // getLineData()
 })
 </script>
 
