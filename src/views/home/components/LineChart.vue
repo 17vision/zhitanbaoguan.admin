@@ -8,7 +8,7 @@ import * as echarts from 'echarts'
 
 const props = defineProps({
     width: { type: String, default: '100%' },
-    height: { type: String, default: '300px' },
+    height: { type: String, default: '400px' },
     chartData: { type: Object, required: true }
 })
 
