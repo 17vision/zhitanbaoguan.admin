@@ -34,7 +34,7 @@
             </div>
         </div>
         <!-- 单课数据 -->
-        <!-- <div class="bg-white p-6 rounded-lg shadow-sm mb-6 ">
+        <div class="bg-white p-6 rounded-lg shadow-sm mb-6 ">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">作业完成情况</h2>
                 <div>
@@ -44,38 +44,19 @@
                                 <Search />
                             </el-icon>
                         </template>
-</el-input>
-</div>
-</div>
-<BarChart :chart-data="barChartOptions" />
-</div> -->
-        <!-- 观看数据 -->
-        <!-- <div class="bg-white p-6 rounded-lg shadow-sm ">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-800">观看数据</h2>
-                <div class="flex items-center space-x-4">
-                    <div class="w-32">
-                    </div>
-                    <div class="w-42">
-                        <el-input placeholder="请输入课程名" v-model="from.title" class="w-40" @keyup.enter="getLineData">
-                            <template #suffix>
-                                <el-icon class="cursor-pointer" @click="getLineData">
-                                    <Search />
-                                </el-icon>
-                            </template>
-                        </el-input>
-                    </div>
-                    <div class="flex items-center ">
-                        <el-radio-group v-model="from.type" @change="getLineData">
-                            <el-radio-button label="日" :value="1" />
-                            <el-radio-button label="周" :value="2" />
-                            <el-radio-button label="月" :value="3" />
-                        </el-radio-group>
-                    </div>
+                    </el-input>
                 </div>
             </div>
+            <BarChart :chart-data="barChartOptions" />
+        </div>
+        <!-- 观看数据 -->
+        <div class="bg-white p-6 rounded-lg shadow-sm ">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">观看数据</h2>
+
+            </div>
             <LineChart :chart-data="lineChartOptions" />
-        </div> -->
+        </div>
     </div>
 </template>
 
@@ -91,6 +72,10 @@ import IconThree from '@/assets/image/datastatistics/three.png'
 import IconFour from '@/assets/image/datastatistics/four.png'
 import IconFive from '@/assets/image/datastatistics/five.png'
 import IconSix from '@/assets/image/datastatistics/six.png'
+import IconSeven from '@/assets/image/datastatistics/seven.png'
+import Icon8 from '@/assets/image/datastatistics/8.png'
+
+
 
 
 
@@ -122,7 +107,7 @@ const barChartOptions = computed(() => ({
     xAxis: [
         {
             type: 'category',
-            data: homeworkBarList.value.map(item => item.title),
+            data: homeworkBarList.value.map(item => item.homework_name),
             axisTick: {
                 alignWithLabel: true
             }
@@ -131,16 +116,15 @@ const barChartOptions = computed(() => ({
     yAxis: [
         {
             type: 'value',
-            name: '单位(份)',
         }
     ],
 
     series: [
         {
-            name: '按时完成',
+            name: '完成',
             type: 'bar',
             barWidth: '8%',
-            data: homeworkBarList.value.map(item => item.like_count),
+            data: homeworkBarList.value.map(item => item.finished),
             itemStyle: {
                 borderRadius: [15],
                 color: {
@@ -157,10 +141,10 @@ const barChartOptions = computed(() => ({
             }
         },
         {
-            name: '超时完成',
+            name: '总数',
             type: 'bar',
             barWidth: '8%',
-            data: homeworkBarList.value.map(item => item.collect_count),
+            data: homeworkBarList.value.map(item => item.total),
             itemStyle: {
                 borderRadius: [15],
                 color: {
@@ -177,10 +161,10 @@ const barChartOptions = computed(() => ({
             }
         },
         {
-            name: '未完成',
+            name: '比例(%)',
             type: 'bar',
             barWidth: '8%',
-            data: homeworkBarList.value.map(item => item.message_count),
+            data: homeworkBarList.value.map(item => item.rate.replace("%", "")),
             itemStyle: {
                 borderRadius: [15],
                 color: {
@@ -219,9 +203,8 @@ const lineChartOptions = computed(() => ({
     xAxis: {
         type: 'category',
         boundaryGap: true,
-        data: lineData.value.map(item => item.date || item.week || item.month),
+        data: lineData.value.map(item => item.nickname),
         axisLabel: {
-            rotate: 45,
             interval: 0,
             margin: 10,
         },
@@ -302,21 +285,34 @@ const summaryData = ref([
         unit: '份',
         change: 0,
         icon: IconSix,
+    },
+    {
+        title: '按时完成率',
+        value: 0,
+        unit: '%',
+        change: 0,
+        icon: IconSeven,
+    }
+    ,
+    {
+        title: '完成率',
+        value: 0,
+        unit: '%',
+        change: 0,
+        icon: Icon8,
     }
 ])
 
 
 const getBarData = async () => {
-    const res = await api.homeworkanalysis_basic({ title: searchText.value })
+    const res = await api.homeworkanalysis_view()
     console.log(res);
 
-    homeworkBarList.value = res as unknown as any[] || []
+    homeworkBarList.value = res.homework_rates as any[] || []
+    lineData.value = res.user_rankings as unknown as any[] || []
+
 }
 
-const getLineData = async () => {
-    const res = await api.homeworkanalysis_basic(from.value)
-    lineData.value = res as unknown as any[] || []
-}
 onMounted(async () => {
     const res = await api.homeworkanalysis_basic()
     const mapping = [
@@ -326,15 +322,29 @@ onMounted(async () => {
         { key: 'pending', compare: 'message_count_compare' },
         { key: 'timeout_finished', compare: 'message_count_compare' },
         { key: 'unfinished', compare: 'message_count_compare' },
+        { key: 'ontime_finished_rate', compare: 'message_count_compare' },
+        { key: 'finished_rate', compare: 'message_count_compare' },
     ];
 
-    summaryData.value = mapping.map((m, i) => ({
-        ...summaryData.value[i],
-        value: Number(res[m.key] ?? 0),
-        change: Number(res[m.compare] ?? 0),
-    }));
-    // getBarData()
-    // getLineData()
+    summaryData.value = mapping.map((m, i) => {
+        let rawValue = res[m.key] ?? 0
+
+        // 如果是字符串带百分号
+        if (typeof rawValue === 'string' && rawValue.includes('%')) {
+            // 去掉 % 并转为数字
+            rawValue = (rawValue.replace('%', ''))
+        } else {
+            // 尝试转为数字
+            rawValue = Number(rawValue) || 0
+        }
+
+        return {
+            ...summaryData.value[i],
+            value: rawValue
+        }
+    })
+
+    getBarData()
 })
 </script>
 

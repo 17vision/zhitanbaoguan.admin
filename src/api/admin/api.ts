@@ -234,4 +234,15 @@ export default {
             params
         })
     },
+    /**
+ * 作业分析统计
+ * @returns 
+ */
+    homeworkanalysis_view(params?: any) {
+        return request({
+            url: '/datastatistics/homeworkanalysis/view',
+            method: 'GET',
+            params
+        })
+    },
 }
