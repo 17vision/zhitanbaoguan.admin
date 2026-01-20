@@ -26,20 +26,9 @@
                 </el-table-column>
                 <el-table-column prop="title" label="标题" />
                 <el-table-column prop="author" label="作者" />
-                <el-table-column prop="status" label="状态">
-                    <template #default="{ row }">
-                        <el-tag :type="row.status === 1 ? 'success' : 'info'">
-                            {{ row.status === 1 ? '启用' : '禁用' }}
-                        </el-tag>
-
-                    </template>
-                </el-table-column>
                 <el-table-column prop="text" label="文案" />
                 <el-table-column label="操作" width="160" fixed="right">
                     <template #default="{ row }">
-                        <el-button link type="primary" v-if="row.status === 1"
-                            @click="handlePublish(row)">禁用</el-button>
-                        <el-button link type="primary" v-else @click="handlePublish(row)">启用</el-button>
                         <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
                         <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
                     </template>
