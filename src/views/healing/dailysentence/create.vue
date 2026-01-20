@@ -1,46 +1,46 @@
 <template>
-    <el-dialog :title="form.id ? '编辑' : '新增'" v-model="dialogVisible" width="800px" :close-on-click-modal="false">
+    <el-dialog :title="form.id ? '编辑' : '新增'" v-model="dialogVisible" width="650px" :close-on-click-modal="false">
 
         <!-- 提交按钮 -->
-        <div class="px-6" style="overflow-y: auto; max-height: 600px;">
-            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-                <el-form-item label="标题">
-                    <el-input v-model="form.name" placeholder="请输入标题" maxlength="20" show-word-limit />
-                </el-form-item>
-                <el-form-item label="状态">
-                    <el-switch v-model="form.status" :active-value="1" :inactive-value="2" active-text="启用"
-                        inactive-text="禁用" />
-                </el-form-item>
-
-                <el-form-item label="图片">
-                    <div class="avatar-uploader">
-                        <div v-if="form.thumbnail" class="relative w-full h-full">
-                            <img :src="toURL(form.thumbnail)" class="cover-image" />
-                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" @click="form.thumbnail = ''">
-                                    <Close />
-                                </el-icon>
+        <div class="px-6">
+            <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
+                <el-row :gutter="24">
+                    <el-col :span="14">
+                        <el-form-item label="标题" prop="title">
+                            <el-input v-model="form.title" placeholder="请输入标题" maxlength="20" show-word-limit />
+                        </el-form-item>
+                        <el-form-item label="作者" class="mb-6">
+                            <el-input v-model="form.author" placeholder="写下作者的名字" />
+                        </el-form-item>
+                        <el-form-item label="文案" class="mb-6">
+                            <el-input v-model="form.text" type="textarea" :rows="11" placeholder="写下你每日的动力来源"
+                                maxlength="200" show-word-limit />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10" class="ml-auto">
+                        <el-form-item label="图片" prop="image">
+                            <div class="avatar-uploader">
+                                <div v-if="form.image" class="relative w-full h-full">
+                                    <img :src="toURL(form.image)" class="cover-image" />
+                                    <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
+                                        <el-icon :size="24" @click="form.image = ''">
+                                            <Close />
+                                        </el-icon>
+                                    </div>
+                                </div>
+                                <label for="teacherAvatarInput" v-else
+                                    class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
+                                    <el-icon class="text-gray-400 text-32px mb-3">
+                                        <Upload />
+                                    </el-icon>
+                                    <span class="text-gray-500 text-sm">点击上传</span>
+                                </label>
+                                <input type="file" name="image" id="teacherAvatarInput"
+                                    @change="handleTeacherAvatarSuccess" accept="image/*" style="display: none;">
                             </div>
-                        </div>
-                        <label for="teacherAvatarInput" v-else
-                            class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
-                            <el-icon class="text-gray-400 text-32px mb-3">
-                                <Upload />
-                            </el-icon>
-                            <span class="text-gray-500 text-sm">点击上传</span>
-                        </label>
-                        <input type="file" name="thumbnail" id="teacherAvatarInput" @change="handleTeacherAvatarSuccess"
-                            accept="image/*" style="display: none;">
-                    </div>
-                </el-form-item>
-
-                <el-form-item label="文案" class="mb-6">
-                    <el-input v-model="form.introduction" type="textarea" :rows="4" placeholder="写下你每日的动力来源"
-                        maxlength="200" show-word-limit />
-                </el-form-item>
-                <el-form-item label="作者" class="mb-6">
-                    <el-input v-model="form.author" placeholder="写下作者的名字" />
-                </el-form-item>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
             </el-form>
         </div>
         <template #footer>
@@ -54,8 +54,9 @@
 import { ElNotification } from 'element-plus'
 import { Upload, Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import api from '@/api/admin/ringtones'
+import api from '@/api/admin/daily_sentences'
 import { uploadImage, uploadFiles } from '@/api/utils'
+import { checkFileRatio } from '@/utils/utils'
 
 // 对话框是否可见
 const dialogVisible = ref(false)
@@ -64,72 +65,31 @@ const formRef = ref()
 const emit = defineEmits(['submit'])
 // 表单校验规则
 const rules = ref<any>({
-    name: [
-        { required: true, message: '请输入名称', trigger: 'blur' },
+    title: [
+        { required: true, message: '请输入标题', trigger: 'blur' },
         { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
     ],
-    status: [
-        { required: true, message: '请选择状态', trigger: 'change' }
-    ],
-    thumbnail: [
+    image: [
         { required: true, message: '请上传图片', trigger: 'change' }
     ],
-    path: [
-        { required: true, message: '请上传音频', trigger: 'change' }
-    ],
-    introduction: [
+    text: [
         { required: true, message: '请输入介绍', trigger: 'blur' },
         { min: 2, max: 225, message: '长度在 2 到 225 个字符', trigger: 'blur' }
     ]
 })
 const form = ref<any>({
-    status: 2,
-    name: '',
-    thumbnail: '', // 资源图片
-    path: '', // 资源文件
-    introduction: '', // 资源介绍
+    image: '', // 资源图片
+    text: '', // 资源介绍
 })
-const MAX_VIDEO_SIZE = 10 * 1024 * 1024;
 // 处理导师头像上传
 const handleTeacherAvatarSuccess = (e: any) => {
     const file = e.target.files[0]
-    form.value.thumbnail = file
+    form.value.image = file
     e.target.value = ''
-    formRef.value?.validateField('thumbnail')
+    formRef.value?.validateField('image')
 }
 
-const handleResourceSuccess = async (e: any) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    const resetInput = () => { e.target.value = ""; };
-
-    // const isImage = file.type.startsWith("image/");
-    const isAudio = file.type === "audio/mpeg";
-
-    // 校验文件类型和大小
-    // if (isImage && file.size > MAX_IMAGE_SIZE) {
-    //     alert("图片大小不能超过 5MB");
-    //     resetInput();
-    //     return;
-    // }
-    if (isAudio && file.size > MAX_VIDEO_SIZE) {
-        alert("音频大小不能超过 20MB");
-        resetInput();
-        return;
-    }
-    if (!isAudio) {
-        alert("仅支持上传 MP3 音频");
-        resetInput();
-        return;
-    }
-
-    // 文件通过校验
-    form.value.path = file;
-
-    resetInput();
-    formRef.value?.validateField('path');
-};
 
 const toURL = (file: File | string) => {
     if (!file) return ''
@@ -154,12 +114,12 @@ const validate = () => {
 const handleSubmit = async () => {
     try {
         await validate()
-        if (form.value.thumbnail instanceof File) {
+        if (form.value.image instanceof File) {
             const res = await uploadImage({
-                file: form.value.thumbnail,
+                file: form.value.image,
                 info: { referer: 'resource', type: 'image' }
             })
-            form.value.thumbnail = res.url
+            form.value.image = res.url
         }
         if (form.value.path instanceof File) {
             const res = await uploadFiles({
@@ -187,11 +147,15 @@ const handleSubmit = async () => {
     }
 }
 
-const open = (row: any) => {
-    form.value = {
-        status: 2,
-        ...row
+const open = async (row: any) => {
+    if (row?.id) {
+        const res = await api.detail(row.id)
+        form.value = res
+    } else {
+        form.value = {
+        }
     }
+
     formRef.value?.resetFields()
 
     dialogVisible.value = true
@@ -208,8 +172,8 @@ defineExpose({
 
 <style lang='scss' scoped>
 .avatar-uploader {
-    width: 150px;
-    height: 150px;
+    width: 100%;
+    aspect-ratio: 9/16;
     border: 1px dashed #ccc;
     border-radius: 8px;
     display: flex;
@@ -217,6 +181,5 @@ defineExpose({
 
 .cover-image {
     width: 100%;
-    height: 100%;
 }
 </style>

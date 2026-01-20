@@ -21,7 +21,7 @@
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
                 <el-table-column label="图片">
                     <template #default="{ row }">
-                        <el-image v-if="row.image" :src="row.image" fit="cover" class="w-20 h-20 rounded" />
+                        <el-image v-if="row.image" :src="row.image" fit="cover" class="w-20 rounded" />
                     </template>
                 </el-table-column>
                 <el-table-column prop="name" label="名称" />

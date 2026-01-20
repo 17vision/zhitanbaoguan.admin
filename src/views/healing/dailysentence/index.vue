@@ -10,7 +10,7 @@
         <div class="bg-white rounded-lg shadow-md p-4">
             <div class="mb-4 flex justify-between items-center">
                 <div class=" flex  ml-auto items-center space-x-5 w-[35%]">
-                    <el-input v-model="searchForm.name" placeholder="搜索名称" class="w-64" clearable />
+                    <el-input v-model="searchForm.name" placeholder="搜索标题" class="w-64" clearable />
                     <el-button type="primary" @click="handleSearch">搜索</el-button>
                     <el-button @click="handleReset">重置</el-button>
                 </div>
@@ -21,10 +21,10 @@
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT">
                 <el-table-column label="图片">
                     <template #default="{ row }">
-                        <el-image v-if="row.thumbnail" :src="row.thumbnail" fit="cover" class="w-20 h-20 rounded" />
+                        <el-image v-if="row.image" :src="row.image" fit="cover" class="w-20 h-20 rounded" />
                     </template>
                 </el-table-column>
-                <el-table-column prop="name" label="名称" />
+                <el-table-column prop="title" label="标题" />
                 <el-table-column prop="author" label="作者" />
                 <el-table-column prop="status" label="状态">
                     <template #default="{ row }">
@@ -34,7 +34,7 @@
 
                     </template>
                 </el-table-column>
-                <el-table-column prop="introduction" label="" />
+                <el-table-column prop="text" label="文案" />
                 <el-table-column label="操作" width="160" fixed="right">
                     <template #default="{ row }">
                         <el-button link type="primary" v-if="row.status === 1"
@@ -61,7 +61,7 @@
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { ElNotification, ElMessageBox } from 'element-plus'
-import api from '@/api/admin/ringtones'
+import api from '@/api/admin/daily_sentences'
 import createVue from './create.vue'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 const MAX_HEIGHT = useWindowHeight(270)

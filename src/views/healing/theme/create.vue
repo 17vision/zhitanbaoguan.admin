@@ -1,45 +1,61 @@
 <template>
-    <el-dialog :title="form.id ? '编辑' : '新增'" v-model="dialogVisible" width="800px" @close="handleClose"
+    <el-dialog :title="form.id ? '编辑' : '新增'" v-model="dialogVisible" width="650px" @close="handleClose"
         :close-on-click-modal="false">
 
         <!-- 提交按钮 -->
-        <div class="px-6" style="overflow-y: auto; max-height: 600px;">
-            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-                <el-form-item label="名称">
-                    <el-input v-model="form.name" placeholder="请输入名称" maxlength="20" show-word-limit />
-                </el-form-item>
-                <el-form-item label="状态">
-                    <el-switch v-model="form.status" :active-value="1" :inactive-value="2" active-text="启用"
-                        inactive-text="禁用" />
-                </el-form-item>
-                <el-form-item label="视频">
-                    <div>
-                        <div v-if="form.path" class="relative ">
-                            <img v-if="isPath(form.path) === 1" :src="toURL(form.path)" class="w-[100px] h-[200px]" />
-                            <video v-if="isPath(form.path) === 2" class="w-[300px] h-[300px]" controls>
-                                <source :src="toURL(form.path)" type="video/mp4">
-                            </video>
-                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" @click="form.path = ''">
-                                    <Close />
-                                </el-icon>
+        <div class="px-6">
+            <el-form ref="formRef" :model="form" :rules="rules" label-position="top" require-asterisk-position="right">
+                <el-row :gutter="24">
+                    <el-col :span="14">
+                        <el-form-item label="名称" prop="name">
+                            <el-input v-model="form.name" placeholder="请输入名称" maxlength="20" show-word-limit />
+                        </el-form-item>
+                        <el-row :gutter="24">
+                            <el-col :span="12">
+                                <el-form-item label="状态">
+                                    <el-switch v-model="form.status" :active-value="1" :inactive-value="2"
+                                        active-text="启用" inactive-text="禁用" />
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="色值">
+                                    <el-color-picker v-model="form.color" />
+                                    <div class="w-12 h-4 ml-5" v-if="form.color"
+                                        :style="{ 'background-color': form.color }"></div>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-form-item label="介绍" class="mb-6">
+                            <el-input v-model="form.introduction" type="textarea" :rows="8" placeholder="请输入介绍"
+                                maxlength="200" show-word-limit />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8" class="ml-auto">
+                        <el-form-item label="视频" prop="path">
+                            <div class="avatar-uploader">
+                                <div v-if="form.path" class="relative ">
+                                    <img v-if="isPath(form.path) === 1" :src="toURL(form.path)" />
+                                    <video v-if="isPath(form.path) === 2" controls>
+                                        <source :src="toURL(form.path)" type="video/mp4">
+                                    </video>
+                                    <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
+                                        <el-icon :size="24" @click="form.path = ''">
+                                            <Close />
+                                        </el-icon>
+                                    </div>
+                                </div>
+                                <label for="pathInput" v-else
+                                    class=" w-full h-full rounded-lg px-6 flex flex-col items-center justify-center cursor-pointer ">
+                                    <span class="text-gray-500 text-sm font-bold text-[#409eff]">点击上传</span>
+                                </label>
+                                <input type="file" name="path" id="pathInput" @change="handleResourceSuccess"
+                                    accept=".mp4" style="display: none;">
                             </div>
-                        </div>
-                        <label for="pathInput" v-else
-                            class=" w-full h-full rounded-lg px-6 flex flex-col items-center justify-center cursor-pointer ">
-                            <span class="text-gray-500 text-sm font-bold text-[#409eff]">点击上传</span>
-                        </label>
-                        <input type="file" name="path" id="pathInput" @change="handleResourceSuccess" accept=".mp4"
-                            style="display: none;">
-                    </div>
-                </el-form-item>
-                <el-form-item label="色值">
-                    <el-color-picker v-model="form.color" />
-                </el-form-item>
-                <el-form-item label="介绍" class="mb-6">
-                    <el-input v-model="form.introduction" type="textarea" :rows="4" placeholder="请输入介绍" maxlength="200"
-                        show-word-limit />
-                </el-form-item>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+
+
             </el-form>
         </div>
         <template #footer>
@@ -55,6 +71,7 @@ import { Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/themes'
 import { uploadFiles } from '@/api/utils'
+import { checkFileRatio } from '@/utils/utils'
 
 // 对话框是否可见
 const dialogVisible = ref(false)
@@ -97,15 +114,9 @@ const handleResourceSuccess = async (e: any) => {
 
     const resetInput = () => { e.target.value = ""; };
 
-    // const isImage = file.type.startsWith("image/");
     const isVideo = file.type === "video/mp4";
 
-    // 校验文件类型和大小
-    // if (isImage && file.size > MAX_IMAGE_SIZE) {
-    //     alert("图片大小不能超过 5MB");
-    //     resetInput();
-    //     return;
-    // }
+
     if (isVideo && file.size > MAX_VIDEO_SIZE) {
         alert("视频大小不能超过 20MB");
         resetInput();
@@ -117,10 +128,13 @@ const handleResourceSuccess = async (e: any) => {
         return;
     }
 
-    // 文件通过校验
-    form.value.path = file;
+
 
     try {
+        await checkFileRatio(file, '9:16');
+        // 文件通过校验
+        form.value.path = file;
+
         let color;
         if (isVideo) {
             color = await getVideoMainColor(file);
@@ -129,8 +143,8 @@ const handleResourceSuccess = async (e: any) => {
         if (color) {
             form.value.color = `rgb(${color.r}, ${color.g}, ${color.b})`;
         }
-    } catch (err) {
-        console.error("获取主色失败:", err);
+    } catch (err: any) {
+        ElNotification.error(err.message);
     } finally {
         resetInput();
         formRef.value?.validateField('path');
@@ -243,22 +257,6 @@ function getMainColorFromCanvas(canvas: HTMLCanvasElement) {
     };
 }
 
-// async function getImageMainColor(file: File) {
-//     const url = URL.createObjectURL(file);
-//     const img = new Image();
-//     img.src = url;
-
-//     await img.decode(); // 等待加载
-
-//     const canvas = document.createElement('canvas');
-//     canvas.width = 10;
-//     canvas.height = 10;
-
-//     const ctx = canvas.getContext('2d')!;
-//     ctx.drawImage(img, 0, 0, 10, 10);
-
-//     return getMainColorFromCanvas(canvas);
-// }
 
 async function getVideoMainColor(file: File) {
     const url = URL.createObjectURL(file);
@@ -285,8 +283,8 @@ async function getVideoMainColor(file: File) {
 
 <style lang='scss' scoped>
 .avatar-uploader {
-    width: 150px;
-    height: 150px;
+    width: 100%;
+    aspect-ratio: 9/16;
     border: 1px dashed #ccc;
     border-radius: 8px;
     display: flex;
@@ -294,6 +292,5 @@ async function getVideoMainColor(file: File) {
 
 .cover-image {
     width: 100%;
-    height: 100%;
 }
 </style>

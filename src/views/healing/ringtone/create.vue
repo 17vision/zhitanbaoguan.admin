@@ -4,8 +4,8 @@
 
         <!-- 提交按钮 -->
         <div class="px-6" style="overflow-y: auto; max-height: 600px;">
-            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-                <el-form-item label="名称">
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" require-asterisk-position="right">
+                <el-form-item label="名称" prop="name">
                     <el-input v-model="form.name" placeholder="请输入名称" maxlength="20" show-word-limit />
                 </el-form-item>
                 <el-form-item label="状态">
@@ -13,7 +13,7 @@
                         inactive-text="禁用" />
                 </el-form-item>
 
-                <el-form-item label="图片">
+                <el-form-item label="图片" prop="thumbnail">
                     <div class="avatar-uploader">
                         <div v-if="form.thumbnail" class="relative w-full h-full">
                             <img :src="toURL(form.thumbnail)" class="cover-image" />
@@ -34,7 +34,7 @@
                             accept="image/*" style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="音频">
+                <el-form-item label="音频" prop="path">
                     <div>
                         <div v-if="form.path" class="relative ">
                             <audio v-if="form.path" class="cover-image2" controls>
@@ -54,7 +54,7 @@
                             style="display: none;">
                     </div>
                 </el-form-item>
-                <el-form-item label="介绍" class="mb-6">
+                <el-form-item label="介绍" class="mb-6" prop="introduction">
                     <el-input v-model="form.introduction" type="textarea" :rows="4" placeholder="请输入介绍" maxlength="200"
                         show-word-limit />
                 </el-form-item>
@@ -73,6 +73,7 @@ import { Upload, Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/ringtones'
 import { uploadImage, uploadFiles } from '@/api/utils'
+import { checkFileRatio } from '@/utils/utils'
 
 // 对话框是否可见
 const dialogVisible = ref(false)
@@ -108,11 +109,17 @@ const form = ref<any>({
 })
 const MAX_VIDEO_SIZE = 10 * 1024 * 1024;
 // 处理导师头像上传
-const handleTeacherAvatarSuccess = (e: any) => {
+const handleTeacherAvatarSuccess = async (e: any) => {
     const file = e.target.files[0]
-    form.value.thumbnail = file
+    try {
+        await checkFileRatio(file, '1:1');
+        form.value.thumbnail = file
+        formRef.value?.validateField('thumbnail')
+    } catch (error: any) {
+        ElNotification.error(error.message);
+    }
     e.target.value = ''
-    formRef.value?.validateField('thumbnail')
+
 }
 
 const handleResourceSuccess = async (e: any) => {
@@ -125,18 +132,14 @@ const handleResourceSuccess = async (e: any) => {
     const isAudio = file.type === "audio/mpeg";
 
     // 校验文件类型和大小
-    // if (isImage && file.size > MAX_IMAGE_SIZE) {
-    //     alert("图片大小不能超过 5MB");
-    //     resetInput();
-    //     return;
-    // }
     if (isAudio && file.size > MAX_VIDEO_SIZE) {
-        alert("音频大小不能超过 20MB");
+        ElNotification.error('音频大小不能超过 20MB');
         resetInput();
         return;
     }
     if (!isAudio) {
-        alert("仅支持上传 MP3 音频");
+        ElNotification.error('仅支持上传 MP3 音频');
+
         resetInput();
         return;
     }

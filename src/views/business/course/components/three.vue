@@ -53,7 +53,6 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="12">
-
                                 <el-form-item label="音频资源" prop="resource_id">
                                     <el-select v-model="chapter.resource_id" placeholder="请选择音频资源" clearable>
                                         <el-option v-for="item in audioList" :key="item.id" :label="item.name"

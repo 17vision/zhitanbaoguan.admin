@@ -1,13 +1,12 @@
 <template>
     <div>
         <el-dialog :title="form.id ? '编辑导师' : '新增导师'" v-model="dialogVisible" width="600px">
-            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px"
-                style="overflow-y: auto; max-height: 600px;">
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
                 <el-form-item label="资源名称" prop="name">
                     <el-input v-model="form.name" placeholder="请输入资源名称" maxlength="20" show-word-limit />
                 </el-form-item>
                 <el-form-item label="类型" prop="type">
-                    <el-select v-model="form.type" placeholder="请选择类型">
+                    <el-select v-model="form.type" placeholder="请选择类型" @change="changeType">
                         <el-option label="图片" :value="1" />
                         <el-option label="视频" :value="2" />
                         <el-option label=" 音频" :value="3" />
@@ -19,7 +18,7 @@
                     </div>
                 </el-form-item>
                 <el-form-item label="资源" prop="path" v-if="form.type">
-                    <div>
+                    <div :class="{ 'avatar-uploader': form.type !== 3 }">
                         <div v-if="form.path" class="relative w-full h-full">
                             <img v-if="form.type === 1" :src="toURL(form.path)" class="cover-image1" />
                             <video v-if="form.type === 2" class="cover-image" controls>
@@ -37,6 +36,7 @@
                         <label for="pathInput" v-else
                             class=" w-full h-full rounded-lg px-6 flex flex-col items-center justify-center cursor-pointer ">
                             <span class="text-gray-500 text-sm font-bold text-[#409eff]">点击上传</span>
+                            <span class="text-gray-500 text-[10px] font-bold text-[#409eff]" v-show="form.type  !==3">请上传9:16的文件</span>
                         </label>
                         <input type="file" name="path" id="pathInput" @change="handleResourceSuccess"
                             :accept="form.type === 1 ? 'image/*' : form.type === 2 ? 'video/*' : 'audio/*'"
@@ -90,14 +90,20 @@ const form = ref<any>({
     path: '', // 资源路径
 })
 
+const changeType = (type: number) => {
+    form.value.path = ''
+    formRef.value?.clearValidate('path')
+}
 const handleResourceSuccess = async (e: any) => {
     const file = e.target.files[0]
     try {
-        await checkFileRatio(file, '9:16')
+        if (form.value.type !== 3) {
+            await checkFileRatio(file, '9:16')
+        }
         form.value.path = file
         formRef.value?.validateField('path')
 
-    } catch (error:any) {
+    } catch (error: any) {
         ElNotification.error(error.message)
     }
     e.target.value = ''
@@ -189,20 +195,14 @@ defineExpose({
 <style lang='scss' scoped>
 .avatar-uploader {
     width: 150px;
-    height: 150px;
+    aspect-ratio: 9/16;
     border: 1px dashed #ccc;
     border-radius: 8px;
     display: flex;
 }
 
 .cover-image {
-    width: 120px;
-    aspect-ratio: 9/16;
+    width: 100%;
 }
 
-.cover-image1 {
-    width: 120px;
-    aspect-ratio: 9/16;
-
-}
 </style>

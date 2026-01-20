@@ -3,79 +3,109 @@
         :close-on-click-modal="false">
 
         <!-- 提交按钮 -->
-        <div class="px-6" style="overflow-y: auto; max-height: 600px;">
-            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-                <el-form-item label="名称">
-                    <el-input v-model="form.name" placeholder="请输入名称" maxlength="20" show-word-limit />
-                </el-form-item>
-                <el-form-item label="状态">
-                    <el-switch v-model="form.status" :active-value="1" :inactive-value="2" active-text="启用"
-                        inactive-text="禁用" />
-                </el-form-item>
-                <el-form-item label="分组">
-                    <div class=" w-full" @click="openSelectGroup()">
-                        <el-input v-model="form.scene_category_name" readonly placeholder="请输入分组" />
-                    </div>
-                </el-form-item>
-                <el-form-item label="类型">
-                    <el-checkbox-group v-model="form.type">
-                        <el-checkbox label="专注" :value="1" :disabled="disabledFn(true)" />
-                        <el-checkbox label="睡眠" :value="2" :disabled="disabledFn(true)" />
-                        <el-checkbox label="小憩" :value="3" :disabled="disabledFn(true)" />
-                        <el-checkbox label="呼吸" :value="4" :disabled="disabledFn(false)" />
-                    </el-checkbox-group>
-                </el-form-item>
-                <el-form-item label="标签">
-                    <div class=" w-full">
-                        <el-input v-model="form.tag" placeholder="请输入标签使用、分隔" />
-                    </div>
-                </el-form-item>
-                <el-form-item label="图片">
-                    <div class="avatar-uploader">
-                        <div v-if="form.image" class="relative w-full h-full">
-                            <img :src="toURL(form.image)" class="cover-image" />
-                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" @click="form.image = ''">
-                                    <Close />
-                                </el-icon>
+        <div class="px-6">
+            <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" label-position="top"
+                require-asterisk-position="right">
+                <el-row :gutter="24">
+                    <el-col :span="12">
+                        <el-form-item label="名称" prop="name">
+                            <el-input v-model="form.name" placeholder="请输入名称" maxlength="20" show-word-limit />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="状态">
+                            <el-switch v-model="form.status" :active-value="1" :inactive-value="2" active-text="启用"
+                                inactive-text="禁用" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="24">
+                    <el-col :span="12">
+                        <el-form-item label="分组" prop="scene_category_id">
+                            <div class=" w-full" @click="openSelectGroup()">
+                                <el-input v-model="form.scene_category_name" readonly placeholder="请输入分组" />
                             </div>
-                        </div>
-                        <label for="teacherAvatarInput" v-else
-                            class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
-                            <el-icon class="text-gray-400 text-32px mb-3">
-                                <Upload />
-                            </el-icon>
-                            <span class="text-gray-500 text-sm">点击上传</span>
-                        </label>
-                        <input type="file" name="image" id="teacherAvatarInput" @change="handleTeacherAvatarSuccess"
-                            accept="image/*" style="display: none;">
-                    </div>
-                </el-form-item>
-                <el-form-item label="视频">
-                    <div>
-                        <div v-if="form.video" class="relative ">
-                            <img v-if="isPath(form.video) === 1" :src="toURL(form.video)" class="w-[100px] h-[200px]" />
-                            <video v-if="isPath(form.video) === 2" class="w-[300px] h-[300px]" controls>
-                                <source :src="toURL(form.video)" type="video/mp4">
-                            </video>
-                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
-                                <el-icon :size="24" @click="form.video = ''">
-                                    <Close />
-                                </el-icon>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="类型" prop="type">
+                            <el-checkbox-group v-model="form.type" @change="changeType">
+                                <el-checkbox label="专注" :value="1" :disabled="disabledFn(true)" />
+                                <el-checkbox label="睡眠" :value="2" :disabled="disabledFn(true)" />
+                                <el-checkbox label="小憩" :value="3" :disabled="disabledFn(true)" />
+                                <el-checkbox label="呼吸" :value="4" :disabled="disabledFn(false)" />
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="24">
+                    <el-col :span="12">
+                        <el-form-item label="标签">
+                            <div class=" w-full">
+                                <el-input v-model="form.tag" placeholder="请输入标签使用、分隔" />
                             </div>
-                        </div>
-                        <label for="pathInput" v-else
-                            class=" w-full h-full rounded-lg px-6 flex flex-col items-center justify-center cursor-pointer ">
-                            <span class="text-gray-500 text-sm font-bold text-[#409eff]">点击上传</span>
-                        </label>
-                        <input type="file" name="video" id="pathInput" @change="handleResourceSuccess" accept=".mp4"
-                            style="display: none;">
-                    </div>
-                </el-form-item>
-                <el-form-item label="介绍" class="mb-6">
-                    <el-input v-model="form.introduction" type="textarea" :rows="4" placeholder="请输入介绍" maxlength="200"
-                        show-word-limit />
-                </el-form-item>
+                        </el-form-item>
+                        <el-form-item label="介绍" prop="introduction">
+                            <el-input v-model="form.introduction" type="textarea" :rows="8" placeholder="请输入介绍"
+                                maxlength="200" show-word-limit />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-row :gutter="24">
+                            <el-col :span="12">
+                                <el-form-item label="图片" prop="image">
+                                    <div :class="[disabledFn(true) ? 'avatar-uploader' : 'avatar-uploader2']">
+                                        <div v-if="form.image" class="relative w-full h-full">
+                                            <img :src="toURL(form.image)" class="cover-image" />
+                                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
+                                                <el-icon :size="24" @click="form.image = ''">
+                                                    <Close />
+                                                </el-icon>
+                                            </div>
+                                        </div>
+                                        <label for="teacherAvatarInput" v-else
+                                            class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
+                                            <el-icon class="text-gray-400 text-32px mb-3">
+                                                <Upload />
+                                            </el-icon>
+                                            <span class="text-gray-500 text-sm">点击上传</span>
+                                            <span class="text-gray-500 text-[10px]">{{ disabledFn(true) ? '请上传1:1的图片' :
+                                                '请上传9:16的图片' }}</span>
+                                        </label>
+                                        <input type="file" name="image" id="teacherAvatarInput"
+                                            @change="handleTeacherAvatarSuccess" accept="image/*"
+                                            style="display: none;">
+                                    </div>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="视频" prop="video">
+                                    <div class="avatar-uploader2">
+                                        <div v-if="form.video" class="relative ">
+                                            <img v-if="isPath(form.video) === 1" :src="toURL(form.video)" />
+                                            <video v-if="isPath(form.video) === 2" controls>
+                                                <source :src="toURL(form.video)" type="video/mp4">
+                                            </video>
+                                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
+                                                <el-icon :size="24" @click="form.video = ''">
+                                                    <Close />
+                                                </el-icon>
+                                            </div>
+                                        </div>
+                                        <label for="pathInput" v-else
+                                            class=" w-full h-full rounded-lg px-6 flex flex-col items-center justify-center cursor-pointer ">
+                                            <span class="text-gray-500 text-sm font-bold text-[#409eff]">点击上传</span>
+                                            <span class="text-gray-500 text-[10px]">请上传9:16的视频</span>
+
+                                        </label>
+                                        <input type="file" name="video" id="pathInput" @change="handleResourceSuccess"
+                                            accept=".mp4" style="display: none;">
+                                    </div>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-col>
+                </el-row>
             </el-form>
         </div>
         <template #footer>
@@ -89,10 +119,11 @@
 <script lang='ts' setup>
 import { ElNotification } from 'element-plus'
 import { Upload, Close } from '@element-plus/icons-vue'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import api from '@/api/admin/scenes'
 import { uploadImage, uploadFiles } from '@/api/utils'
 import GroupVue from './Group.vue'
+import { checkFileRatio } from '@/utils/utils'
 
 // 对话框是否可见
 const dialogVisible = ref(false)
@@ -107,6 +138,9 @@ const rules = ref<any>({
     ],
     status: [
         { required: true, message: '请选择状态', trigger: 'change' }
+    ],
+    type: [
+        { required: true, message: '请选择类型', trigger: 'change' }
     ],
     image: [
         { required: true, message: '请上传图片', trigger: 'change' }
@@ -132,14 +166,22 @@ const onGroupSelect = (group: any) => {
     form.value.scene_category_name = group.name
     formRef.value?.validateField('scene_category_id')
 }
-// const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 20 * 1024 * 1024;
-// 处理导师头像上传
-const handleTeacherAvatarSuccess = (e: any) => {
+// 封面图片上传成功
+const handleTeacherAvatarSuccess = async (e: any) => {
     const file = e.target.files[0]
-    form.value.image = file
+    try {
+        if (form.value.type && form.value.type.includes(4)) {
+            await checkFileRatio(file, '1:1')
+        } else {
+            await checkFileRatio(file, '9:16')
+        }
+        form.value.image = file
+        formRef.value?.validateField('image')
+    } catch (error: any) {
+        ElNotification.error(error.message)
+    }
     e.target.value = ''
-    formRef.value?.validateField('image')
 }
 
 const handleResourceSuccess = async (e: any) => {
@@ -148,30 +190,24 @@ const handleResourceSuccess = async (e: any) => {
 
     const resetInput = () => { e.target.value = ""; };
 
-    // const isImage = file.type.startsWith("image/");
     const isVideo = file.type === "video/mp4";
 
-    // 校验文件类型和大小
-    // if (isImage && file.size > MAX_IMAGE_SIZE) {
-    //     alert("图片大小不能超过 5MB");
-    //     resetInput();
-    //     return;
-    // }
     if (isVideo && file.size > MAX_VIDEO_SIZE) {
-        alert("视频大小不能超过 20MB");
+        ElNotification.error("视频大小不能超过 20MB");
         resetInput();
         return;
     }
     if (!isVideo) {
-        alert("仅支持上传 MP4 视频");
+        ElNotification.error("仅支持上传 MP4 视频");
         resetInput();
         return;
     }
 
-    // 文件通过校验
-    form.value.video = file;
 
     try {
+        await checkFileRatio(file, '9:16')
+        // 文件通过校验
+        form.value.video = file;
         let color;
         if (isVideo) {
             color = await getVideoMainColor(file);
@@ -247,19 +283,24 @@ const handleSubmit = async () => {
             })
             form.value.video = res
         }
-        if (form.value.id) {
-            for (const key in form.value) {
-                if (!form.value[key]) {
-                    delete form.value[key]
+
+        let data = {
+            ...form.value,
+            type: form.value.type?.join(',')
+        }
+        if (data.id) {
+            for (const key in data) {
+                if (!data[key]) {
+                    delete data[key]
                 }
             }
-            await api.update(form.value)
+            await api.update(data)
             ElNotification.success('更新成功')
         } else {
-            await api.create(form.value)
+            await api.create(data)
             ElNotification.success('创建成功')
         }
-        emit('submit', form.value)
+        emit('submit', data)
         dialogVisible.value = false
     } catch (error) {
         console.log(error)
@@ -270,7 +311,8 @@ const open = async (row: any) => {
     if (row.id) {
         const res = await api.detail(row.id)
         form.value = {
-            ...res
+            ...res,
+            type: res.type?.split(',').map((v: string) => +v).filter(Boolean)
         }
     } else {
         form.value = {
@@ -306,23 +348,6 @@ function getMainColorFromCanvas(canvas: HTMLCanvasElement) {
     };
 }
 
-// async function getImageMainColor(file: File) {
-//     const url = URL.createObjectURL(file);
-//     const img = new Image();
-//     img.src = url;
-
-//     await img.decode(); // 等待加载
-
-//     const canvas = document.createElement('canvas');
-//     canvas.width = 10;
-//     canvas.height = 10;
-
-//     const ctx = canvas.getContext('2d')!;
-//     ctx.drawImage(img, 0, 0, 10, 10);
-
-//     return getMainColorFromCanvas(canvas);
-// }
-
 async function getVideoMainColor(file: File) {
     const url = URL.createObjectURL(file);
     const video = document.createElement('video');
@@ -343,18 +368,13 @@ async function getVideoMainColor(file: File) {
     return getMainColorFromCanvas(canvas);
 }
 
-watch(
-    () => form.value.type,
-    (val = []) => {
-        if (val) {
-            if (val.includes(4) && val.length > 1) {
-                form.value.type = [4]
-            }
-        }
 
-    },
-    { deep: true }
-)
+const changeType = (val: any) => {
+    if (val.includes(4)) {
+        form.value.image = ''
+    }
+}
+
 
 const disabledFn = (bool: boolean) => {
     const arr = Array.isArray(form.value.type) ? form.value.type : []
@@ -371,8 +391,15 @@ const disabledFn = (bool: boolean) => {
     display: flex;
 }
 
+.avatar-uploader2 {
+    width: 150px;
+    aspect-ratio: 9/16;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+}
+
 .cover-image {
     width: 100%;
-    height: 100%;
 }
 </style>
