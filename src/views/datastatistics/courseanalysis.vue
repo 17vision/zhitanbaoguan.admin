@@ -37,7 +37,7 @@
         <!-- 单课数据 -->
         <div class="bg-white p-6 rounded-lg shadow-sm mb-6 ">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">单课数据</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">课程数据</h2>
                 <div>
                     <el-input placeholder="请输入课程名" v-model="searchText" class="w-40" @keyup.enter="getBarData">
                         <template #suffix>

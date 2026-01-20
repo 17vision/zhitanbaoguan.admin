@@ -23,8 +23,10 @@
                 <el-table-column prop="name" label="名称" />
                 <el-table-column prop="status" label="状态">
                     <template #default="{ row }">
-                        <el-tag v-if="row.status === 1" type="success">启用</el-tag>
-                        <el-tag v-else type="info">禁用</el-tag>
+                        <el-tag :type="row.status === 1 ? 'success' : 'info'">
+                            {{ row.status === 1 ? '启用' : '禁用' }}
+                        </el-tag>
+
                     </template>
                 </el-table-column>
                 <el-table-column prop="introduction" label="介绍" />
@@ -53,7 +55,7 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElNotification, ElMessageBox } from 'element-plus'
 import api from '@/api/admin/themes'
 import createVue from './create.vue'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
@@ -102,7 +104,7 @@ const handleEdit = (row: any) => {
 const handlePublish = async (row: any) => {
     // TODO: 实现编辑课程逻辑
     await api.update({ id: row.id, status: row.status === 1 ? 2 : 1 })
-    ElMessage.success('操作成功')
+    ElNotification.success('操作成功')
     handleSearch()
 
 }
@@ -114,7 +116,7 @@ const handleDelete = (row: any) => {
     }).then(async () => {
         // TODO: 实现删除逻辑
         await api.delete(row.id)
-        ElMessage.success('删除成功')
+        ElNotification.success('删除成功')
         handleSearch()
     })
 }

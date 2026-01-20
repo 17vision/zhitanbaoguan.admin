@@ -26,9 +26,9 @@
             </div>
 
             <!-- 表格区域 -->
-            <el-table v-loading="loading" :data="tableData"
+            <el-table v-loading="loading" :data="tableData" row-key="id"
                 :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="MAX_HEIGHT"
-                @selection-change="handleSelectionChange">
+                @selection-change="handleSelectionChange" :tree-props="{ children: 'replies' }">
                 <!-- <el-table-column type="selection" width="55" /> -->
                 <el-table-column prop="user.nickname" label="用户名称" />
                 <el-table-column prop="updated_at" label="评论时间" />
@@ -53,7 +53,7 @@
 <script setup lang="ts">
 // import { Delete } from '@element-plus/icons-vue'
 import { ref, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElNotification, ElMessageBox } from 'element-plus'
 import api from '@/api/admin/courses_messages'
 import course from '@/api/admin/api'
 
@@ -104,22 +104,23 @@ const handleDelete = (row?: any) => {
             type: 'warning'
         }).then(async () => {
             // TODO: 实现删除逻辑
-            await api.delete(row.id)
-            ElMessage.success('删除成功')
+            const data = row.course_message_id ? { course_message_reply_id: row.id } : { course_message_id: row.id }
+            await api.delete(data)
+            ElNotification.success('删除成功')
             handleSearch()
         })
     } else {
         // 批量删除
         if (selection.value.length === 0) {
-            ElMessage.warning('请选择要删除的数据')
+            ElNotification.warning('请选择要删除的数据')
             return
         }
         ElMessageBox.confirm('确定要删除这些数据吗？', '提示', {
             type: 'warning'
         }).then(async () => {
             // TODO: 实现批量删除逻辑
-            await api.delete(selection.value.map((item: any) => item.id))
-            ElMessage.success('删除成功')
+            // await api.delete(selection.value.map((item: any) => item.id))
+            ElNotification.success('删除成功')
             handleSearch()
         })
     }

@@ -33,7 +33,7 @@
         </el-form>
         <!-- 提交按钮 -->
         <div class="flex justify-end mx-6">
-           
+
         </div>
         <template #footer>
             <el-button type="default" @click="dialogVisible = false">取消</el-button>
@@ -43,11 +43,13 @@
 </template>
 
 <script lang='ts' setup>
-import { ElMessage } from 'element-plus'
-import {  Upload, Close } from '@element-plus/icons-vue'
+import { ElNotification } from 'element-plus'
+import { Upload, Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/tutors'
 import { uploadImage } from '@/api/utils'
+import { checkFileRatio } from '@/utils/utils'
+
 // 对话框是否可见
 const dialogVisible = ref(false)
 // 表单引用
@@ -69,11 +71,17 @@ const form = ref<any>({
 })
 
 // 处理导师头像上传
-const handleTeacherAvatarSuccess = (e: any) => {
+const handleTeacherAvatarSuccess = async (e: any) => {
     const file = e.target.files[0]
-    form.value.avatar = file
+    try {
+        await checkFileRatio(file, '1:1')
+        form.value.avatar = file
+        formRef.value?.validateField('avatar')
+
+    } catch (error) {
+        ElNotification.error('请上传比例为1:1的图片')
+    }
     e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件
-    formRef.value?.validateField('avatar')
 }
 
 const toURL = (file: File | string) => {
@@ -115,10 +123,10 @@ const handleSubmit = async () => {
                 }
             }
             await api.update(form.value)
-            ElMessage.success('更新成功')
+            ElNotification.success('更新成功')
         } else {
             await api.create(form.value)
-            ElMessage.success('创建成功')
+            ElNotification.success('创建成功')
         }
         emit('submit', form.value)
         dialogVisible.value = false
@@ -128,7 +136,7 @@ const handleSubmit = async () => {
 }
 
 const open = (row: any) => {
-    form.value = {...row}
+    form.value = { ...row }
     dialogVisible.value = true
 }
 

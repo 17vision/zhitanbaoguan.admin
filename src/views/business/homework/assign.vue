@@ -33,7 +33,7 @@
 </template>
 
 <script lang='ts' setup>
-import { ElMessage } from 'element-plus'
+import { ElNotification } from 'element-plus'
 import { ref } from 'vue'
 import api from '@/api/admin/grades'
 import user_homework from '@/api/admin/user_homework'
@@ -87,7 +87,7 @@ const handleSubmit = async () => {
             ...form.value,
             homework_id: route.query.id,
         })
-        ElMessage.success('创建成功')
+        ElNotification.success('创建成功')
         emit('submit', form.value)
         dialogVisible.value = false
     } catch (error) {

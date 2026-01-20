@@ -335,10 +335,10 @@ const handleDrop = async (
 
     try {
         await Promise.all(alllist)
-        ElMessage.success('分组排序已更新')
+        ElNotification.success('分组排序已更新')
         fetchMediaGroups()
     } catch (e) {
-        ElMessage.error('更新排序失败')
+        ElNotification.error('更新排序失败')
     }
 }
 const allowDrop = (_draggingNode: Node, _dropNode: Node, dropType: NodeDropType) => {

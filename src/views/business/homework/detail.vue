@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElNotification, ElMessageBox } from 'element-plus'
 import api from '@/api/admin/user_homework'
 import createVue from './assign.vue'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
@@ -102,7 +102,7 @@ const handleDelete = (row: any) => {
     }).then(async () => {
         // TODO: 实现删除逻辑
         await api.delete(row.id)
-        ElMessage.success('删除成功')
+        ElNotification.success('删除成功')
         handleSearch()
     })
 }

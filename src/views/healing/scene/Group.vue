@@ -319,10 +319,10 @@ const handleDrop = async (
 
     try {
         await api.update(payload)
-        ElMessage.success('分组排序已更新')
+        ElNotification.success('分组排序已更新')
         fetchMediaGroups()
     } catch (e) {
-        ElMessage.error('更新排序失败')
+        ElNotification.error('更新排序失败')
     }
 }
 

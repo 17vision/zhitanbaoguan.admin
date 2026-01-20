@@ -51,7 +51,7 @@
 </template>
 
 <script lang='ts' setup>
-import { ElMessage } from 'element-plus'
+import { ElNotification } from 'element-plus'
 import { Upload, Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/ringtones'
@@ -175,10 +175,10 @@ const handleSubmit = async () => {
                 }
             }
             await api.update(form.value)
-            ElMessage.success('更新成功')
+            ElNotification.success('更新成功')
         } else {
             await api.create(form.value)
-            ElMessage.success('创建成功')
+            ElNotification.success('创建成功')
         }
         emit('submit', form.value)
         dialogVisible.value = false

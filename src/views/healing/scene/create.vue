@@ -17,9 +17,17 @@
                         <el-input v-model="form.scene_category_name" readonly placeholder="请输入分组" />
                     </div>
                 </el-form-item>
+                <el-form-item label="类型">
+                    <el-checkbox-group v-model="form.type">
+                        <el-checkbox label="专注" :value="1" :disabled="disabledFn(true)" />
+                        <el-checkbox label="睡眠" :value="2" :disabled="disabledFn(true)" />
+                        <el-checkbox label="小憩" :value="3" :disabled="disabledFn(true)" />
+                        <el-checkbox label="呼吸" :value="4" :disabled="disabledFn(false)" />
+                    </el-checkbox-group>
+                </el-form-item>
                 <el-form-item label="标签">
                     <div class=" w-full">
-                        <el-input v-model="form.tag" readonly placeholder="请输入标签使用、分隔" />
+                        <el-input v-model="form.tag" placeholder="请输入标签使用、分隔" />
                     </div>
                 </el-form-item>
                 <el-form-item label="图片">
@@ -79,9 +87,9 @@
 </template>
 
 <script lang='ts' setup>
-import { ElMessage } from 'element-plus'
+import { ElNotification } from 'element-plus'
 import { Upload, Close } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import api from '@/api/admin/scenes'
 import { uploadImage, uploadFiles } from '@/api/utils'
 import GroupVue from './Group.vue'
@@ -246,10 +254,10 @@ const handleSubmit = async () => {
                 }
             }
             await api.update(form.value)
-            ElMessage.success('更新成功')
+            ElNotification.success('更新成功')
         } else {
             await api.create(form.value)
-            ElMessage.success('创建成功')
+            ElNotification.success('创建成功')
         }
         emit('submit', form.value)
         dialogVisible.value = false
@@ -335,7 +343,23 @@ async function getVideoMainColor(file: File) {
     return getMainColorFromCanvas(canvas);
 }
 
+watch(
+    () => form.value.type,
+    (val = []) => {
+        if (val) {
+            if (val.includes(4) && val.length > 1) {
+                form.value.type = [4]
+            }
+        }
 
+    },
+    { deep: true }
+)
+
+const disabledFn = (bool: boolean) => {
+    const arr = Array.isArray(form.value.type) ? form.value.type : []
+    return bool ? arr.includes(4) : arr.some((v: number) => v !== 4)
+}
 </script>
 
 <style lang='scss' scoped>

@@ -47,6 +47,7 @@
                                 class=" w-full h-full rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer ">
                                 <img :src="Icon" alt="" class="w-6 h-6">
                                 <span class="text-[#666666] text-sm mt-2">点击上传图片</span>
+                                <span class="text-[#666666] text-[10px]">请上传16:9的图片</span>
                             </label>
                             <input type="file" name="cover" id="coverInput" @change="handleCoverSuccess"
                                 accept="image/*" style="display: none;">
@@ -71,7 +72,7 @@ import { ref } from 'vue'
 import api from '@/api/admin/api'
 import tutors from '@/api/admin/tutors'
 import { uploadImage } from '@/api/utils'
-
+import { checkFileRatio } from '@/utils/utils'
 // 表单引用
 const formRef = ref()
 const route = useRoute()
@@ -106,11 +107,18 @@ const toURL = (file: File | string) => {
 }
 
 // 处理课程封面上传
-const handleCoverSuccess = (e: any) => {
+const handleCoverSuccess = async (e: any) => {
     // 检查文件类型
     const file = e.target.files[0]
-    form.value.cover = file
-    e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件
+
+    try {
+        await checkFileRatio(file, '16:9')
+        form.value.cover = file
+
+    } catch (error) {
+        ElNotification.error(error.message)
+    }
+    e.target.value = ''
 }
 
 const validate = () => {
@@ -168,8 +176,8 @@ onMounted(() => {
 
 <style lang='scss' scoped>
 .avatar-uploader {
-    width: 200px;
-    height: 150px;
+    width: 90%;
+    aspect-ratio: 16 / 9;
     background-color: rgba(0, 0, 0, 0.15);
     border: 1px dashed #ccc;
     border-radius: 8px;

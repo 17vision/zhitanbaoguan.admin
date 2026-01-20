@@ -1,6 +1,6 @@
 <template>
     <div class="p-4">
-        <el-table :data="tableData"  :header-cell-style="{ background: '#F5F6FA', color: '#666666' }"
+        <el-table :data="tableData" :header-cell-style="{ background: '#F5F6FA', color: '#666666' }"
             :max-height="MaxHeight">
             <el-table-column prop="title" label="标题" width="100" />
             <el-table-column label="背景" width="140">
@@ -38,26 +38,37 @@
             </el-table-column>
         </el-table>
         <!-- 章节列表 -->
-        <el-dialog :title="chapter.id ? '编辑章节' : '添加章节'" v-model="chapterDialogVisible" width="60%">
-            <el-form label-width="100px" :model="chapter" ref="chapterFormRef" :rules="rules">
+        <el-dialog :title="chapter.id ? '编辑章节' : '添加章节'" v-model="chapterDialogVisible" width="850px">
+            <el-form label-width="100px" :model="chapter" ref="chapterFormRef" :rules="rules" label-position="top">
                 <el-row :gutter="24">
-                    <el-col :span="12">
+                    <el-col :span="16">
                         <el-form-item label="课程标题" prop="title">
                             <el-input v-model="chapter.title" placeholder="请输入课程标题" />
                         </el-form-item>
-                        <el-form-item label="课程时长" prop="duration">
-                            <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />
-                            <span class="ml-2 text-gray-600">分钟</span>
-                        </el-form-item>
-                        <el-form-item label="音频资源" prop="resource_id">
-                            <el-select v-model="chapter.resource_id" placeholder="请选择音频资源" clearable>
-                                <el-option v-for="item in audioList" :key="item.id" :label="item.name"
-                                    :value="item.id" />
-                            </el-select>
+                        <el-row :gutter="24">
+                            <el-col :span="12">
+                                <el-form-item label="课程时长" prop="duration">
+                                    <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />
+                                    <span class="ml-2 text-gray-600">分钟</span>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+
+                                <el-form-item label="音频资源" prop="resource_id">
+                                    <el-select v-model="chapter.resource_id" placeholder="请选择音频资源" clearable>
+                                        <el-option v-for="item in audioList" :key="item.id" :label="item.name"
+                                            :value="item.id" />
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+
+                        </el-row>
+                        <el-form-item label="课程内容">
+                            <el-input v-model="chapter.description" type="textarea" placeholder="请输入课程内容" :rows="14"  />
                         </el-form-item>
                     </el-col>
-                    <el-col :span="12">
-                        <el-form-item label="图片" prop="background">
+                    <el-col :span="8">
+                        <el-form-item label="背景文件" prop="background">
                             <div class="avatar-uploader">
                                 <div v-if="chapter.background" class="relative ">
                                     <video v-if="is_file(chapter.background)" class="cover-image2" controls>
@@ -76,6 +87,7 @@
                                         <Upload />
                                     </el-icon>
                                     <span class="text-gray-500 text-sm">点击上传</span>
+                                    <span class="text-gray-500 text-[10px]">请上传比例为 9:16 的图片或视频</span>
                                 </label>
                                 <input type="file" name="cover" id="coverInput" @change="handleCoverSuccess"
                                     accept=".jpg,.jpeg,.png,.gif,.mp4" style="display: none;">
@@ -83,16 +95,14 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-form-item label="课程内容">
-                    <el-input v-model="chapter.description" type="textarea" placeholder="请输入课程内容" :rows="8" />
-                </el-form-item>
+
             </el-form>
             <template #footer>
                 <el-button type="danger" @click="chapterDialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="handleSubmit">保存</el-button>
             </template>
         </el-dialog>
-        <marking ref="audioVueRef" @save="getList"/>
+        <marking ref="audioVueRef" @save="getList" />
     </div>
 </template>
 
@@ -104,6 +114,8 @@ import resources from '@/api/admin/resources'
 import { uploadImage } from '@/api/utils'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 import Marking from './marking.vue'
+import { checkFileRatio } from '@/utils/utils'
+
 const MaxHeight = useWindowHeight(300)
 const route = useRoute()
 
@@ -149,19 +161,25 @@ const handleDeleteChapter = async (row: any) => {
         type: 'warning'
     }).then(async () => {
         await api.deleteCoursesChapters(row.id)
-        ElMessage.success('删除成功')
+        ElNotification.success('删除成功')
         getList()
     })
 }
 // 处理封面上传
-const handleCoverSuccess = (e: any) => {
+const handleCoverSuccess = async (e: any) => {
     const file = e.target.files[0]
     if (!file) return
     if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif' && file.type !== 'video/mp4' && file.type !== 'audio/mpeg') {
-        ElMessage.error('文件格式不正确')
+        ElNotification.error('文件格式不正确')
         return
     }
-    chapter.value.background = file
+    try {
+        await checkFileRatio(file, '9:16')
+        chapter.value.background = file
+
+    } catch (error) {
+        ElNotification.error(error.message)
+    }
     e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件
 }
 
@@ -192,7 +210,7 @@ const handleSubmit = async () => {
 const validate = () => {
     return new Promise((resolve, reject) => {
         if (tableData.value.length === 0) {
-            ElMessage.warning('请添加课程章节')
+            ElNotification.warning('请添加课程章节')
             reject('请添加课程章节')
         } else {
             resolve({})
@@ -241,8 +259,8 @@ const getAudioList = async () => {
 
 <style lang='scss' scoped>
 .avatar-uploader {
-    width: 220px;
-    height: 220px;
+    width: 300px;
+    aspect-ratio: 9/16;
     border: 1px dashed #ccc;
     border-radius: 12px;
     display: flex;

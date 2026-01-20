@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElNotification } from 'element-plus'
 import kc1 from '@/assets/image/course/kc1.png'
 import fabu from '@/assets/image/course/fabu.png'
 import kc11 from '@/assets/image/course/kc11.png'
@@ -131,7 +131,7 @@ const handleBack = () => {
 }
 // 保存草稿
 const handleSaveDraft = () => {
-    ElMessage.success('保存草稿成功')
+    ElNotification.success('保存草稿成功')
     if (nextRef.value) {
         nextRef.value?.validate().then(() => {
             router.push({ name: 'course.index' })
@@ -145,7 +145,7 @@ const handlePublish = async () => {
         const res = await nextRef.value?.validate() as any
         if (res.id || route.query.id) {
             await api.updateCourse({ id: res.id || route.query.id, status: 1 })
-            ElMessage.success('发布课程成功')
+            ElNotification.success('发布课程成功')
             router.push({ name: 'course.index' })
         }
     }

@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElNotification, ElMessageBox } from 'element-plus'
 import api from '@/api/admin/resources'
 import resource_groups from '@/api/admin/resource_groups'
 import createVue from './create.vue'
@@ -132,7 +132,7 @@ const handleDeleteAll = async () => {
         // TODO: 实现删除逻辑
         const ids = selectedRows.value.map((item: any) => item.id).join(',')
         await api.delete(ids)
-        ElMessage.success('删除成功')
+        ElNotification.success('删除成功')
         handleSearch()
     })
 }
@@ -143,7 +143,7 @@ const handleDelete = (row: any) => {
     }).then(async () => {
         // TODO: 实现删除逻辑
         await api.delete(row.id)
-        ElMessage.success('删除成功')
+        ElNotification.success('删除成功')
         handleSearch()
     })
 }

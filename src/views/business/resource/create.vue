@@ -22,10 +22,10 @@
                     <div>
                         <div v-if="form.path" class="relative w-full h-full">
                             <img v-if="form.type === 1" :src="toURL(form.path)" class="cover-image1" />
-                            <video v-if="form.type === 2" class="cover-image2" controls>
+                            <video v-if="form.type === 2" class="cover-image" controls>
                                 <source :src="toURL(form.path)" type="video/mp4">
                             </video>
-                            <audio v-if="form.type === 3" class="cover-image2" controls>
+                            <audio v-if="form.type === 3" controls>
                                 <source :src="toURL(form.path)" type="audio/mpeg">
                             </audio>
                             <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
@@ -55,12 +55,14 @@
 </template>
 
 <script lang='ts' setup>
-import { ElMessage } from 'element-plus'
+import { ElNotification } from 'element-plus'
 import { Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/resources'
 import { uploadImage, uploadFiles } from '@/api/utils'
 import GroupVue from './Group.vue'
+import { checkFileRatio } from '@/utils/utils'
+
 // 对话框是否可见
 const dialogVisible = ref(false)
 const loading = ref(false)
@@ -88,11 +90,17 @@ const form = ref<any>({
     path: '', // 资源路径
 })
 
-const handleResourceSuccess = (e: any) => {
+const handleResourceSuccess = async (e: any) => {
     const file = e.target.files[0]
-    form.value.path = file
-    e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件
-    formRef.value?.validateField('path')
+    try {
+        await checkFileRatio(file, '9:16')
+        form.value.path = file
+        formRef.value?.validateField('path')
+
+    } catch (error:any) {
+        ElNotification.error(error.message)
+    }
+    e.target.value = ''
 }
 
 const toURL = (file: File | string) => {
@@ -153,10 +161,10 @@ const handleSubmit = async () => {
                 }
             }
             await api.update(form.value)
-            ElMessage.success('更新成功')
+            ElNotification.success('更新成功')
         } else {
             await api.create(form.value)
-            ElMessage.success('创建成功')
+            ElNotification.success('创建成功')
         }
         emit('submit', form.value)
         dialogVisible.value = false
@@ -188,12 +196,13 @@ defineExpose({
 }
 
 .cover-image {
-    width: 100%;
-    height: 100%;
+    width: 120px;
+    aspect-ratio: 9/16;
 }
 
 .cover-image1 {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    aspect-ratio: 9/16;
+
 }
 </style>

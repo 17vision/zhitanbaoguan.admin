@@ -14,7 +14,7 @@ export default {
         })
     },
 
-    delete(data: any) {
+    delete(data: { course_message_id?: number, course_message_reply_id?: number }) {
         return request({
             url: '/courses/messages',
             method: 'delete',

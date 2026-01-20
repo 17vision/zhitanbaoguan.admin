@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElNotification, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import api from '@/api/admin/api'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
@@ -116,14 +116,14 @@ const handleReset = () => {
 // 批量删除
 const handleBatchDelete = () => {
     if (selectedRows.value.length === 0) {
-        ElMessage.warning('请选择要删除的课程')
+        ElNotification.warning('请选择要删除的课程')
         return
     }
     ElMessageBox.confirm('确定要删除选中的课程吗？', '提示', {
         type: 'warning'
     }).then(() => {
         // TODO: 实现批量删除逻辑
-        ElMessage.success('删除成功')
+        ElNotification.success('删除成功')
     })
 }
 
@@ -146,7 +146,7 @@ const handleDelete = (row: any) => {
     }).then(async () => {
         // TODO: 实现删除逻辑
         await api.deleteCourse({ id: row.id })
-        ElMessage.success('删除成功')
+        ElNotification.success('删除成功')
         // TODO: 刷新数据
         handleSearch()
     })
@@ -157,7 +157,7 @@ const handleStatusChange = (row: any) => {
     // TODO: 实现状态修改逻辑
     api.updateCourse({ id: row.id, status: row.status }).then((res) => {
         if (res.status === 1) {
-            ElMessage.success('发布成功')
+            ElNotification.success('发布成功')
         }
     })
 }

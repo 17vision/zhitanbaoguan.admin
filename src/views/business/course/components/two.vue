@@ -54,6 +54,7 @@
 <script lang='ts' setup>
 import { ref } from 'vue'
 import Icon from '@/assets/image/course/shangchuan.png'
+import { checkFileRatio } from '@/utils/utils'
 
 import { Upload, Close } from '@element-plus/icons-vue'
 // 表单引用
@@ -70,14 +71,26 @@ const toURL = (file: File | string) => {
     return file
 }
 
-const handlePhoneBackgroundSuccess = (e: any) => {
+const handlePhoneBackgroundSuccess = async (e: any) => {
     const file = e.target.files[0]
-    form.value.phoneBackground = file
+    try {
+        await checkFileRatio(file, '1:1')
+        form.value.phoneBackground = file
+
+    } catch (error) {
+        ElNotification.error(error)
+    }
     e.target.value = ''
 }
-const handleHelmetSceneSuccess = (e: any) => {
+const handleHelmetSceneSuccess = async (e: any) => {
     const file = e.target.files[0]
-    form.value.helmetScene = file
+    try {
+        await checkFileRatio(file, '1:1')
+        form.value.helmetScene = file
+
+    } catch (error) {
+        ElNotification.error(error.message)
+    }
     e.target.value = ''
 }
 const validate = () => {

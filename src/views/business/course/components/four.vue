@@ -136,7 +136,6 @@ function goAddWorkflow() {
         config: []
     })
 
-    console.log(homeworks.value)
 }
 
 function goAddConfig(value: Homewrok) {
@@ -181,7 +180,7 @@ const validate = () => {
     return new Promise((resolve, reject) => {
         const item = homeworks.value.find((item) => item.isEdit == true)
         if (item) {
-            ElMessage.warning('请保存作业')
+            ElNotification.warning('请保存作业')
             reject('请保存作业')
         } else {
             resolve({})
