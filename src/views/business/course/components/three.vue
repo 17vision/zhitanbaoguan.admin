@@ -47,18 +47,18 @@
                         </el-form-item>
                         <el-row :gutter="24">
                             <el-col :span="12">
-                                <el-form-item label="课程时长" prop="duration">
-                                    <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />
-                                    <span class="ml-2 text-gray-600">分钟</span>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="12">
                                 <el-form-item label="音频资源" prop="resource_id">
                                     <el-select v-model="chapter.resource_id" placeholder="请选择音频资源" clearable
                                         @change="changeAudio">
                                         <el-option v-for="item in audioList" :key="item.id" :label="item.name"
                                             :value="item.id" />
                                     </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="12">
+                                <el-form-item label="课程时长" prop="duration">
+                                    <el-input-number :min="0" v-model="chapter.duration" placeholder="请输入课程时长" />
+                                    <span class="ml-2 text-gray-600">分钟</span>
                                 </el-form-item>
                             </el-col>
 
