@@ -176,7 +176,7 @@ const handleCoverSuccess = async (e: any) => {
         await checkFileRatio(file, '9:16')
         chapter.value.background = file
 
-    } catch (error) {
+    }  catch (error:any) {
         ElNotification.error(error.message)
     }
     e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件

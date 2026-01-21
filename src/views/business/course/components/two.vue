@@ -77,8 +77,8 @@ const handlePhoneBackgroundSuccess = async (e: any) => {
         await checkFileRatio(file, '1:1')
         form.value.phoneBackground = file
 
-    } catch (error) {
-        ElNotification.error(error)
+    } catch (error:any) {
+        ElNotification.error(error.message)
     }
     e.target.value = ''
 }
@@ -88,7 +88,7 @@ const handleHelmetSceneSuccess = async (e: any) => {
         await checkFileRatio(file, '1:1')
         form.value.helmetScene = file
 
-    } catch (error) {
+    } catch (error:any) {
         ElNotification.error(error.message)
     }
     e.target.value = ''

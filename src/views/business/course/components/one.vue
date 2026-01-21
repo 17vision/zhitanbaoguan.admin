@@ -115,7 +115,7 @@ const handleCoverSuccess = async (e: any) => {
         await checkFileRatio(file, '16:9')
         form.value.cover = file
 
-    } catch (error) {
+    } catch (error:any) {
         ElNotification.error(error.message)
     }
     e.target.value = ''
