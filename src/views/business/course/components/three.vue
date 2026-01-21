@@ -54,7 +54,8 @@
                             </el-col>
                             <el-col :span="12">
                                 <el-form-item label="音频资源" prop="resource_id">
-                                    <el-select v-model="chapter.resource_id" placeholder="请选择音频资源" clearable>
+                                    <el-select v-model="chapter.resource_id" placeholder="请选择音频资源" clearable
+                                        @change="changeAudio">
                                         <el-option v-for="item in audioList" :key="item.id" :label="item.name"
                                             :value="item.id" />
                                     </el-select>
@@ -63,7 +64,7 @@
 
                         </el-row>
                         <el-form-item label="课程内容">
-                            <el-input v-model="chapter.description" type="textarea" placeholder="请输入课程内容" :rows="14"  />
+                            <el-input v-model="chapter.description" type="textarea" placeholder="请输入课程内容" :rows="14" />
                         </el-form-item>
                     </el-col>
                     <el-col :span="8">
@@ -176,7 +177,7 @@ const handleCoverSuccess = async (e: any) => {
         await checkFileRatio(file, '9:16')
         chapter.value.background = file
 
-    }  catch (error:any) {
+    } catch (error: any) {
         ElNotification.error(error.message)
     }
     e.target.value = '' // 清空文件输入框的值，以便下次上传时可以触发change事件
@@ -254,6 +255,39 @@ const getAudioList = async () => {
     const res = await resources.list({ type: 3, limit: 1000 })
     audioList.value = res.data
 }
+
+const changeAudio = async (id: any) => {
+    const data = audioList.value.find((item: any) => item.id === id)
+    const duration = await getAudioDurationByUrl(data.path)
+    const minutes = Math.round(duration / 60)
+
+    chapter.value.duration = minutes
+}
+function getAudioDurationByUrl(url: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+        const audio = new Audio()
+        if (!url) return resolve(0)
+
+        audio.preload = 'metadata'
+        audio.src = url
+
+        audio.addEventListener('loadedmetadata', () => {
+            const duration = audio.duration
+
+            if (!isFinite(duration)) {
+                reject(new Error('无法获取音频时长'))
+                return
+            }
+
+            resolve(Math.floor(duration)) // 取整
+        })
+
+        audio.addEventListener('error', () => {
+            reject(new Error('音频加载失败'))
+        })
+    })
+}
+
 </script>
 
 <style lang='scss' scoped>
