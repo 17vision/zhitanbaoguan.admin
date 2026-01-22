@@ -81,12 +81,24 @@ const form = ref<any>({
     image: '', // 资源图片
     text: '', // 资源介绍
 })
+const MAX_VIDEO_SIZE = 2 * 1024 * 1024 // 20MB
 // 处理导师头像上传
-const handleTeacherAvatarSuccess = (e: any) => {
+const handleTeacherAvatarSuccess = async (e: any) => {
     const file = e.target.files[0]
-    form.value.image = file
+    if (file.size > MAX_VIDEO_SIZE) {
+        ElNotification.error('图片大小不能超过 2MB')
+        e.target.value = ''
+        return;
+    }
+    try {
+        await checkFileRatio(file, '9:16')
+        form.value.image = file
+        formRef.value?.validateField('image')
+
+    } catch (error) {
+        ElNotification.error('请上传9:16比例的图片')
+    }
     e.target.value = ''
-    formRef.value?.validateField('image')
 }
 
 
