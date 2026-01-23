@@ -135,13 +135,8 @@ const handleResourceSuccess = async (e: any) => {
         // 文件通过校验
         form.value.path = file;
 
-        let color;
         if (isVideo) {
-            color = await getVideoMainColor(file);
-        }
-
-        if (color) {
-            form.value.color = `rgb(${color.r}, ${color.g}, ${color.b})`;
+            form.value.color = await getVideoMainColor(file);
         }
     } catch (err: any) {
         ElNotification.error(err.message);
@@ -250,11 +245,19 @@ function getMainColorFromCanvas(canvas: HTMLCanvasElement) {
         b += data[i + 2];
     }
 
-    return {
-        r: Math.round(r / count),
-        g: Math.round(g / count),
-        b: Math.round(b / count),
-    };
+    r = Math.round(r / count);
+    g = Math.round(g / count);
+    b = Math.round(b / count);
+
+    return rgbToHex(r, g, b);
+}
+function rgbToHex(r: number, g: number, b: number) {
+    return (
+        '#' +
+        [r, g, b]
+            .map(v => v.toString(16).padStart(2, '0'))
+            .join('')
+    );
 }
 
 
@@ -267,6 +270,7 @@ async function getVideoMainColor(file: File) {
 
     // 等待元数据加载
     await new Promise(res => video.onloadeddata = res);
+    video.currentTime = 0.25; // 跳转到0.25秒以确保有画面
 
     const canvas = document.createElement('canvas');
     canvas.width = 10;
