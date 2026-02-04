@@ -31,7 +31,7 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="8" class="ml-auto">
-                        <el-form-item label="视频" prop="path">
+                        <el-form-item label="图片" prop="path">
                             <div class="avatar-uploader">
                                 <div v-if="form.path" class="relative ">
                                     <img v-if="isPath(form.path) === 1" :src="toURL(form.path)" />
@@ -49,12 +49,31 @@
                                     <span class="text-gray-500 text-sm font-bold text-[#409eff]">点击上传</span>
                                 </label>
                                 <input type="file" name="path" id="pathInput" @change="handleResourceSuccess"
-                                    accept=".mp4" style="display: none;">
+                                    accept="image/*" style="display: none;">
                             </div>
                         </el-form-item>
                     </el-col>
                 </el-row>
-
+                <el-form-item label="音频" prop="audio">
+                    <div>
+                        <div v-if="form.audio" class="relative ">
+                            <audio v-if="form.audio" class="cover-image2" controls>
+                                <source :src="toURL(form.audio)" type="audio/mpeg">
+                            </audio>
+                            <div class="absolute top-1 right-1 text-red-500 cursor-pointer">
+                                <el-icon :size="24" @click="form.audio = ''">
+                                    <Close />
+                                </el-icon>
+                            </div>
+                        </div>
+                        <label for="pathInput2" v-else
+                            class=" w-full h-full rounded-lg px-6 flex flex-col items-center justify-center cursor-pointer ">
+                            <span class="text-gray-500 text-sm font-bold text-[#409eff]">点击上传</span>
+                        </label>
+                        <input type="file" name="audio" id="pathInput2" @change="handleHeadSuccess" accept=".mp3"
+                            style="display: none;">
+                    </div>
+                </el-form-item>
 
             </el-form>
         </div>
@@ -70,7 +89,7 @@ import { ElNotification } from 'element-plus'
 import { Close } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import api from '@/api/admin/themes'
-import { uploadFiles } from '@/api/utils'
+import { uploadFiles, uploadImage } from '@/api/utils'
 import { checkFileRatio } from '@/utils/utils'
 
 // 对话框是否可见
@@ -87,8 +106,11 @@ const rules = ref<any>({
     status: [
         { required: true, message: '请选择状态', trigger: 'change' }
     ],
+    audio: [
+        { required: true, message: '请上传音频', trigger: 'change' }
+    ],
     path: [
-        { required: true, message: '请上传视频', trigger: 'change' }
+        { required: true, message: '请上传图片', trigger: 'change' }
     ],
     introduction: [
         { required: true, message: '请输入介绍', trigger: 'blur' },
@@ -103,10 +125,38 @@ const form = ref<any>({
     head: '',
     status: 2,
 })
-// const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const MAX_VIDEO_SIZE = 20 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 // 处理导师头像上传
+const MAX_VIDEO_SIZE = 10 * 1024 * 1024;
 
+const handleHeadSuccess = async (e: any) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const resetInput = () => { e.target.value = ""; };
+
+    // const isImage = file.type.startsWith("image/");
+    const isAudio = file.type === "audio/mpeg";
+
+    // 校验文件类型和大小
+    if (isAudio && file.size > MAX_VIDEO_SIZE) {
+        ElNotification.error('音频大小不能超过 20MB');
+        resetInput();
+        return;
+    }
+    if (!isAudio) {
+        ElNotification.error('仅支持上传 MP3 音频');
+
+        resetInput();
+        return;
+    }
+
+    // 文件通过校验
+    form.value.audio = file;
+
+    resetInput();
+    formRef.value?.validateField('audio');
+}
 
 const handleResourceSuccess = async (e: any) => {
     const file = e.target.files?.[0];
@@ -114,16 +164,16 @@ const handleResourceSuccess = async (e: any) => {
 
     const resetInput = () => { e.target.value = ""; };
 
-    const isVideo = file.type === "video/mp4";
+    const isImage = file.type.startsWith("image/");
 
 
-    if (isVideo && file.size > MAX_VIDEO_SIZE) {
-        alert("视频大小不能超过 20MB");
+    if (isImage && file.size > MAX_IMAGE_SIZE) {
+        alert("图片大小不能超过 5MB");
         resetInput();
         return;
     }
-    if (!isVideo) {
-        alert("仅支持上传 MP4 视频");
+    if (!isImage) {
+        alert("仅支持上传图片类型的文件");
         resetInput();
         return;
     }
@@ -135,8 +185,8 @@ const handleResourceSuccess = async (e: any) => {
         // 文件通过校验
         form.value.path = file;
 
-        if (isVideo) {
-            form.value.color = await getVideoMainColor(file);
+        if (isImage) {
+            form.value.color = await getImageMainColor(file);
         }
     } catch (err: any) {
         ElNotification.error(err.message);
@@ -192,11 +242,18 @@ const handleSubmit = async () => {
         await validate()
 
         if (form.value.path instanceof File) {
-            const res = await uploadFiles({
+            const res = await uploadImage({
                 file: form.value.path,
-                info: { referer: 'resource', type: 'video' }
+                info: { referer: 'resource', type: 'image' }
             })
-            form.value.path = res
+            form.value.path = res.url
+        }
+        if (form.value.audio instanceof File) {
+            const res = await uploadFiles({
+                file: form.value.audio,
+                info: { referer: 'resource', type: 'audio' }
+            })
+            form.value.audio = res
         }
         if (form.value.id) {
             for (const key in form.value) {
@@ -261,23 +318,20 @@ function rgbToHex(r: number, g: number, b: number) {
 }
 
 
-async function getVideoMainColor(file: File) {
+async function getImageMainColor(file: File) {
     const url = URL.createObjectURL(file);
-    const video = document.createElement('video');
+    const img = new Image();
+    img.src = url;
 
-    video.preload = 'auto';
-    video.src = url;
-
-    // 等待元数据加载
-    await new Promise(res => video.onloadeddata = res);
-    video.currentTime = 0.25; // 跳转到0.25秒以确保有画面
+    // 等待图片加载
+    await new Promise(res => img.onload = res);
 
     const canvas = document.createElement('canvas');
     canvas.width = 10;
     canvas.height = 10;
 
     const ctx = canvas.getContext('2d')!;
-    ctx.drawImage(video, 0, 0, 10, 10);
+    ctx.drawImage(img, 0, 0, 10, 10);
 
     return getMainColorFromCanvas(canvas);
 }
