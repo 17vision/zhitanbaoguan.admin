@@ -87,10 +87,10 @@
                                         <Upload />
                                     </el-icon>
                                     <span class="text-gray-500 text-sm">点击上传</span>
-                                    <span class="text-gray-500 text-[10px]">请上传比例为 9:16 的图片或视频</span>
+                                    <span class="text-gray-500 text-[10px]">请上传比例为 9:16 的图片</span>
                                 </label>
                                 <input type="file" name="cover" id="coverInput" @change="handleCoverSuccess"
-                                    accept=".jpg,.jpeg,.png,.gif,.mp4" style="display: none;">
+                                    accept=".jpg,.jpeg,.png,.gif" style="display: none;">
                             </div>
                         </el-form-item>
                     </el-col>
@@ -169,7 +169,7 @@ const handleDeleteChapter = async (row: any) => {
 const handleCoverSuccess = async (e: any) => {
     const file = e.target.files[0]
     if (!file) return
-    if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif' && file.type !== 'video/mp4' && file.type !== 'audio/mpeg') {
+    if (file.type !== 'image/jpeg' && file.type !== 'image/png' && file.type !== 'image/gif') {
         ElNotification.error('文件格式不正确')
         return
     }
