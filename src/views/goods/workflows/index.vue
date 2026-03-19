@@ -1,7 +1,7 @@
 <template>
     <div class="p-4">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-Medium">主题管理</h2>
+            <h2 class="text-2xl font-Medium">大空间课程管理</h2>
             <div class="flex items-center space-x-2">
             </div>
         </div>
