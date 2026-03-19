@@ -37,15 +37,14 @@
 
                 <el-table-column label="用户昵称" prop="user_nickname" />
 
-                <el-table-column label="商品名称" prop="goods_name" />
+                <el-table-column label="商品名称" prop="workflow_name" />
 
                 <el-table-column label="商品价格">
                     <template #default="scope">
-                        <span>¥ {{ scope.row.goods_price }}</span>
+                        <span>¥ {{ scope.row.pay_amount }}</span>
                     </template>
                 </el-table-column>
 
-                <el-table-column label="商品类型" prop="goods_type_str" />
 
 
                 <el-table-column label="设备 ID" prop="device_id" />
@@ -68,7 +67,7 @@
 
                 <el-table-column label="创建时间" prop="created_at" />
 
-                <el-table-column align="center" label="操作" fixed="right" width="188">
+                <el-table-column align="center" label="操作" fixed="right" width="160">
                     <template #default="scope">
                         <div v-if="scope.row.status === 2">
                             <el-button size="small" type="primary" text @click="goOrderRefund(scope.row.id)">

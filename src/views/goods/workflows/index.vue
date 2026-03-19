@@ -108,11 +108,8 @@ const handleEdit = (id: any) => {
 
 // 发布/下架课程
 const handlePublish = (id: any, list_status: number, price: string) => {
-    if (list_status === 2) {
-        if (!price) {
-            ElNotification.error('请先设置价格')
-            return
-        }
+    if (list_status === 2 && !price) {
+        ElNotification.error('请先设置价格')
         return
     }
     ElMessageBox.confirm(`确定要${list_status === 2 ? '上架' : '下架'}吗？`, '提示', {

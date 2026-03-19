@@ -32,7 +32,7 @@
 
                 <el-table-column label="用户昵称" prop="user_nickname" />
 
-                <el-table-column label="商品名称" prop="goods_name" />
+                <el-table-column label="商品名称" prop="workflow_name" />
 
                 <el-table-column label="商品价格">
                     <template #default="scope">
@@ -40,7 +40,6 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="商品类型" prop="goods_type_str" />
 
                 <el-table-column label="设备 ID" prop="device_id" />
 
