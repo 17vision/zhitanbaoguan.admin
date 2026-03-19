@@ -42,7 +42,7 @@ export default {
             url: '/scenes',
             method: 'delete',
             data: {
-                ids: String(ids)
+                id: String(ids)
             }
         })
     },
