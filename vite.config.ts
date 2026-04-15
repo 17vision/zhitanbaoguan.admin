@@ -29,6 +29,15 @@ export default defineConfig({
             '@': pathSrc
         }
     },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                api: 'modern-compiler',
+                // 2) 强制屏蔽 legacy-js-api 警告
+                silenceDeprecations: ['legacy-js-api'],
+            }
+        }
+    },
     plugins: [
         vue(),
         AutoImport({
