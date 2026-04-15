@@ -1,14 +1,17 @@
 import request from '@/utils/request'
 
+
+
+
 export default {
     /**
-     * 获取列表
+     * 获取场馆列表
      * @param params 查询参数
      * @returns 
      */
-    getlist(params?: any) {
+    list(params?: any) {
         return request({
-            url: '/workflows',
+            url: '/venues',
             method: 'get',
             params: {
                 page: 1,
@@ -18,25 +21,38 @@ export default {
         })
     },
     /**
-     * 退款
+     * 获取场馆详情
+     * @param id 场馆ID
      * @returns 
      */
-    getDetail(id: any) {
+    detail(id: number) {
         return request({
-            url: '/workflows/' + id,
+            url: '/venues/' + id,
             method: 'get',
         })
     },
     /**
-     * 退款
+     * 获取场馆详情
+     * @param id 场馆ID
      * @returns 
      */
-    putWorkflows(data: any) {
+    create(data: any) {
         return request({
-            url: '/workflows',
+            url: '/venues',
+            method: 'post',
+            data
+        })
+    },
+    /**
+     * 更新场馆
+     * @param data 场馆数据
+     * @returns 
+     */
+    put(data: any) {
+        return request({
+            url: '/venues/',
             method: 'put',
             data
         })
     },
-
 }
