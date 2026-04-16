@@ -9,7 +9,7 @@
                     <div class=" flex  ml-auto items-center space-x-5 w-[50%]">
                         <el-select v-model="req.status" placeholder="全部状态" clearable class="w-32">
                             <el-option label="已发布" :value="1" />
-                            <el-option label="未发布" :value="0" />
+                            <el-option label="未发布" :value="2" />
                         </el-select>
                         <el-button type="primary" @click="fetchData">搜索</el-button>
                         <el-button @click="handleReset">重置</el-button>
@@ -29,6 +29,10 @@
                         v-if="includes(app.routeNames, ['organization.create', 'organization.update', 'organization.delete'])"
                         label="操作" align="center" fixed="right" width="200">
                         <template #default="scope">
+                            <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 2"
+                                link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
+                            <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 1"
+                                link size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
                             <el-button v-if="includes(app.routeNames, ['organization.update'])" link size="small"
                                 type="primary" text @click="goEdit(scope.row)">编辑</el-button>
                         </template>
@@ -104,6 +108,46 @@ function goEdit(value: any): void {
     }
 }
 
+// 上线 / 下线切换
+const goPublish = async (row: { id: string; status: number }) => {
+    if (!row?.id) return
+
+    const targetStatus = row.status === 1 ? 2 : 1
+    const actionText = targetStatus === 1 ? '上线' : '下线'
+
+    // 确认弹窗
+    await ElMessageBox.confirm(
+        `确定要将该记录${actionText}吗？`,
+        '操作确认',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }
+    ).catch(() => {
+        // 取消操作
+        return Promise.reject()
+    })
+
+    try {
+        await organizationsApi.put({
+            id: row.id,
+            status: targetStatus,
+        })
+
+        ElNotification.success({
+            title: '操作成功',
+            message: `${actionText}成功`,
+        })
+
+        fetchData()
+    } catch (err) {
+        ElNotification.error({
+            title: '操作失败',
+            message: `${actionText}失败，请稍后重试`,
+        })
+    }
+}
 
 
 </script>

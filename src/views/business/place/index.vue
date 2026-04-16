@@ -1,15 +1,14 @@
 <template>
     <div>
         <div v-loading="$store.loading" class="p-5">
-            <div v-if="includes(app.routeNames, ['venue.create'])" class="flex items-center mb-5">
+            <div v-if="includes(app.routeNames, ['place.create'])" class="flex items-center mb-5">
                 <el-button type="primary" size="small" @click="goCreate">添加</el-button>
             </div>
             <div class="bg-white rounded-lg shadow-md p-4">
                 <div class="mb-4 flex justify-between items-center">
                     <div class=" flex  ml-auto items-center space-x-5 w-[50%]">
-                        <el-select v-model="req.status" placeholder="全部状态" clearable class="w-32">
-                            <el-option label="已发布" :value="1" />
-                            <el-option label="未发布" :value="2" />
+                        <el-select v-model="req.venue_id" placeholder="全部" class="w-32">
+                            <el-option v-for="value in venues" :key="value.id" :label="value.name" :value="value.id" />
                         </el-select>
                         <el-button type="primary" @click="fetchData">搜索</el-button>
                         <el-button @click="handleReset">重置</el-button>
@@ -17,38 +16,44 @@
                 </div>
                 <el-table :data="tableData" class=" w-full"
                     :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="maxHeight">
+                    <el-table-column label="点位名" prop="name" min-width="140" />
 
-                    <el-table-column label="场馆名" prop="name" />
-                    <el-table-column label="场馆封面" prop="cover">
+                    <el-table-column label="封面" prop="cover" width="180">
                         <template #default="scope">
-                            <div v-if="scope.row.cover" class="logo-wrap">
-                                <img :src="scope.row.cover" alt="" />
+                            <div v-if="scope.row.cover" class="cover-img">
+                                <img :src="scope.row.cover" alt="封面" />
+                            </div>
+                            <div v-else class="cover-empty">-</div>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="点位地址" prop="address" min-width="180" />
+                    <el-table-column label="状态" prop="status_str" width="100" />
+
+                    <el-table-column label="介绍" prop="introduction" min-width="220">
+                        <template #default="scope">
+                            <div class="line-clamp-3 text-gray-500 text-xs" :title="scope.row.introduction">
+                                {{ scope.row.introduction }}
                             </div>
                         </template>
                     </el-table-column>
 
-                    <el-table-column label="手机号码" prop="phone" />
-                    <el-table-column label="场馆地址" prop="address" />
-
-                    <el-table-column label="状态" prop="status_str" />
-                    <el-table-column label="场馆介绍" prop="introduction">
-                        <template #default="scope">
-                            <div class="text-xs text-gray-500  line-clamp-3" :title="scope.row.introduction">{{
-                                scope.row.introduction }}</div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="创建时间" prop="created_at" />
+                    <el-table-column label="创建时间" prop="created_at" width="180" />
 
 
-                    <el-table-column v-if="includes(app.routeNames, ['venue.create', 'venue.update', 'venue.delete'])"
-                        label="操作" align="center" fixed="right" width="200">
+                    <el-table-column v-if="includes(app.routeNames, ['place.create', 'place.update', 'place.delete'])"
+                        label="操作" align="center" fixed="right" width="220">
                         <template #default="scope">
                             <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 2"
                                 link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
                             <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 1"
                                 link size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['venue.update'])" link size="small"
+                            <el-button v-if="includes(app.routeNames, ['place.list'])" link size="small" type="primary"
+                                text @click="goList(scope.row)">子集列表</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.update'])" link size="small"
                                 type="primary" text @click="goEdit(scope.row)">编辑</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.delete'])" link size="small" type="danger"
+                                text @click="deleteFn(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -61,11 +66,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onBeforeMount } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApp } from '@/stores/app'
 import { includes } from '@/utils/utils'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
+
+import placesApi from '@/api/business/places'
 import venuesApi from '@/api/business/venues'
 
 const maxHeight = useWindowHeight(200)
@@ -78,6 +85,7 @@ const app = useApp()
 
 const total = ref<number>(0)
 
+const venues = ref<Array<any>>([])
 const req = reactive<PaginateReq>({
     page: 1,
     limit: 20
@@ -85,22 +93,23 @@ const req = reactive<PaginateReq>({
 
 const tableData = ref<Array<any>>([])
 
-onBeforeMount(function () {
+onMounted(function () {
     req.page = 1
-    fetchData()
+    venuesApi.list({ page: 1, limit: 999 }).then((res: Record<string, any>) => {
+        if (res && res.data) {
+            venues.value = res.data
+            req.venue_id = venues.value.length > 0 ? venues.value[0].id : undefined
+            fetchData()
+        }
+    })
 })
 
-function handleReset() {
-    req.page = 1
-    req.status = undefined
-    fetchData()
-}
 
 function fetchData() {
-
+    if (req.venue_id == undefined) return
 
     const data = { ...req }
-    venuesApi
+    placesApi
         .list(data)
         .then((res: Record<string, any>) => {
             if (res && res.data) {
@@ -113,15 +122,60 @@ function fetchData() {
 }
 
 function goCreate() {
-    router.push({ name: 'venue.create' })
+    router.push({ name: 'place.create' })
 }
 
 function goEdit(value: any): void {
     if (value && value.id) {
-        router.push({ name: 'venue.create', query: { id: value.id } })
+        router.push({ name: 'place.create', query: { id: value.id } })
     }
 }
 
+
+
+const goList = (value: any): void => {
+    if (value && value.id) {
+        router.push({ name: 'place.list', query: { parent_id: value.id, venue_id: value.venue_id } })
+    }
+}
+function handleReset() {
+    req.page = 1
+    req.venue_id = venues.value.length > 0 ? venues.value[0].id : undefined
+    fetchData()
+}
+
+// 删除景点/场馆
+const deleteFn = async (item: any) => {
+    // 无 ID 直接返回
+    if (!item?.id) return
+
+    // 弹出确认框
+    ElMessageBox.confirm('确定要删除这条数据吗？删除后无法恢复！', '提示', {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        try {
+            // 调用删除接口
+            await placesApi.delete(item.id)
+
+            // 成功提示
+            ElNotification.success({
+                title: '删除成功',
+                message: '数据已删除'
+            })
+
+            // 刷新列表
+            fetchData()
+        } catch (err) {
+            // 失败提示
+            ElNotification.error({
+                title: '删除失败',
+                message: '删除过程出现异常'
+            })
+        }
+    })
+}
 
 // 上线 / 下线切换
 const goPublish = async (row: { id: string; status: number }) => {
@@ -145,7 +199,7 @@ const goPublish = async (row: { id: string; status: number }) => {
     })
 
     try {
-        await venuesApi.put({
+        await placesApi.put({
             id: row.id,
             status: targetStatus,
         })
@@ -163,6 +217,7 @@ const goPublish = async (row: { id: string; status: number }) => {
         })
     }
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -195,6 +250,19 @@ const goPublish = async (row: { id: string; status: number }) => {
 
     .el-icon {
         color: #f00;
+    }
+}
+
+.cover-img {
+    width: 120px;
+    height: 70px;
+    border-radius: 6px;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 }
 </style>

@@ -5,13 +5,13 @@ import request from '@/utils/request'
 
 export default {
     /**
-     * 获取场馆列表
+     * 获取列表
      * @param params 查询参数
      * @returns 
      */
     list(params?: any) {
         return request({
-            url: '/venues',
+            url: '/places',
             method: 'get',
             params: {
                 page: 1,
@@ -21,38 +21,53 @@ export default {
         })
     },
     /**
-     * 获取场馆详情
-     * @param id 场馆ID
+     * 获取详情
+     * @param id ID
      * @returns 
      */
     detail(id: number | string) {
         return request({
-            url: '/venues/' + id,
+            url: '/places/' + id,
             method: 'get',
         })
     },
     /**
-     * 创建场馆
-     * @param data 场馆数据
+     * 创建
+     * @param data 数据
      * @returns 
      */
     create(data: any) {
         return request({
-            url: '/venues',
+            url: '/places',
             method: 'post',
             data
         })
     },
     /**
-     * 更新场馆
-     * @param data 场馆数据
+     * 更新
+     * @param data 数据
      * @returns 
      */
     put(data: any) {
         return request({
-            url: '/venues/',
+            url: '/places/',
             method: 'put',
             data
         })
     },
+    /**
+     * 删除
+     * @param id ID
+     * @returns
+     *  
+     * */
+    delete(id: number | string) {
+        return request({
+            url: '/places/',
+            method: 'delete',
+            data: {
+                id
+            }
+        })
+    }
 }

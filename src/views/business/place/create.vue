@@ -2,30 +2,28 @@
     <div class="page-container">
         <el-card v-loading="$store.loading" shadow="never" class="form-card">
             <div class="card-header">
-                <span class="card-title">{{ ruleForm.id ? '编辑场馆' : '创建场馆' }}</span>
+                <span class="card-title">{{ ruleForm.id ? '编辑点位' : '创建点位' }}</span>
             </div>
 
             <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="90px" label-position="right"
                 class="mt-4 form-grid">
                 <!-- 左列 -->
                 <div class="form-col">
-                    <el-form-item label="场馆名称" prop="name">
+                    <el-form-item label="点位名称" prop="name">
                         <el-input v-model="ruleForm.name" placeholder="请输入场馆名称" clearable />
                     </el-form-item>
 
-                    <el-form-item label="联系手机" prop="phone">
-                        <el-input v-model="ruleForm.phone" placeholder="请输入手机号" clearable />
-                    </el-form-item>
-
-                    <el-form-item label="所属组织" prop="organization_id">
-                        <el-select v-model="ruleForm.organization_id" placeholder="请选择组织" filterable>
-                            <el-option v-for="item in organizationList" :key="item.id" :label="item.name"
-                                :value="item.id" />
+                    <el-form-item label="所属场馆" prop="venue_id">
+                        <el-select v-model="ruleForm.venue_id" placeholder="请选择场馆" filterable :disabled="!!venue_id">
+                            <el-option v-for="item in venues" :key="item.id" :label="item.name" :value="item.id" />
                         </el-select>
                     </el-form-item>
 
-                    <el-form-item label="场馆地址" prop="address">
-                        <el-input v-model="ruleForm.address" placeholder="请输入场馆地址" clearable />
+                    <el-form-item label="点位地址" prop="address">
+                        <el-input v-model="ruleForm.address" placeholder="请输入点位地址" clearable />
+                    </el-form-item>
+                    <el-form-item label="标签" prop="tags">
+                        <el-input v-model="ruleForm.tags" placeholder="请输入标签，多个标签用逗号分隔" clearable />
                     </el-form-item>
                 </div>
 
@@ -35,7 +33,7 @@
                         <div class="avatar-uploader">
                             <div v-if="ruleForm.cover" class="relative w-full h-full">
                                 <img :src="toUrl(ruleForm.cover)" class="w-full h-full object-cover rounded-lg" />
-                                <div class="absolute top-1 right-1 bg-black/50 p-1 rounded-full cursor-pointer w-6 h-6 cursor-pointer flex items-center justify-center"
+                                <div class="absolute top-1 right-1 bg-black/50 p-1 rounded-full w-6 h-6 cursor-pointer flex items-center justify-center"
                                     @click="ruleForm.cover = ''">
                                     <el-icon size="16" color="#fff">
                                         <Close />
@@ -58,11 +56,13 @@
                     <el-form-item label="营业时间">
                         <div class="flex gap-2 items-center">
                             <el-form-item prop="open_time" class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.open_time" placeholder="开门" style="width:140px" />
+                                <el-time-select v-model="ruleForm.open_time" format="HH:mm" placeholder="开门"
+                                    style="width:140px" />
                             </el-form-item>
                             <span class="text-gray-400">—</span>
                             <el-form-item prop="close_time" class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.close_time" placeholder="关门" style="width:140px" />
+                                <el-time-select v-model="ruleForm.close_time" format="HH:mm" placeholder="关门"
+                                    style="width:140px" />
                             </el-form-item>
                         </div>
                     </el-form-item>
@@ -80,7 +80,7 @@
                 </div>
 
                 <!-- 介绍（通栏） -->
-                <el-form-item label="场馆介绍" prop="introduction" class="form-full">
+                <el-form-item label="介绍" prop="introduction" class="form-full">
                     <el-input v-model="ruleForm.introduction" type="textarea" :rows="8" placeholder="请输入场馆介绍"
                         clearable />
                 </el-form-item>
@@ -104,18 +104,20 @@ import { useRouter, useRoute } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElNotification } from 'element-plus'
 import venuesApi from '@/api/business/venues'
-import organizationsApi from '@/api/business/organization'
+import placesApi from '@/api/business/places'
+import { uploadFiles } from '@/api/utils'
 
 interface RuleForm {
     id?: string
-    phone: string
     name: string
     introduction: string
-    organization_id?: string
+    venue_id?: number
+    parent_id?: number
     cover?: string | File
     address?: string
     open_time?: string
     close_time?: string
+    tag?: string
     longitude?: string
     latitude?: string
     [key: string]: any
@@ -125,19 +127,32 @@ const router = useRouter()
 const route = useRoute()
 const ruleFormRef = ref<FormInstance>()
 
-const organizationList = ref<any[]>([])
+const venues = ref<any[]>([])
 
 const initialForm = (): RuleForm => ({
-    phone: '',
     name: '',
     introduction: '',
-    organization_id: '',
     cover: '',
     address: '',
     open_time: '',
     close_time: '',
     longitude: '',
     latitude: '',
+})
+
+const venue_id = computed(() => {
+    return +(route.query.venue_id as string || 0)
+})
+const parent_id = computed(() => {
+    return +(route.query.parent_id as string || 0)
+})
+
+const ruleForm = reactive<RuleForm>(initialForm())
+
+const rules = reactive<FormRules<RuleForm>>({
+    name: [{ required: true, message: '请输入点位名称', trigger: 'blur' }],
+    venue_id: [{ required: true, message: '请选择所属场馆', trigger: 'change' }],
+    address: [{ required: true, message: '请输入点位地址', trigger: 'blur' }],
 })
 
 const toUrl = (cover: string | File) => {
@@ -148,26 +163,25 @@ const toUrl = (cover: string | File) => {
     }
 }
 
-const ruleForm = reactive<RuleForm>(initialForm())
-
-const rules = reactive<FormRules<RuleForm>>({
-    name: [{ required: true, message: '请输入场馆名称', trigger: 'blur' }],
-    phone: [
-        { required: true, message: '请输入手机号', trigger: 'blur' },
-        { pattern: /^1[3-9]\d{9}$/, message: '手机号格式错误', trigger: 'blur' },
-    ],
-    organization_id: [{ required: true, message: '请选择组织', trigger: 'change' }],
-    address: [{ required: true, message: '请输入场馆地址', trigger: 'blur' }],
-    open_time: [{ required: true, message: '请选择开门时间', trigger: 'change' }],
-    close_time: [{ required: true, message: '请选择关门时间', trigger: 'change' }],
-})
-
 const submitRole = () => {
     ruleFormRef.value?.validate(async (valid) => {
         if (!valid) return
-        const data = { ...ruleForm }
-        const api = data.id ? venuesApi.put : venuesApi.create
+        const data: any = { ...ruleForm }
+
+        if (data.cover instanceof File) {
+            const res = await uploadFiles({
+                file: data.cover,
+                info: { referer: 'place', type: 'image' }
+            })
+            data.cover = res.url
+        }
+        const api = data.id ? placesApi.put : placesApi.create
         try {
+            for (const key in data) {
+                if (data[key] === '') {
+                    delete data[key]
+                }
+            }
             await api(data)
             ElNotification.success({ title: '成功', message: ruleForm.id ? '修改成功' : '创建成功' })
             setTimeout(() => goBack(), 1200)
@@ -190,12 +204,21 @@ const goBack = () => {
 
 onMounted(async () => {
     const { id } = route.query as { id?: string }
-    organizationsApi.list({ page: 1, limit: 100 }).then(res => {
-        organizationList.value = res.data
+    venuesApi.list({ page: 1, limit: 100 }).then(res => {
+        venues.value = res.data
     })
+
     if (id) {
-        const res = await venuesApi.detail(id)
-        Object.assign(ruleForm, res)
+        const res = await placesApi.detail(id)
+        for (const key in res) {
+            if (res[key] !== undefined && res[key] !== null && res[key] !== '') {
+                ruleForm[key] = res[key]
+            }
+        }
+
+    } else {
+        ruleForm.venue_id = venue_id.value
+        ruleForm.parent_id = parent_id.value
     }
 })
 </script>
