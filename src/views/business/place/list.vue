@@ -44,7 +44,7 @@
                 <el-table-column label="创建时间" prop="created_at" width="180" />
 
                 <el-table-column v-if="includes(app.routeNames, ['place.update', 'place.delete'])" label="操作"
-                    align="center" fixed="right" width="220">
+                    align="center" fixed="right" width="180">
                     <template #default="scope">
                         <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 2"
                             link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
@@ -54,7 +54,8 @@
                             @click="goList(scope.row)">
                             子集列表
                         </el-button>
-
+                        <el-button v-if="includes(app.routeNames, ['place.introduction'])" link size="small"
+                            type="primary" text @click="goPlacet(scope.row)">音频列表</el-button>
                         <el-button v-if="includes(app.routeNames, ['place.update'])" link size="small" type="primary"
                             @click="goEdit(scope.row)">
                             编辑
@@ -159,6 +160,9 @@ const goEdit = (item: any) => {
     if (item?.id) router.push({ name: 'place.create', query: { id: item.id } })
 }
 
+const goPlacet = (item: any) => {
+    if (item?.id) router.push({ name: 'place.introduction', query: { place_id: item.id } })
+}
 const goList = (item: any) => {
     if (item?.id) {
         router.push({

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-loading="$store.loading" class="p-5">
-            <div v-if="includes(app.routeNames, ['place.create'])" class="flex items-center mb-5">
+            <div v-if="includes(app.routeNames, ['place.audio'])" class="flex items-center mb-5">
                 <el-button type="primary" size="small" @click="goCreate">添加</el-button>
             </div>
             <div class="bg-white rounded-lg shadow-md p-4">
@@ -16,12 +16,12 @@
                 </div>
                 <el-table :data="tableData" class=" w-full"
                     :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="maxHeight">
-                    <el-table-column label="点位名" prop="name" min-width="140" />
+                    <el-table-column label="名称" prop="name" min-width="140" />
 
-                    <el-table-column label="封面" prop="cover" width="180">
+                    <el-table-column label="音频" prop="voice" width="300">
                         <template #default="scope">
-                            <div v-if="scope.row.cover" class="cover-img">
-                                <img :src="scope.row.cover" alt="封面" />
+                            <div v-if="scope.row.voice" class="cover-img">
+                                <audio :src="scope.row.voice" controls class="w-full h-full object-cover rounded-lg" />
                             </div>
                             <div v-else class="cover-empty">-</div>
                         </template>
@@ -47,12 +47,8 @@
                                 link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
                             <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 1"
                                 link size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.list'])" link size="small" type="primary"
-                                text @click="goList(scope.row)">子集列表</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.introduction'])" link size="small" type="primary"
-                                text @click="goPlacet(scope.row)">音频列表</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.update'])" link size="small"
-                                type="primary" text @click="goEdit(scope.row)">编辑</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.audio'])" link size="small" type="primary"
+                                text @click="goEdit(scope.row)">编辑</el-button>
                             <el-button v-if="includes(app.routeNames, ['place.delete'])" link size="small" type="danger"
                                 text @click="deleteFn(scope.row)">删除</el-button>
                         </template>
@@ -73,8 +69,7 @@ import { useApp } from '@/stores/app'
 import { includes } from '@/utils/utils'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 
-import placesApi from '@/api/business/places'
-import venuesApi from '@/api/business/venues'
+import placeIntroductionsApi from '@/api/business/place_introductions'
 
 const maxHeight = useWindowHeight(200)
 
@@ -96,21 +91,14 @@ const tableData = ref<Array<any>>([])
 
 onMounted(function () {
     req.page = 1
-    venuesApi.list({ page: 1, limit: 999 }).then((res: Record<string, any>) => {
-        if (res && res.data) {
-            venues.value = res.data
-            req.venue_id = venues.value.length > 0 ? venues.value[0].id : undefined
-            fetchData()
-        }
-    })
+    fetchData()
 })
 
 
 function fetchData() {
-    if (req.venue_id == undefined) return
 
-    const data = { ...req }
-    placesApi
+    const data = { ...req, place_id: router.currentRoute.value.query.place_id }
+    placeIntroductionsApi
         .list(data)
         .then((res: Record<string, any>) => {
             if (res && res.data) {
@@ -123,25 +111,15 @@ function fetchData() {
 }
 
 function goCreate() {
-    router.push({ name: 'place.create' })
+    router.push({ name: 'place.audio', query: { place_id: router.currentRoute.value.query.place_id } })
 }
 
 function goEdit(value: any): void {
     if (value && value.id) {
-        router.push({ name: 'place.create', query: { id: value.id } })
+        router.push({ name: 'place.audio', query: { id: value.id } })
     }
 }
 
-
-const goPlacet = (item: any) => {
-    if (item?.id) router.push({ name: 'place.introduction', query: { place_id: item.id } })
-}
-
-const goList = (value: any): void => {
-    if (value && value.id) {
-        router.push({ name: 'place.list', query: { parent_id: value.id, venue_id: value.venue_id } })
-    }
-}
 function handleReset() {
     req.page = 1
     req.venue_id = venues.value.length > 0 ? venues.value[0].id : undefined
@@ -161,7 +139,7 @@ const deleteFn = async (item: any) => {
     }).then(async () => {
         try {
             // 调用删除接口
-            await placesApi.delete(item.id)
+            await placeIntroductionsApi.delete(item.id)
 
             // 成功提示
             ElNotification.success({
@@ -203,7 +181,7 @@ const goPublish = async (row: { id: string; status: number }) => {
     })
 
     try {
-        await placesApi.put({
+        await placeIntroductionsApi.put({
             id: row.id,
             status: targetStatus,
         })
@@ -258,15 +236,10 @@ const goPublish = async (row: { id: string; status: number }) => {
 }
 
 .cover-img {
-    width: 120px;
-    height: 70px;
+    width: 220px;
+    height: 40px;
     border-radius: 6px;
     overflow: hidden;
 
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
 }
 </style>

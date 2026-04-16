@@ -183,7 +183,7 @@ const submitRole = () => {
             }
             await api(data)
             ElNotification.success({ title: '成功', message: ruleForm.id ? '修改成功' : '创建成功' })
-            setTimeout(() => goBack(), 1200)
+            setTimeout(() => goBack(), 800)
         } catch (err) {
             ElNotification.error({ title: '失败', message: ruleForm.id ? '修改失败' : '创建失败' })
         }

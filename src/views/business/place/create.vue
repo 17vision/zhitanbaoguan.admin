@@ -33,7 +33,7 @@
                         <div class="avatar-uploader">
                             <div v-if="ruleForm.cover" class="relative w-full h-full">
                                 <img :src="toUrl(ruleForm.cover)" class="w-full h-full object-cover rounded-lg" />
-                                <div class="absolute top-1 right-1 bg-black/50 p-1 rounded-full w-6 h-6 cursor-pointer flex items-center justify-center"
+                                <div class="absolute top-1 right-1 bg-black/20 p-1 rounded-full w-6 h-6 cursor-pointer flex items-center justify-center"
                                     @click="ruleForm.cover = ''">
                                     <el-icon size="16" color="#fff">
                                         <Close />
@@ -184,7 +184,7 @@ const submitRole = () => {
             }
             await api(data)
             ElNotification.success({ title: '成功', message: ruleForm.id ? '修改成功' : '创建成功' })
-            setTimeout(() => goBack(), 1200)
+            setTimeout(() => goBack(), 800)
         } catch (err) {
             ElNotification.error({ title: '失败', message: ruleForm.id ? '修改失败' : '创建失败' })
         }
