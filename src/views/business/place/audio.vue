@@ -84,6 +84,7 @@ const rules = reactive<FormRules<RuleForm>>({
 
     name: [{ required: true, message: "请输入名称", trigger: "blur" }],
     voice: [{ required: true, message: "请上传音频", trigger: "blur" }],
+    content: [{ required: true, message: "请输入介绍", trigger: "blur" }],
 });
 
 // 提交

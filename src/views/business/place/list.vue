@@ -44,7 +44,7 @@
                 <el-table-column label="创建时间" prop="created_at" width="180" />
 
                 <el-table-column v-if="includes(app.routeNames, ['place.update', 'place.delete'])" label="操作"
-                    align="center" fixed="right" width="180">
+                    align="center" fixed="right" width="280">
                     <template #default="scope">
                         <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2"
                             link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
