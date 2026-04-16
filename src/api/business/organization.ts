@@ -55,4 +55,11 @@ export default {
             data
         })
     },
+    delete(id: number | string) {
+        return request({
+            url: '/organizations/',
+            method: 'delete',
+            data: { id }
+        })
+    }
 }

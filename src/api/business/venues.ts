@@ -55,4 +55,17 @@ export default {
             data
         })
     },
+
+    /**
+     * 删除场馆
+     * @param id 场馆ID
+     * @returns
+     * */
+    delete(id: number | string) {
+        return request({
+            url: '/venues/',
+            method: 'delete',
+            data: { id }
+        })
+    }
 }

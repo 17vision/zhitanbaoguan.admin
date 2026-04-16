@@ -43,12 +43,14 @@
                     <el-table-column v-if="includes(app.routeNames, ['venue.create', 'venue.update', 'venue.delete'])"
                         label="操作" align="center" fixed="right" width="200">
                         <template #default="scope">
-                            <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 2"
-                                link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 1"
-                                link size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
+                            <el-button v-if="includes(app.routeNames, ['venue.update']) && scope.row.status == 2" link
+                                size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
+                            <el-button v-if="includes(app.routeNames, ['venue.update']) && scope.row.status == 1" link
+                                size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
                             <el-button v-if="includes(app.routeNames, ['venue.update'])" link size="small"
                                 type="primary" text @click="goEdit(scope.row)">编辑</el-button>
+                            <el-button v-if="includes(app.routeNames, ['venue.delete'])" link size="small" type="danger"
+                                text @click="deleteFn(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -121,7 +123,25 @@ function goEdit(value: any): void {
         router.push({ name: 'venue.create', query: { id: value.id } })
     }
 }
+function deleteFn(row: any) {
+    if (!row?.id) return
 
+    ElMessageBox.confirm('确定要删除这条数据吗？删除后无法恢复！', '提示', {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        try {
+            await venuesApi.delete(row.id)
+            ElNotification.success({ title: '成功', message: '删除成功' })
+            fetchData()
+        } catch (err) {
+            ElNotification.error({ title: '失败', message: '删除失败，请稍后重试' })
+        }
+    }).catch(() => {
+        // 取消操作
+    })
+}
 
 // 上线 / 下线切换
 const goPublish = async (row: { id: string; status: number }) => {

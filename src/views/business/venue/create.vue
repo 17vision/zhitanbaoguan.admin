@@ -57,11 +57,11 @@
 
                     <el-form-item label="营业时间">
                         <div class="flex gap-2 items-center">
-                            <el-form-item prop="open_time" class="mb-0 flex-1">
+                            <el-form-item  class="mb-0 flex-1">
                                 <el-time-select v-model="ruleForm.open_time" format="HH:mm:ss" placeholder="开门" style="width:140px" />
                             </el-form-item>
                             <span class="text-gray-400">—</span>
-                            <el-form-item prop="close_time" class="mb-0 flex-1">
+                            <el-form-item class="mb-0 flex-1">
                                 <el-time-select v-model="ruleForm.close_time" format="HH:mm:ss" placeholder="关门" style="width:140px" />
                             </el-form-item>
                         </div>

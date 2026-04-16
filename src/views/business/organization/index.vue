@@ -35,6 +35,8 @@
                                 link size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
                             <el-button v-if="includes(app.routeNames, ['organization.update'])" link size="small"
                                 type="primary" text @click="goEdit(scope.row)">编辑</el-button>
+                            <el-button v-if="includes(app.routeNames, ['organization.delete'])" link size="small"
+                                type="danger" text @click="deleteFn(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -96,6 +98,27 @@ function fetchData() {
 
 
         })
+}
+
+
+function deleteFn(row: any) {
+    if (!row?.id) return
+
+    ElMessageBox.confirm('确定要删除这条数据吗？删除后无法恢复！', '提示', {
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async () => {
+        try {
+            await organizationsApi.delete(row.id)
+            ElNotification.success({ title: '成功', message: '删除成功' })
+            fetchData()
+        } catch (err) {
+            ElNotification.error({ title: '失败', message: '删除失败，请稍后重试' })
+        }
+    }).catch(() => {
+        // 取消操作
+    })
 }
 
 function goCreate() {

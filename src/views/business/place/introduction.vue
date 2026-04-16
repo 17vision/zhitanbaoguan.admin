@@ -43,9 +43,9 @@
                     <el-table-column v-if="includes(app.routeNames, ['place.create', 'place.update', 'place.delete'])"
                         label="操作" align="center" fixed="right" width="180">
                         <template #default="scope">
-                            <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 2"
+                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2"
                                 link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['organization.update']) && scope.row.status == 1"
+                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 1"
                                 link size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
                             <el-button v-if="includes(app.routeNames, ['place.audio'])" link size="small" type="primary"
                                 text @click="goEdit(scope.row)">编辑</el-button>
