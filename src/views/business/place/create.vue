@@ -10,7 +10,7 @@
                 <!-- 左列 -->
                 <div class="form-col">
                     <el-form-item label="点位名称" prop="name">
-                        <el-input v-model="ruleForm.name" placeholder="请输入场馆名称" clearable />
+                        <el-input v-model="ruleForm.name" placeholder="请输入点位名称" clearable />
                     </el-form-item>
 
                     <el-form-item label="所属场馆" prop="venue_id">
@@ -19,7 +19,7 @@
                         </el-select>
                     </el-form-item>
 
-                    <el-form-item label="点位地址" prop="address">
+                    <el-form-item label="点位地址">
                         <el-input v-model="ruleForm.address" placeholder="请输入点位地址" clearable />
                     </el-form-item>
                     <el-form-item label="标签" prop="tags">
@@ -56,12 +56,12 @@
                     <el-form-item label="营业时间">
                         <div class="flex gap-2 items-center">
                             <el-form-item prop="open_time" class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.open_time" format="HH:mm" placeholder="开门"
+                                <el-time-select v-model="ruleForm.open_time" format="HH:mm:ss" placeholder="开门"
                                     style="width:140px" />
                             </el-form-item>
                             <span class="text-gray-400">—</span>
                             <el-form-item prop="close_time" class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.close_time" format="HH:mm" placeholder="关门"
+                                <el-time-select v-model="ruleForm.close_time" format="HH:mm:ss" placeholder="关门"
                                     style="width:140px" />
                             </el-form-item>
                         </div>
@@ -141,10 +141,10 @@ const initialForm = (): RuleForm => ({
 })
 
 const venue_id = computed(() => {
-    return +(route.query.venue_id as string || 0)
+    return +(route.query.venue_id as string || '')
 })
 const parent_id = computed(() => {
-    return +(route.query.parent_id as string || 0)
+    return +(route.query.parent_id as string || '')
 })
 
 const ruleForm = reactive<RuleForm>(initialForm())
@@ -178,7 +178,7 @@ const submitRole = () => {
         const api = data.id ? placesApi.put : placesApi.create
         try {
             for (const key in data) {
-                if (data[key] === '') {
+                if (data[key] === '' || data[key] === null || data[key] === undefined || data[key] === 0) {
                     delete data[key]
                 }
             }
@@ -207,16 +207,17 @@ onMounted(async () => {
     venuesApi.list({ page: 1, limit: 100 }).then(res => {
         venues.value = res.data
     })
-
+    
     if (id) {
         const res = await placesApi.detail(id)
         for (const key in res) {
-            if (res[key] !== undefined && res[key] !== null && res[key] !== '') {
+            if (res[key]) {
                 ruleForm[key] = res[key]
             }
         }
+        
+    } else if (venue_id.value || parent_id.value) {
 
-    } else {
         ruleForm.venue_id = venue_id.value
         ruleForm.parent_id = parent_id.value
     }

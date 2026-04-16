@@ -2,7 +2,7 @@
     <div v-loading="$store.loading" class="p-5">
         <div v-if="includes(app.routeNames, ['place.create'])" class="flex items-center gap-3 mb-5">
             <el-button type="primary" size="small" @click="goCreate">
-                添加场馆
+                添加
             </el-button>
             <el-button size="small" @click="goBack">返回</el-button>
         </div>
@@ -31,7 +31,6 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="点位地址" prop="address" min-width="180" />
                 <el-table-column label="状态" prop="status_str" width="100" />
 
                 <el-table-column label="介绍" prop="introduction" min-width="220">

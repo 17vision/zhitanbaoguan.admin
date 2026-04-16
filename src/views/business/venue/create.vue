@@ -58,11 +58,11 @@
                     <el-form-item label="营业时间">
                         <div class="flex gap-2 items-center">
                             <el-form-item prop="open_time" class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.open_time" placeholder="开门" style="width:140px" />
+                                <el-time-select v-model="ruleForm.open_time" format="HH:mm:ss" placeholder="开门" style="width:140px" />
                             </el-form-item>
                             <span class="text-gray-400">—</span>
                             <el-form-item prop="close_time" class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.close_time" placeholder="关门" style="width:140px" />
+                                <el-time-select v-model="ruleForm.close_time" format="HH:mm:ss" placeholder="关门" style="width:140px" />
                             </el-form-item>
                         </div>
                     </el-form-item>
@@ -105,6 +105,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { ElNotification } from 'element-plus'
 import venuesApi from '@/api/business/venues'
 import organizationsApi from '@/api/business/organization'
+import { uploadFiles } from '@/api/utils'
 
 interface RuleForm {
     id?: string
@@ -166,8 +167,20 @@ const submitRole = () => {
     ruleFormRef.value?.validate(async (valid) => {
         if (!valid) return
         const data = { ...ruleForm }
+        if (data.cover instanceof File) {
+            const res = await uploadFiles({
+                file: data.cover,
+                info: { referer: 'venue', type: 'image' }
+            })
+            data.cover = res.url
+        }
         const api = data.id ? venuesApi.put : venuesApi.create
         try {
+            for (const key in data) {
+                if (data[key] === '') {
+                    delete data[key]
+                }
+            }
             await api(data)
             ElNotification.success({ title: '成功', message: ruleForm.id ? '修改成功' : '创建成功' })
             setTimeout(() => goBack(), 1200)

@@ -27,7 +27,6 @@
                         </template>
                     </el-table-column>
 
-                    <el-table-column label="点位地址" prop="address" min-width="180" />
                     <el-table-column label="状态" prop="status_str" width="100" />
 
                     <el-table-column label="介绍" prop="introduction" min-width="220">
