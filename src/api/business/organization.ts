@@ -25,7 +25,7 @@ export default {
      * @param id 组织ID
      * @returns 
      */
-    detail(id: number) {
+    detail(id: number | string) {
         return request({
             url: '/organizations/' + id,
             method: 'get',

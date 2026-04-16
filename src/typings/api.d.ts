@@ -1,12 +1,13 @@
 // 分页
 declare interface PaginateReq {
-  limit: number
-  page: number
+    limit: number
+    page: number
+    [key: string]: any
 }
 
 // 带有父级的分页
 declare interface ParentPaginateReq extends PaginateReq {
-  parent_id?: number
+    parent_id?: number
 }
 
 // 数字 boolean 型

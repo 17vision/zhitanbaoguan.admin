@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-loading="$store.loading" class="p-5">
-            <div v-if="includes(app.routeNames, ['organization.create'])" class="flex items-center mb-5">
+            <div v-if="includes(app.routeNames, ['venue.create'])" class="flex items-center mb-5">
                 <el-button type="primary" size="small" @click="goCreate">添加</el-button>
             </div>
             <div class="bg-white rounded-lg shadow-md p-4">
@@ -18,18 +18,32 @@
                 <el-table :data="tableData" class=" w-full"
                     :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="maxHeight">
 
-                    <el-table-column label="组织名" prop="name" />
+                    <el-table-column label="场馆名" prop="name" />
+                    <el-table-column label="场馆封面" prop="cover">
+                        <template #default="scope">
+                            <div v-if="scope.row.cover" class="logo-wrap">
+                                <img :src="scope.row.cover" alt="" />
+                            </div>
+                        </template>
+                    </el-table-column>
 
                     <el-table-column label="手机号码" prop="phone" />
+                    <el-table-column label="场馆地址" prop="address" />
 
-                    <el-table-column label="介绍" prop="introduction" />
                     <el-table-column label="状态" prop="status_str" />
+                    <el-table-column label="场馆介绍" prop="introduction">
+                        <template #default="scope">
+                            <div class="text-xs text-gray-500  line-clamp-3" :title="scope.row.introduction">{{
+                                scope.row.introduction }}</div>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="创建时间" prop="created_at" />
-                    <el-table-column
-                        v-if="includes(app.routeNames, ['organization.create', 'organization.update', 'organization.delete'])"
+
+
+                    <el-table-column v-if="includes(app.routeNames, ['venue.create', 'venue.update', 'venue.delete'])"
                         label="操作" align="center" fixed="right" width="200">
                         <template #default="scope">
-                            <el-button v-if="includes(app.routeNames, ['organization.update'])" link size="small"
+                            <el-button v-if="includes(app.routeNames, ['venue.update'])" link size="small"
                                 type="primary" text @click="goEdit(scope.row)">编辑</el-button>
                         </template>
                     </el-table-column>
@@ -48,7 +62,7 @@ import { useRouter } from 'vue-router'
 import { useApp } from '@/stores/app'
 import { includes } from '@/utils/utils'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
-import organizationsApi from '@/api/business/organization'
+import venuesApi from '@/api/business/venues'
 const maxHeight = useWindowHeight(200)
 
 
@@ -71,17 +85,17 @@ onBeforeMount(function () {
     fetchData()
 })
 
-
-const handleReset = () => {
+function handleReset() {
     req.page = 1
     req.status = undefined
     fetchData()
 }
+
 function fetchData() {
 
 
     const data = { ...req }
-    organizationsApi
+    venuesApi
         .list(data)
         .then((res: Record<string, any>) => {
             if (res && res.data) {
@@ -90,17 +104,16 @@ function fetchData() {
 
             total.value = res.total
 
-
         })
 }
 
 function goCreate() {
-    router.push({ name: 'organization.create' })
+    router.push({ name: 'venue.create' })
 }
 
 function goEdit(value: any): void {
     if (value && value.id) {
-        router.push({ name: 'organization.create', query: { id: value.id } })
+        router.push({ name: 'venue.create', query: { id: value.id } })
     }
 }
 

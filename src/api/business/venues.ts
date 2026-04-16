@@ -25,7 +25,7 @@ export default {
      * @param id 场馆ID
      * @returns 
      */
-    detail(id: number) {
+    detail(id: number | string) {
         return request({
             url: '/venues/' + id,
             method: 'get',
