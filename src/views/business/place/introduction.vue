@@ -3,13 +3,17 @@
         <div v-loading="$store.loading" class="p-5">
             <div v-if="includes(app.routeNames, ['place.audio'])" class="flex items-center mb-5">
                 <el-button type="primary" size="small" @click="goCreate">添加</el-button>
+                <el-button size="small" @click="goBack">返回</el-button>
             </div>
             <div class="bg-white rounded-lg shadow-md p-4">
-                <div class="mb-4 flex justify-between items-center">
-                    <div class=" flex  ml-auto items-center space-x-5 w-[50%]">
-                        <el-select v-model="req.venue_id" placeholder="全部" class="w-32">
+                <div class="flex   items-center justify-between  w-full mb-4">
+                    <div class="text-lg font-semibold">{{ title }}</div>
+
+                    <div class=" ml-auto  flex items-center space-x-5">
+                        <el-select v-model="req.venue_id" placeholder="全部" class="w-32" style="width: 200px;">
                             <el-option v-for="value in venues" :key="value.id" :label="value.name" :value="value.id" />
                         </el-select>
+
                         <el-button type="primary" @click="fetchData">搜索</el-button>
                         <el-button @click="handleReset">重置</el-button>
                     </div>
@@ -43,10 +47,10 @@
                     <el-table-column v-if="includes(app.routeNames, ['place.create', 'place.update', 'place.delete'])"
                         label="操作" align="center" fixed="right" width="280">
                         <template #default="scope">
-                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2"
-                                link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 1"
-                                link size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2" link
+                                size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 1" link
+                                size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
                             <el-button v-if="includes(app.routeNames, ['place.audio'])" link size="small" type="primary"
                                 text @click="goEdit(scope.row)">编辑</el-button>
                             <el-button v-if="includes(app.routeNames, ['place.delete'])" link size="small" type="danger"
@@ -64,7 +68,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useApp } from '@/stores/app'
 import { includes } from '@/utils/utils'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
@@ -76,7 +80,10 @@ const maxHeight = useWindowHeight(200)
 
 
 const router = useRouter()
+const route = useRoute()
 
+
+const title = computed(() => route.query.title || '点位列表')
 const app = useApp()
 
 const total = ref<number>(0)
@@ -108,6 +115,10 @@ function fetchData() {
             total.value = res.total
 
         })
+}
+
+const goBack = () => {
+    router.back()
 }
 
 function goCreate() {

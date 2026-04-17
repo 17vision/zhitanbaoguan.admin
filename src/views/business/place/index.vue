@@ -134,12 +134,12 @@ function goEdit(value: any): void {
 
 
 const goPlacet = (item: any) => {
-    if (item?.id) router.push({ name: 'place.introduction', query: { place_id: item.id } })
+    if (item?.id) router.push({ name: 'place.introduction', query: { place_id: item.id,title:item.name  } })
 }
 
 const goList = (value: any): void => {
     if (value && value.id) {
-        router.push({ name: 'place.list', query: { parent_id: value.id, venue_id: value.venue_id } })
+        router.push({ name: 'place.list', query: { parent_id: value.id, venue_id: value.venue_id,title:value.name } })
     }
 }
 function handleReset() {

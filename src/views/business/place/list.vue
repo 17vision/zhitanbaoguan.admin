@@ -8,14 +8,18 @@
         </div>
 
         <div class="bg-white rounded-lg shadow-md p-4">
-            <div class="flex  ml-auto items-center space-x-5 w-[50%] mb-4">
-                <el-select v-model="req.status" placeholder="全部状态" clearable class="w-32">
-                    <el-option label="已发布" :value="1" />
-                    <el-option label="未发布" :value="2" />
-                </el-select>
+            <div class="flex   items-center justify-between  w-full mb-4">
+                <div class="text-lg font-semibold">{{ title }}</div>
 
-                <el-button type="primary" @click="fetchData">搜索</el-button>
-                <el-button @click="handleReset">重置</el-button>
+                <div class=" ml-auto ">
+                    <el-select v-model="req.status" placeholder="全部状态" clearable style="width: 200px;">
+                        <el-option label="已发布" :value="1" />
+                        <el-option label="未发布" :value="2" />
+                    </el-select>
+
+                    <el-button type="primary" @click="fetchData">搜索</el-button>
+                    <el-button @click="handleReset">重置</el-button>
+                </div>
             </div>
 
             <el-table :data="tableData" :max-height="maxHeight"
@@ -46,10 +50,10 @@
                 <el-table-column v-if="includes(app.routeNames, ['place.update', 'place.delete'])" label="操作"
                     align="center" fixed="right" width="280">
                     <template #default="scope">
-                        <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2"
-                            link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
-                        <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 1"
-                            link size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
+                        <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2" link
+                            size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
+                        <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 1" link
+                            size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
                         <el-button v-if="includes(app.routeNames, ['place.list'])" link size="small" type="primary"
                             @click="goList(scope.row)">
                             子集列表
@@ -101,6 +105,7 @@ const req = reactive({
 
 const venue_id = computed(() => route.query.venue_id)
 const parent_id = computed(() => route.query.parent_id)
+const title = computed(() => route.query.title || '点位列表')
 
 // 获取列表
 const fetchData = async () => {
@@ -161,13 +166,13 @@ const goEdit = (item: any) => {
 }
 
 const goPlacet = (item: any) => {
-    if (item?.id) router.push({ name: 'place.introduction', query: { place_id: item.id } })
+    if (item?.id) router.push({ name: 'place.introduction', query: { place_id: item.id, title: item.name } })
 }
 const goList = (item: any) => {
     if (item?.id) {
         router.push({
             name: 'place.list',
-            query: { parent_id: item.id, venue_id: item.venue_id },
+            query: { parent_id: item.id, venue_id: item.venue_id, title: item.name },
         })
     }
 }
