@@ -26,7 +26,7 @@
 
             <el-table :data="tableData" :max-height="maxHeight"
                 :header-cell-style="{ background: '#F5F6FA', color: '#666' }" class="w-full">
-                <el-table-column label="点位名" prop="name" min-width="140" />
+                <el-table-column label="点位名" prop="name" width="140" />
 
                 <el-table-column label="封面" prop="cover" width="180">
                     <template #default="scope">
@@ -36,7 +36,13 @@
                         <div v-else class="cover-empty">-</div>
                     </template>
                 </el-table-column>
-
+                <el-table-column label="小程序码" prop="qrcode" width="180">
+                    <template #default="scope">
+                        <div v-if="scope.row.qrcode" class="logo-wrap">
+                            <img :src="scope.row.qrcode" alt="" />
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column label="状态" prop="status_str" width="100" />
 
                 <el-table-column label="介绍" prop="introduction">
@@ -57,19 +63,20 @@
                                 :type="scope.row.status == 1 ? 'danger' : 'primary'" text @click="goPublish(scope.row)">
                                 {{ scope.row.status == 1 ? '下线' : '上线' }}
                             </el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.update'])" link size="small"
-                                type="primary" text @click="goEdit(scope.row)">编辑</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.list'])" link size="small" type="primary"
+                                text @click="goList(scope.row)">子集列表</el-button>
                             <!-- 更多操作 → 合并成下拉菜单 -->
                             <el-dropdown @command="(cmd) => handleCommand(cmd, scope.row)">
                                 <el-button link size="small" type="primary" text>更多</el-button>
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item v-if="includes(app.routeNames, ['place.update'])"
+                                            command="edit">编辑
+                                        </el-dropdown-item>
+                                        <el-dropdown-item v-if="includes(app.routeNames, ['place.update'])"
                                             command="qrcode">生成小程序码
                                         </el-dropdown-item>
-                                        <el-dropdown-item v-if="includes(app.routeNames, ['place.list'])"
-                                            command="list">子集列表
-                                        </el-dropdown-item>
+
                                         <el-dropdown-item v-if="includes(app.routeNames, ['place.introduction'])"
                                             command="audio">音频列表
                                         </el-dropdown-item>

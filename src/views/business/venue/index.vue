@@ -51,22 +51,44 @@
 
 
                     <el-table-column v-if="includes(app.routeNames, ['venue.create', 'venue.update', 'venue.delete'])"
-                        label="操作" align="center" fixed="right" width="300">
+                        label="操作" align="center" fixed="right" width="220">
                         <template #default="scope">
-                            <el-button v-if="includes(app.routeNames, ['venue.update']) && scope.row.status == 2" link
-                                size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['venue.update']) && scope.row.status == 1" link
-                                size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['venue.update'])" link size="small"
-                                type="primary" text @click="setQrcode(scope.row)">生成小程序码</el-button>
-                            <el-button v-if="includes(app.routeNames, ['venue.introduction'])" link size="small"
-                                type="primary" text @click="goPlacet(scope.row)">音频列表</el-button>
-                            <el-button v-if="includes(app.routeNames, ['venue.update'])" link size="small"
-                                type="primary" text @click="goEdit(scope.row)">编辑</el-button>
-                            <el-button v-if="includes(app.routeNames, ['venue.delete'])" link size="small" type="danger"
-                                text @click="deleteFn(scope.row)">删除</el-button>
+                            <div class="flex items-center justify-center space-x-2">
+                                <!-- 上下线 合并为一个按钮 -->
+                                <el-button v-if="includes(app.routeNames, ['venue.update'])" link size="small"
+                                    :type="scope.row.status === 1 ? 'danger' : 'primary'" text
+                                    @click="goPublish(scope.row)">
+                                    {{ scope.row.status === 1 ? '下线' : '上线' }}
+                                </el-button>
+                                <el-button v-if="includes(app.routeNames, ['venue.update'])" link size="small"
+                                    type="primary" text @click="goEdit(scope.row)">
+                                    编辑
+                                </el-button>
+                                <!-- 更多操作 下拉菜单 -->
+                                <el-dropdown @command="(cmd) => handleVenueCommand(cmd, scope.row)">
+                                    <el-button link size="small" type="primary" text>更多</el-button>
+                                    <template #dropdown>
+                                        <el-dropdown-menu>
+                                            <el-dropdown-item v-if="includes(app.routeNames, ['venue.update'])"
+                                                command="qrcode">
+                                                生成小程序码
+                                            </el-dropdown-item>
+                                            <el-dropdown-item v-if="includes(app.routeNames, ['venue.introduction'])"
+                                                command="audio">
+                                                音频列表
+                                            </el-dropdown-item>
+
+                                            <el-dropdown-item v-if="includes(app.routeNames, ['venue.delete'])"
+                                                command="delete" divided>
+                                                删除
+                                            </el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </template>
+                                </el-dropdown>
+                            </div>
                         </template>
                     </el-table-column>
+
                 </el-table>
 
                 <el-pagination class="mt-5" background hide-on-single-page layout="total, prev, pager, next"
@@ -132,6 +154,24 @@ function fetchData() {
 
 function goCreate() {
     router.push({ name: 'venue.create' })
+}
+
+// 场馆列表更多操作
+const handleVenueCommand = (cmd: string, row: any) => {
+    switch (cmd) {
+        case 'qrcode':
+            setQrcode(row)
+            break
+        case 'audio':
+            goPlacet(row)
+            break
+        case 'edit':
+            goEdit(row)
+            break
+        case 'delete':
+            deleteFn(row)
+            break
+    }
 }
 
 function goEdit(value: any): void {
