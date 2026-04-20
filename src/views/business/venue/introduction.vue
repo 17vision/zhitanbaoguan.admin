@@ -3,6 +3,8 @@
         <div v-loading="$store.loading" class="p-5">
             <div v-if="includes(app.routeNames, ['venue.audio'])" class="flex items-center mb-5">
                 <el-button type="primary" size="small" @click="goCreate">添加</el-button>
+                <el-button type="primary" size="small" @click="handleSort">排序</el-button>
+
             </div>
             <div class="bg-white rounded-lg shadow-md p-4">
                 <div class="mb-4 flex justify-between items-center">
@@ -16,7 +18,7 @@
                 </div>
                 <el-table :data="tableData" class=" w-full"
                     :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="maxHeight">
-                    <el-table-column label="名称" prop="name" min-width="140" />
+                    <el-table-column label="名称" prop="name" width="140" />
 
                     <el-table-column label="音频" prop="voice" width="300">
                         <template #default="scope">
@@ -57,6 +59,8 @@
                 <el-pagination class="mt-5" background hide-on-single-page layout="total, prev, pager, next"
                     :total="total" :page-size="req.limit" v-model:current-page="req.page" @current-change="fetchData" />
             </div>
+            <SortableList ref="reference" @confirm="confirm" />
+
         </div>
     </div>
 </template>
@@ -197,6 +201,23 @@ const goPublish = async (row: { id: string; status: number }) => {
     }
 }
 
+
+const reference = ref()
+const handleSort = () => {
+    reference.value?.open(tableData.value)
+}
+
+const confirm = async (list: any) => {
+
+    if (list.length > 0) {
+        await venue_introductionsApi.sort(list)
+        ElNotification.success({
+            title: '排序成功',
+            message: '数据排序已更新'
+        })
+        fetchData()
+    }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -3,6 +3,7 @@
         <div v-loading="$store.loading" class="p-5">
             <div v-if="includes(app.routeNames, ['place.create'])" class="flex items-center mb-5">
                 <el-button type="primary" size="small" @click="goCreate">添加</el-button>
+                <el-button type="primary" size="small" @click="handleSort">排序</el-button>
             </div>
             <div class="bg-white rounded-lg shadow-md p-4">
                 <div class="mb-4 flex justify-between items-center">
@@ -16,12 +17,12 @@
                 </div>
                 <el-table :data="tableData" class=" w-full"
                     :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="maxHeight">
-                    <el-table-column label="点位名" prop="name" min-width="140" />
+                    <el-table-column label="点位名" prop="name" width="140" />
 
                     <el-table-column label="封面" prop="cover" width="180">
                         <template #default="scope">
                             <div v-if="scope.row.cover" class="cover-img">
-                                <img :src="scope.row.cover" alt="封面" />
+                                <el-image :src="scope.row.cover" show-progress alt="封面" />
                             </div>
                             <div v-else class="cover-empty">-</div>
                         </template>
@@ -29,7 +30,7 @@
 
                     <el-table-column label="状态" prop="status_str" width="100" />
 
-                    <el-table-column label="介绍" prop="introduction" min-width="220">
+                    <el-table-column label="介绍" prop="introduction">
                         <template #default="scope">
                             <div class="line-clamp-3 text-gray-500 text-xs" :title="scope.row.introduction">
                                 {{ scope.row.introduction }}
@@ -43,14 +44,14 @@
                     <el-table-column v-if="includes(app.routeNames, ['place.create', 'place.update', 'place.delete'])"
                         label="操作" align="center" fixed="right" width="280">
                         <template #default="scope">
-                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2"
-                                link size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 1"
-                                link size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2" link
+                                size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 1" link
+                                size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
                             <el-button v-if="includes(app.routeNames, ['place.list'])" link size="small" type="primary"
                                 text @click="goList(scope.row)">子集列表</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.introduction'])" link size="small" type="primary"
-                                text @click="goPlacet(scope.row)">音频列表</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.introduction'])" link size="small"
+                                type="primary" text @click="goPlacet(scope.row)">音频列表</el-button>
                             <el-button v-if="includes(app.routeNames, ['place.update'])" link size="small"
                                 type="primary" text @click="goEdit(scope.row)">编辑</el-button>
                             <el-button v-if="includes(app.routeNames, ['place.delete'])" link size="small" type="danger"
@@ -62,6 +63,7 @@
                 <el-pagination class="mt-5" background hide-on-single-page layout="total, prev, pager, next"
                     :total="total" :page-size="req.limit" v-model:current-page="req.page" @current-change="fetchData" />
             </div>
+            <SortableList ref="reference" @confirm="confirm" />
         </div>
     </div>
 </template>
@@ -76,7 +78,7 @@ import { useWindowHeight } from '@/hooks/useWindowHeight'
 import placesApi from '@/api/business/places'
 import venuesApi from '@/api/business/venues'
 
-const maxHeight = useWindowHeight(200)
+const maxHeight = useWindowHeight(240)
 
 
 
@@ -126,6 +128,7 @@ function goCreate() {
     router.push({ name: 'place.create' })
 }
 
+
 function goEdit(value: any): void {
     if (value && value.id) {
         router.push({ name: 'place.create', query: { id: value.id } })
@@ -134,12 +137,12 @@ function goEdit(value: any): void {
 
 
 const goPlacet = (item: any) => {
-    if (item?.id) router.push({ name: 'place.introduction', query: { place_id: item.id,title:item.name  } })
+    if (item?.id) router.push({ name: 'place.introduction', query: { place_id: item.id, title: item.name } })
 }
 
 const goList = (value: any): void => {
     if (value && value.id) {
-        router.push({ name: 'place.list', query: { parent_id: value.id, venue_id: value.venue_id,title:value.name } })
+        router.push({ name: 'place.list', query: { parent_id: value.id, venue_id: value.venue_id, title: value.name } })
     }
 }
 function handleReset() {
@@ -222,6 +225,23 @@ const goPublish = async (row: { id: string; status: number }) => {
     }
 }
 
+
+const reference = ref()
+const handleSort = () => {
+    reference.value?.open(tableData.value)
+}
+
+const confirm = async (list: any) => {
+
+    if (list.length > 0) {
+        await placesApi.sort(list)
+        ElNotification.success({
+            title: '排序成功',
+            message: '数据排序已更新'
+        })
+        fetchData()
+    }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -67,5 +67,20 @@ export default {
             method: 'delete',
             data: { id }
         })
+    },
+    /**
+     * 排序
+     * @param data 数据
+     * @returns 
+     **/
+    sort(ids: number[]) {
+        return request({
+            url: '/venues/sorts',
+            method: 'POST',
+            data: {
+                ids
+            }
+
+        })
     }
 }

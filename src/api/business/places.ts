@@ -69,5 +69,21 @@ export default {
                 id
             }
         })
+    },
+
+    /**
+     * 排序
+     * @param data 数据
+     * @returns 
+     */
+    sort(ids: number[]) {
+        return request({
+            url: '/places/sorts',
+            method: 'POST',
+            data: {
+                ids
+            }
+
+        })
     }
 }

@@ -5,13 +5,15 @@
                 添加
             </el-button>
             <el-button size="small" @click="goBack">返回</el-button>
+            <el-button type="primary" size="small" @click="handleSort">排序</el-button>
+
         </div>
 
         <div class="bg-white rounded-lg shadow-md p-4">
             <div class="flex   items-center justify-between  w-full mb-4">
                 <div class="text-lg font-semibold">{{ title }}</div>
 
-                <div class=" ml-auto ">
+                <div class=" ml-auto space-x-5 ">
                     <el-select v-model="req.status" placeholder="全部状态" clearable style="width: 200px;">
                         <el-option label="已发布" :value="1" />
                         <el-option label="未发布" :value="2" />
@@ -77,6 +79,8 @@
                 layout="total, prev, pager, next" :total="total" :page-size="req.limit" v-model:current-page="req.page"
                 @current-change="fetchData" />
         </div>
+        <SortableList ref="reference" @confirm="confirm" />
+
     </div>
 </template>
 
@@ -89,7 +93,7 @@ import { useWindowHeight } from '@/hooks/useWindowHeight'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import placesApi from '@/api/business/places'
 
-const maxHeight = useWindowHeight(200)
+const maxHeight = useWindowHeight(240)
 const router = useRouter()
 const route = useRoute()
 const app = useApp()
@@ -215,6 +219,23 @@ const goPublish = async (row: { id: string; status: number }) => {
             title: '操作失败',
             message: `${actionText}失败，请稍后重试`,
         })
+    }
+}
+
+const reference = ref()
+const handleSort = () => {
+    reference.value?.open(tableData.value)
+}
+
+const confirm = async (list: any) => {
+
+    if (list.length > 0) {
+        await placesApi.sort(list)
+        ElNotification.success({
+            title: '排序成功',
+            message: '数据排序已更新'
+        })
+        fetchData()
     }
 }
 

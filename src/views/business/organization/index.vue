@@ -55,7 +55,7 @@ import { useApp } from '@/stores/app'
 import { includes } from '@/utils/utils'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 import organizationsApi from '@/api/business/organization'
-const maxHeight = useWindowHeight(200)
+const maxHeight = useWindowHeight(240)
 
 
 

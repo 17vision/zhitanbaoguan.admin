@@ -3,6 +3,8 @@
         <div v-loading="$store.loading" class="p-5">
             <div v-if="includes(app.routeNames, ['venue.create'])" class="flex items-center mb-5">
                 <el-button type="primary" size="small" @click="goCreate">添加</el-button>
+                <el-button type="primary" size="small" @click="handleSort">排序</el-button>
+
             </div>
             <div class="bg-white rounded-lg shadow-md p-4">
                 <div class="mb-4 flex justify-between items-center">
@@ -60,6 +62,8 @@
                 <el-pagination class="mt-5" background hide-on-single-page layout="total, prev, pager, next"
                     :total="total" :page-size="req.limit" v-model:current-page="req.page" @current-change="fetchData" />
             </div>
+            <SortableList ref="reference" @confirm="confirm" />
+
         </div>
     </div>
 </template>
@@ -72,7 +76,7 @@ import { includes } from '@/utils/utils'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 import venuesApi from '@/api/business/venues'
 
-const maxHeight = useWindowHeight(200)
+const maxHeight = useWindowHeight(240)
 
 
 
@@ -188,6 +192,23 @@ const goPublish = async (row: { id: string; status: number }) => {
             title: '操作失败',
             message: `${actionText}失败，请稍后重试`,
         })
+    }
+}
+
+const reference = ref()
+const handleSort = () => {
+    reference.value?.open(tableData.value)
+}
+
+const confirm = async (list: any) => {
+
+    if (list.length > 0) {
+        await venuesApi.sort(list)
+        ElNotification.success({
+            title: '排序成功',
+            message: '数据排序已更新'
+        })
+        fetchData()
     }
 }
 </script>

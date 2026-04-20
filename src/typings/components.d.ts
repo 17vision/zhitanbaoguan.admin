@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    DraggableTable: typeof import('./../components/DraggableTable/DraggableTable.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
     ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
@@ -42,6 +43,7 @@ declare module 'vue' {
     NGroup: typeof import('./../components/Group/NGroup.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SortableList: typeof import('./../components/SortableList/SortableList.vue')['default']
     SvgIcon: typeof import('./../components/SvgIcon/SvgIcon.vue')['default']
     TableColumnsController: typeof import('./../components/TableColumnsController/TableColumnsController.vue')['default']
   }
