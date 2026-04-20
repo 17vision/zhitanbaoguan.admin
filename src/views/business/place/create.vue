@@ -206,7 +206,7 @@ onMounted(async () => {
     venuesApi.list({ page: 1, limit: 100 }).then(res => {
         venues.value = res.data
     })
-    
+
     if (id) {
         const res = await placesApi.detail(id)
         for (const key in res) {
@@ -214,7 +214,7 @@ onMounted(async () => {
                 ruleForm[key] = res[key]
             }
         }
-        
+
     } else if (venue_id.value || parent_id.value) {
 
         ruleForm.venue_id = venue_id.value

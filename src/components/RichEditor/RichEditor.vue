@@ -27,7 +27,7 @@ watch(() => props.modelValue, (val) => {
 const toolbarConfig = ref({
     toolbarKeys: [
         'bold', 'underline', 'italic', 'through',
-        'fontSize', 'fontFamily', 'fontColor', 'bgColor',
+        'fontSize', 'fontFamily', 'bgColor',
         'lineHeight', 'justifyLeft', 'justifyCenter', 'justifyRight',
         'bulletedList', 'numberedList',
         'indent', 'delIndent',
@@ -87,6 +87,8 @@ onBeforeUnmount(() => {
 }
 
 .editor {
-    min-height: 300px;
+    min-height: 240px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 </style>
