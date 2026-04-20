@@ -41,6 +41,7 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ImageCanvas: typeof import('./../components/ImageCanvas/ImageCanvas.vue')['default']
     NGroup: typeof import('./../components/Group/NGroup.vue')['default']
+    RichEditor: typeof import('./../components/RichEditor/RichEditor.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SortableList: typeof import('./../components/SortableList/SortableList.vue')['default']

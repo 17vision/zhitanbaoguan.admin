@@ -57,12 +57,14 @@
 
                     <el-form-item label="营业时间">
                         <div class="flex gap-2 items-center">
-                            <el-form-item  class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.open_time" format="HH:mm:ss" placeholder="开门" style="width:140px" />
+                            <el-form-item class="mb-0 flex-1">
+                                <el-time-select v-model="ruleForm.open_time" format="HH:mm:ss" placeholder="开门"
+                                    style="width:140px" />
                             </el-form-item>
                             <span class="text-gray-400">—</span>
                             <el-form-item class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.close_time" format="HH:mm:ss" placeholder="关门" style="width:140px" />
+                                <el-time-select v-model="ruleForm.close_time" format="HH:mm:ss" placeholder="关门"
+                                    style="width:140px" />
                             </el-form-item>
                         </div>
                     </el-form-item>
@@ -81,8 +83,7 @@
 
                 <!-- 介绍（通栏） -->
                 <el-form-item label="场馆介绍" prop="introduction" class="form-full">
-                    <el-input v-model="ruleForm.introduction" type="textarea" :rows="8" placeholder="请输入场馆介绍"
-                        clearable />
+                    <RichEditor v-model="ruleForm.introduction" placeholder="请输入场馆介绍" />
                 </el-form-item>
 
                 <!-- 按钮 -->
@@ -177,7 +178,7 @@ const submitRole = () => {
         const api = data.id ? venuesApi.put : venuesApi.create
         try {
             for (const key in data) {
-                if (data[key] === '') {
+                if (data[key] === '' || data[key] === null || data[key] === undefined || data[key] === 0) {
                     delete data[key]
                 }
             }

@@ -32,8 +32,8 @@
 
                     <el-table-column label="介绍" prop="introduction">
                         <template #default="scope">
-                            <div class="line-clamp-3 text-gray-500 text-xs" :title="scope.row.introduction">
-                                {{ scope.row.introduction }}
+                            <div class="line-clamp-3 text-gray-500 text-xs" :title="scope.row.introduction"
+                                v-html="scope.row.introduction">
                             </div>
                         </template>
                     </el-table-column>

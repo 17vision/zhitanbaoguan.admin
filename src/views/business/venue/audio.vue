@@ -33,8 +33,7 @@
                 </el-form-item>
 
                 <el-form-item label="介绍" prop="content">
-                    <el-input v-model="ruleForm.content" type="textarea" :rows="8" placeholder="请输入介绍" clearable
-                        style="width: 400px" />
+                        <RichEditor v-model="ruleForm.content" placeholder="请输入介绍" />
                 </el-form-item>
 
                 <el-form-item class="form-footer">

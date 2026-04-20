@@ -81,8 +81,7 @@
 
                 <!-- 介绍（通栏） -->
                 <el-form-item label="介绍" prop="introduction" class="form-full">
-                    <el-input v-model="ruleForm.introduction" type="textarea" :rows="8" placeholder="请输入场馆介绍"
-                        clearable />
+                    <RichEditor v-model="ruleForm.introduction" placeholder="请输入场馆介绍" />
                 </el-form-item>
 
                 <!-- 按钮 -->
