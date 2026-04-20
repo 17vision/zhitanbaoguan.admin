@@ -27,7 +27,13 @@
                             <div v-else class="cover-empty">-</div>
                         </template>
                     </el-table-column>
-
+                    <el-table-column label="小程序码" prop="qrcode"  width="180">
+                        <template #default="scope">
+                            <div v-if="scope.row.qrcode" class="logo-wrap">
+                                <img :src="scope.row.qrcode" alt="" />
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="状态" prop="status_str" width="100" />
 
                     <el-table-column label="介绍" prop="introduction">
@@ -41,21 +47,38 @@
                     <el-table-column label="创建时间" prop="created_at" width="180" />
 
 
-                    <el-table-column v-if="includes(app.routeNames, ['place.create', 'place.update', 'place.delete'])"
-                        label="操作" align="center" fixed="right" width="280">
+                    <el-table-column label="操作" align="center" fixed="right" width="180">
                         <template #default="scope">
-                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2" link
-                                size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 1" link
-                                size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.list'])" link size="small" type="primary"
-                                text @click="goList(scope.row)">子集列表</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.introduction'])" link size="small"
-                                type="primary" text @click="goPlacet(scope.row)">音频列表</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.update'])" link size="small"
-                                type="primary" text @click="goEdit(scope.row)">编辑</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.delete'])" link size="small" type="danger"
-                                text @click="deleteFn(scope.row)">删除</el-button>
+                            <div class="flex gap-4 items-center justify-center">
+                                <!-- 上下线 -->
+                                <el-button v-if="includes(app.routeNames, ['place.update'])" link size="small"
+                                    :type="scope.row.status == 1 ? 'danger' : 'primary'" text
+                                    @click="goPublish(scope.row)">
+                                    {{ scope.row.status == 1 ? '下线' : '上线' }}
+                                </el-button>
+                                <el-button v-if="includes(app.routeNames, ['place.update'])" link size="small"
+                                    type="primary" text @click="goEdit(scope.row)">编辑</el-button>
+                                <!-- 更多操作 → 合并成下拉菜单 -->
+                                <el-dropdown @command="(cmd) => handleCommand(cmd, scope.row)">
+                                    <el-button link size="small" type="primary" text>更多</el-button>
+                                    <template #dropdown>
+                                        <el-dropdown-menu>
+                                            <el-dropdown-item v-if="includes(app.routeNames, ['place.update'])"
+                                                command="qrcode">生成小程序码
+                                            </el-dropdown-item>
+                                            <el-dropdown-item v-if="includes(app.routeNames, ['place.list'])"
+                                                command="list">子集列表
+                                            </el-dropdown-item>
+                                            <el-dropdown-item v-if="includes(app.routeNames, ['place.introduction'])"
+                                                command="audio">音频列表
+                                            </el-dropdown-item>
+                                            <el-dropdown-item v-if="includes(app.routeNames, ['place.delete'])"
+                                                command="delete" divided>删除
+                                            </el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </template>
+                                </el-dropdown>
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -127,7 +150,16 @@ function fetchData() {
 function goCreate() {
     router.push({ name: 'place.create' })
 }
-
+// 表格更多操作
+function handleCommand(cmd: string, row: any) {
+    switch (cmd) {
+        case 'qrcode': setQrcode(row); break
+        case 'list': goList(row); break
+        case 'audio': goPlacet(row); break
+        case 'edit': goEdit(row); break
+        case 'delete': deleteFn(row); break
+    }
+}
 
 function goEdit(value: any): void {
     if (value && value.id) {
@@ -150,7 +182,17 @@ function handleReset() {
     req.venue_id = venues.value.length > 0 ? venues.value[0].id : undefined
     fetchData()
 }
+const setQrcode = async (row: any) => {
+    if (!row?.id) return
 
+    try {
+        await placesApi.qrcode(row.id)
+        ElNotification.success({ title: '成功', message: '小程序码生成成功' })
+        fetchData()
+    } catch (err) {
+        ElNotification.error({ title: '失败', message: '小程序码生成失败，请稍后重试' })
+    }
+}
 // 删除景点/场馆
 const deleteFn = async (item: any) => {
     // 无 ID 直接返回
@@ -269,7 +311,7 @@ const confirm = async (list: any) => {
 .logo-wrap,
 .title-wrap {
     img {
-        width: 160px;
+        width: 120px;
     }
 
     .el-icon {

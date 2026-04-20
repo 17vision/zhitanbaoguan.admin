@@ -82,5 +82,19 @@ export default {
             }
 
         })
-    }
+    },
+    /**
+     * 获取小程序码
+     * @param id 场馆ID
+     * @returns
+     */
+    qrcode(id?: any) {
+        return request({
+            url: 'venues/qrcode',
+            method: 'post',
+            data: {
+                id
+            }
+        })
+    },
 }

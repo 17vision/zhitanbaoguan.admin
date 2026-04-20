@@ -28,6 +28,13 @@
                             </div>
                         </template>
                     </el-table-column>
+                    <el-table-column label="小程序码" prop="qrcode">
+                        <template #default="scope">
+                            <div v-if="scope.row.qrcode" class="logo-wrap">
+                                <img :src="scope.row.qrcode" alt="" />
+                            </div>
+                        </template>
+                    </el-table-column>
 
                     <el-table-column label="手机号码" prop="phone" />
                     <el-table-column label="场馆地址" prop="address" />
@@ -44,12 +51,14 @@
 
 
                     <el-table-column v-if="includes(app.routeNames, ['venue.create', 'venue.update', 'venue.delete'])"
-                        label="操作" align="center" fixed="right" width="200">
+                        label="操作" align="center" fixed="right" width="300">
                         <template #default="scope">
                             <el-button v-if="includes(app.routeNames, ['venue.update']) && scope.row.status == 2" link
                                 size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
                             <el-button v-if="includes(app.routeNames, ['venue.update']) && scope.row.status == 1" link
                                 size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
+                            <el-button v-if="includes(app.routeNames, ['venue.update'])" link size="small"
+                                type="primary" text @click="setQrcode(scope.row)">生成小程序码</el-button>
                             <el-button v-if="includes(app.routeNames, ['venue.introduction'])" link size="small"
                                 type="primary" text @click="goPlacet(scope.row)">音频列表</el-button>
                             <el-button v-if="includes(app.routeNames, ['venue.update'])" link size="small"
@@ -134,6 +143,17 @@ function goPlacet(value: any): void {
     if (value?.id) router.push({ name: 'venue.introduction', query: { venue_id: value.id } })
 }
 
+const setQrcode = async (row: any) => {
+    if (!row?.id) return
+
+    try {
+        await venuesApi.qrcode(row.id)
+        ElNotification.success({ title: '成功', message: '小程序码生成成功' })
+        fetchData()
+    } catch (err) {
+        ElNotification.error({ title: '失败', message: '小程序码生成失败，请稍后重试' })
+    }
+}
 // 删除
 function deleteFn(row: any) {
     if (!row?.id) return

@@ -27,6 +27,9 @@
                     <el-form-item label="场馆地址" prop="address">
                         <el-input v-model="ruleForm.address" placeholder="请输入场馆地址" clearable />
                     </el-form-item>
+                    <el-form-item label="小程序路径" prop="qrcode_root">
+                        <el-input v-model="ruleForm.qrcode_root" placeholder="请输入小程序路径" clearable />
+                    </el-form-item>
                 </div>
 
                 <!-- 右列 -->
@@ -270,7 +273,7 @@ onMounted(async () => {
 }
 
 .avatar-uploader {
-    width: 160px;
+    width: 230px;
     aspect-ratio: 16 / 9;
     background: #fafafa;
     border: 1px dashed #dcdfe6;
