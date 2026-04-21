@@ -23,15 +23,15 @@
                     <el-table-column label="场馆名" prop="name" />
                     <el-table-column label="场馆封面" prop="cover">
                         <template #default="scope">
-                            <div v-if="scope.row.cover" class="logo-wrap">
-                                <img :src="scope.row.cover" alt="" />
+                            <div v-if="scope.row.cover" class="logo-wrap" >
+                                <img :src="scope.row.cover" alt="" @click="handleClick(scope.row.cover)" />
                             </div>
                         </template>
                     </el-table-column>
                     <el-table-column label="小程序码" prop="qrcode">
                         <template #default="scope">
-                            <div v-if="scope.row.qrcode" class="logo-wrap">
-                                <img :src="scope.row.qrcode" alt="" />
+                            <div v-if="scope.row.qrcode" class="w-[50px] h-[50px]">
+                                <img :src="scope.row.qrcode" alt="" @click="handleClick(scope.row.qrcode)" />
                             </div>
                         </template>
                     </el-table-column>
@@ -73,6 +73,10 @@
                                                 command="qrcode">
                                                 生成小程序码
                                             </el-dropdown-item>
+                                            <el-dropdown-item v-if="includes(app.routeNames, ['venue.update'])"
+                                                command="download">
+                                                下载小程序码
+                                            </el-dropdown-item>
                                             <el-dropdown-item v-if="includes(app.routeNames, ['venue.introduction'])"
                                                 command="audio">
                                                 音频列表
@@ -95,7 +99,7 @@
                     :total="total" :page-size="req.limit" v-model:current-page="req.page" @current-change="fetchData" />
             </div>
             <SortableList ref="reference" @confirm="confirm" />
-
+            <el-image-viewer v-if="showPreview" :url-list="srcList" show-progress @close="showPreview = false" />
         </div>
     </div>
 </template>
@@ -156,6 +160,15 @@ function goCreate() {
     router.push({ name: 'venue.create' })
 }
 
+const showPreview = ref(false)
+const srcList = ref<string[]>([])
+const handleClick = (url: string) => {
+    if (!url) return
+
+    showPreview.value = true
+    srcList.value = [url]
+}
+
 // 场馆列表更多操作
 const handleVenueCommand = (cmd: string, row: any) => {
     switch (cmd) {
@@ -170,6 +183,9 @@ const handleVenueCommand = (cmd: string, row: any) => {
             break
         case 'delete':
             deleteFn(row)
+            break
+        case 'download':
+            downloadFn(row)
             break
     }
 }
@@ -194,6 +210,38 @@ const setQrcode = async (row: any) => {
         ElNotification.error({ title: '失败', message: '小程序码生成失败，请稍后重试' })
     }
 }
+
+const downloadFn = async (row: any) => {
+    if (!row?.id) return
+
+    try {
+        const res = await fetch(row.qrcode)
+        const blob = await res.blob()
+
+        const url = URL.createObjectURL(blob)
+
+        const a = document.createElement('a')
+        a.href = url
+
+        // 自动识别后缀
+        const ext = row.qrcode.split('.').pop()?.split('?')[0] || 'png'
+        a.download = `${row.name || '二维码'}.${ext}`
+
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+
+        URL.revokeObjectURL(url)
+
+        ElNotification.success({
+            title: '成功',
+            message: '下载完成'
+        })
+    } catch (err) {
+        ElNotification.error({ title: '失败', message: '小程序码下载失败，请稍后重试' })
+    }
+}
+
 // 删除
 function deleteFn(row: any) {
     if (!row?.id) return

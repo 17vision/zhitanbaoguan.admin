@@ -6,6 +6,8 @@
             </el-button>
             <el-button size="small" @click="goBack">返回</el-button>
             <el-button type="primary" size="small" @click="handleSort">排序</el-button>
+            <el-button type="primary" size="small" @click="handleGenerate">一键生成</el-button>
+            <el-button type="primary" size="small" @click="handleDownload">批量下载</el-button>
 
         </div>
 
@@ -28,18 +30,18 @@
                 :header-cell-style="{ background: '#F5F6FA', color: '#666' }" class="w-full">
                 <el-table-column label="点位名" prop="name" width="140" />
 
-                <el-table-column label="封面" prop="cover" width="180">
+                <el-table-column label="封面" prop="cover" width="100">
                     <template #default="scope">
                         <div v-if="scope.row.cover" class="cover-img">
-                            <img :src="scope.row.cover" alt="封面" />
+                            <img :src="scope.row.cover" alt="封面" @click="handleClick(scope.row.cover)" />
                         </div>
                         <div v-else class="cover-empty">-</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="小程序码" prop="qrcode" width="180">
+                <el-table-column label="小程序码" prop="qrcode" width="100">
                     <template #default="scope">
-                        <div v-if="scope.row.qrcode" class="logo-wrap">
-                            <img :src="scope.row.qrcode" alt="" />
+                        <div v-if="scope.row.qrcode" class="w-[50px] h-[50px]">
+                            <img :src="scope.row.qrcode" alt="" @click="handleClick(scope.row.qrcode)" />
                         </div>
                     </template>
                 </el-table-column>
@@ -76,7 +78,10 @@
                                         <el-dropdown-item v-if="includes(app.routeNames, ['place.update'])"
                                             command="qrcode">生成小程序码
                                         </el-dropdown-item>
-
+                                        <el-dropdown-item v-if="includes(app.routeNames, ['venue.update'])"
+                                            command="download">
+                                            下载小程序码
+                                        </el-dropdown-item>
                                         <el-dropdown-item v-if="includes(app.routeNames, ['place.introduction'])"
                                             command="audio">音频列表
                                         </el-dropdown-item>
@@ -96,6 +101,7 @@
                 @current-change="fetchData" />
         </div>
         <SortableList ref="reference" @confirm="confirm" />
+        <el-image-viewer v-if="showPreview" :url-list="srcList" show-progress @close="showPreview = false" />
 
     </div>
 </template>
@@ -108,6 +114,7 @@ import { includes } from '@/utils/utils'
 import { useWindowHeight } from '@/hooks/useWindowHeight'
 import { ElMessageBox, ElNotification } from 'element-plus'
 import placesApi from '@/api/business/places'
+import JSZip from 'jszip'
 
 const maxHeight = useWindowHeight(240)
 const router = useRouter()
@@ -157,6 +164,7 @@ function handleCommand(cmd: string, row: any) {
         case 'audio': goPlacet(row); break
         case 'edit': goEdit(row); break
         case 'delete': deleteFn(row); break
+        case 'download': downloadFn(row); break
     }
 }
 
@@ -197,6 +205,46 @@ const goCreate = () => {
         name: 'place.create',
         query: { venue_id: venue_id.value, parent_id: parent_id.value },
     })
+}
+
+const showPreview = ref(false)
+const srcList = ref<string[]>([])
+const handleClick = (url: string) => {
+    if (!url) return
+
+    showPreview.value = true
+    srcList.value = [url]
+}
+
+const downloadFn = async (row: any) => {
+    if (!row?.id) return
+
+    try {
+        const res = await fetch(row.qrcode)
+        const blob = await res.blob()
+
+        const url = URL.createObjectURL(blob)
+
+        const a = document.createElement('a')
+        a.href = url
+
+        // 自动识别后缀
+        const ext = row.qrcode.split('.').pop()?.split('?')[0] || 'png'
+        a.download = `${row.name || '二维码'}.${ext}`
+
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+
+        URL.revokeObjectURL(url)
+
+        ElNotification.success({
+            title: '成功',
+            message: '下载完成'
+        })
+    } catch (err) {
+        ElNotification.error({ title: '失败', message: '小程序码下载失败，请稍后重试' })
+    }
 }
 
 const goBack = () => {
@@ -264,7 +312,56 @@ const reference = ref()
 const handleSort = () => {
     reference.value?.open(tableData.value)
 }
+const handleGenerate = async () => {
+    if (!tableData.value || tableData.value.length === 0) return
 
+    const list = tableData.value.map(item => placesApi.qrcode(item.id))
+    Promise.all(list).then(() => {
+        ElNotification.success({
+            title: '成功',
+            message: '小程序码生成成功'
+        })
+        fetchData()
+
+    }).catch(() => {
+        ElNotification.error({
+            title: '失败',
+            message: '小程序码生成失败，请稍后重试'
+        })
+    })
+}
+
+const handleDownload = async () => {
+    if (!tableData.value || tableData.value.length === 0) return
+
+    const list = tableData.value.map(item => ({
+        name: item.name,
+        qrcode: item.qrcode
+    }))
+
+    if (list.length > 0) {
+        const zip = new JSZip()
+        const images = zip.folder('images')
+        const promises = list.map(async (item) => {
+            const response = await fetch(item.qrcode)
+            const blob = await response.blob()
+            const filename = item.name + '.png'
+            images?.file(filename, blob)
+        })
+        await Promise.all(promises)
+        const content = await zip.generateAsync({ type: 'blob' })
+        const url = URL.createObjectURL(content)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = '小程序码.zip'
+        a.click()
+        URL.revokeObjectURL(url)
+        ElNotification.success({
+            title: '成功',
+            message: '下载完成'
+        })
+    }
+}
 const confirm = async (list: any) => {
 
     if (list.length > 0) {
@@ -293,8 +390,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .cover-img {
-    width: 120px;
-    height: 70px;
+    width: 80px;
     border-radius: 6px;
     overflow: hidden;
 
