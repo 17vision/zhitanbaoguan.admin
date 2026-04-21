@@ -68,7 +68,7 @@
                             <el-button v-if="includes(app.routeNames, ['place.list'])" link size="small" type="primary"
                                 text @click="goList(scope.row)">子集列表</el-button>
                             <!-- 更多操作 → 合并成下拉菜单 -->
-                            <el-dropdown @command="(cmd) => handleCommand(cmd, scope.row)">
+                            <el-dropdown @command="handleCommand($event, scope.row)">
                                 <el-button link size="small" type="primary" text>更多</el-button>
                                 <template #dropdown>
                                     <el-dropdown-menu>

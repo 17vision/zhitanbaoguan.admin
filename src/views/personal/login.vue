@@ -273,7 +273,7 @@ function runTimer() {
         }
 
         reToken()
-    }, 1000);
+    }, 1000) as unknown as number;
 }
 
 function clearTimer() {

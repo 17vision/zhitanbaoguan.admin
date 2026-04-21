@@ -23,7 +23,7 @@
                     <el-table-column label="场馆名" prop="name" />
                     <el-table-column label="场馆封面" prop="cover">
                         <template #default="scope">
-                            <div v-if="scope.row.cover" class="logo-wrap" >
+                            <div v-if="scope.row.cover" class="logo-wrap">
                                 <img :src="scope.row.cover" alt="" @click="handleClick(scope.row.cover)" />
                             </div>
                         </template>
@@ -65,7 +65,7 @@
                                     编辑
                                 </el-button>
                                 <!-- 更多操作 下拉菜单 -->
-                                <el-dropdown @command="(cmd) => handleVenueCommand(cmd, scope.row)">
+                                <el-dropdown @command="handleVenueCommand($event, scope.row)">
                                     <el-button link size="small" type="primary" text>更多</el-button>
                                     <template #dropdown>
                                         <el-dropdown-menu>
