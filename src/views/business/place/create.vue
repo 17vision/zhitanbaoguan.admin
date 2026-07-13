@@ -25,11 +25,34 @@
                     <el-form-item label="标签" prop="tags">
                         <el-input v-model="ruleForm.tags" placeholder="请输入标签，多个标签用逗号分隔" clearable />
                     </el-form-item>
+                    <el-form-item label="营业时间">
+                        <div class="flex gap-2 items-center">
+                            <el-form-item prop="open_time" class="mb-0 flex-1">
+                                <el-time-select v-model="ruleForm.open_time" format="HH:mm:ss" placeholder="开门"
+                                    style="width:140px" />
+                            </el-form-item>
+                            <span class="text-gray-400">—</span>
+                            <el-form-item prop="close_time" class="mb-0 flex-1">
+                                <el-time-select v-model="ruleForm.close_time" format="HH:mm:ss" placeholder="关门"
+                                    style="width:140px" />
+                            </el-form-item>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="经纬度">
+                        <div class="flex gap-2">
+                            <el-form-item prop="longitude" class="mb-0 flex-1">
+                                <el-input v-model="ruleForm.longitude" placeholder="经度" style="width:100%" />
+                            </el-form-item>
+                            <el-form-item prop="latitude" class="mb-0 flex-1">
+                                <el-input v-model="ruleForm.latitude" placeholder="纬度" style="width:100%" />
+                            </el-form-item>
+                        </div>
+                    </el-form-item>
                 </div>
 
                 <!-- 右列 -->
                 <div class="form-col">
-                    <el-form-item label="场馆封面">
+                    <el-form-item label="列表封面" required prop="cover">
                         <div class="avatar-uploader">
                             <div v-if="ruleForm.cover" class="relative w-full h-full">
                                 <img :src="toUrl(ruleForm.cover)" class="w-full h-full object-cover rounded-lg" />
@@ -52,29 +75,27 @@
                                 class="hidden" />
                         </div>
                     </el-form-item>
+                    <el-form-item label="详情封面">
+                        <div class="avatar-uploader">
+                            <div v-if="ruleForm.detailCover" class="relative w-full h-full">
+                                <img :src="toUrl(ruleForm.detailCover)" class="w-full h-full object-cover rounded-lg" />
+                                <div class="absolute top-1 right-1 bg-black/20 p-1 rounded-full w-6 h-6 cursor-pointer flex items-center justify-center"
+                                    @click="ruleForm.detailCover = ''">
+                                    <el-icon size="16" color="#fff">
+                                        <Close />
+                                    </el-icon>
+                                </div>
+                            </div>
 
-                    <el-form-item label="营业时间">
-                        <div class="flex gap-2 items-center">
-                            <el-form-item prop="open_time" class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.open_time" format="HH:mm:ss" placeholder="开门"
-                                    style="width:140px" />
-                            </el-form-item>
-                            <span class="text-gray-400">—</span>
-                            <el-form-item prop="close_time" class="mb-0 flex-1">
-                                <el-time-select v-model="ruleForm.close_time" format="HH:mm:ss" placeholder="关门"
-                                    style="width:140px" />
-                            </el-form-item>
-                        </div>
-                    </el-form-item>
-
-                    <el-form-item label="经纬度">
-                        <div class="flex gap-2">
-                            <el-form-item prop="longitude" class="mb-0 flex-1">
-                                <el-input v-model="ruleForm.longitude" placeholder="经度" style="width:100%" />
-                            </el-form-item>
-                            <el-form-item prop="latitude" class="mb-0 flex-1">
-                                <el-input v-model="ruleForm.latitude" placeholder="纬度" style="width:100%" />
-                            </el-form-item>
+                            <label v-else for="detailCoverInput"
+                                class="w-full h-full flex flex-col items-center justify-center cursor-pointer">
+                                <el-icon size="32" color="#8c939d">
+                                    <Plus />
+                                </el-icon>
+                                <span class="text-gray-500 text-xs mt-1">点击上传</span>
+                            </label>
+                            <input type="file" id="detailCoverInput" accept="image/*" @change="handleDetailCoverSuccess"
+                                class="hidden" />
                         </div>
                     </el-form-item>
                 </div>
@@ -137,6 +158,7 @@ const initialForm = (): RuleForm => ({
     close_time: '',
     longitude: '',
     latitude: '',
+    detailCover: ''
 })
 
 const venue_id = computed(() => {
@@ -152,6 +174,7 @@ const rules = reactive<FormRules<RuleForm>>({
     name: [{ required: true, message: '请输入点位名称', trigger: 'blur' }],
     venue_id: [{ required: true, message: '请选择所属场馆', trigger: 'change' }],
     address: [{ required: true, message: '请输入点位地址', trigger: 'blur' }],
+    cover: [{ required: true, message: '请上传列表封面', trigger: 'change' }]
 })
 
 const toUrl = (cover: string | File) => {
@@ -193,10 +216,17 @@ const submitRole = () => {
 const handleCoverSuccess = (e: Event) => {
     const file = (e.target as HTMLInputElement).files?.[0]
     if (!file) return
-    ruleForm.cover = file
-        ; (e.target as HTMLInputElement).value = ''
+    ruleForm.cover = file;
+    ruleFormRef.value?.validateField('cover');
+    (e.target as HTMLInputElement).value = ''
 }
-
+const handleDetailCoverSuccess = (e: Event) => {
+    const file = (e.target as HTMLInputElement).files?.[0]
+    if (!file) return
+    ruleForm.detailCover = file;
+    ruleFormRef.value?.validateField('detailCover');
+    (e.target as HTMLInputElement).value = ''
+}
 const goBack = () => {
     router.back()
 }
@@ -279,7 +309,7 @@ onMounted(async () => {
 }
 
 .avatar-uploader {
-    width: 160px;
+    width: 235px;
     aspect-ratio: 16 / 9;
     background: #fafafa;
     border: 1px dashed #dcdfe6;

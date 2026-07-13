@@ -34,7 +34,7 @@
 
                 <!-- 右列 -->
                 <div class="form-col">
-                    <el-form-item label="场馆封面">
+                    <el-form-item label="场馆封面" required prop="cover">
                         <div class="avatar-uploader">
                             <div v-if="ruleForm.cover" class="relative w-full h-full">
                                 <img :src="toUrl(ruleForm.cover)" class="w-full h-full object-cover rounded-lg" />
@@ -165,6 +165,7 @@ const rules = reactive<FormRules<RuleForm>>({
     address: [{ required: true, message: '请输入场馆地址', trigger: 'blur' }],
     open_time: [{ required: true, message: '请选择开门时间', trigger: 'change' }],
     close_time: [{ required: true, message: '请选择关门时间', trigger: 'change' }],
+    cover: [{ required: true, message: '请上传场馆封面', trigger: 'change' }]
 })
 
 const submitRole = () => {
@@ -197,8 +198,9 @@ const submitRole = () => {
 const handleCoverSuccess = (e: Event) => {
     const file = (e.target as HTMLInputElement).files?.[0]
     if (!file) return
-    ruleForm.cover = file
-        ; (e.target as HTMLInputElement).value = ''
+    ruleForm.cover = file;
+    ruleFormRef.value?.validateField('cover');
+    (e.target as HTMLInputElement).value = ''
 }
 
 const goBack = () => {
