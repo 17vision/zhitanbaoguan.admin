@@ -77,10 +77,10 @@
                     </el-form-item>
                     <el-form-item label="详情封面">
                         <div class="avatar-uploader">
-                            <div v-if="ruleForm.detailCover" class="relative w-full h-full">
-                                <img :src="toUrl(ruleForm.detailCover)" class="w-full h-full object-cover rounded-lg" />
+                            <div v-if="ruleForm.placepic" class="relative w-full h-full">
+                                <img :src="toUrl(ruleForm.placepic)" class="w-full h-full object-cover rounded-lg" />
                                 <div class="absolute top-1 right-1 bg-black/20 p-1 rounded-full w-6 h-6 cursor-pointer flex items-center justify-center"
-                                    @click="ruleForm.detailCover = ''">
+                                    @click="ruleForm.placepic = ''">
                                     <el-icon size="16" color="#fff">
                                         <Close />
                                     </el-icon>
@@ -158,7 +158,7 @@ const initialForm = (): RuleForm => ({
     close_time: '',
     longitude: '',
     latitude: '',
-    detailCover: ''
+    placepic: ''
 })
 
 const venue_id = computed(() => {
@@ -197,6 +197,13 @@ const submitRole = () => {
             })
             data.cover = res.url
         }
+        if (data.placepic instanceof File) {
+            const res = await uploadFiles({
+                file: data.placepic,
+                info: { referer: 'place', type: 'image' }
+            })
+            data.placepic = res.url
+        }
         const api = data.id ? placesApi.put : placesApi.create
         try {
             for (const key in data) {
@@ -223,8 +230,8 @@ const handleCoverSuccess = (e: Event) => {
 const handleDetailCoverSuccess = (e: Event) => {
     const file = (e.target as HTMLInputElement).files?.[0]
     if (!file) return
-    ruleForm.detailCover = file;
-    ruleFormRef.value?.validateField('detailCover');
+    ruleForm.placepic = file;
+    ruleFormRef.value?.validateField('placepic');
     (e.target as HTMLInputElement).value = ''
 }
 const goBack = () => {
