@@ -418,7 +418,7 @@ const confirm = async (list: any) => {
 }
 
 .cover-img {
-    width: 80px;
+    width: 60px;
     height: 50px;
     border-radius: 6px;
 

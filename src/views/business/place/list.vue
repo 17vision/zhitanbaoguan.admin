@@ -390,7 +390,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .cover-img {
-    width: 80px;
+    width: 60px;
     border-radius: 6px;
     overflow: hidden;
 

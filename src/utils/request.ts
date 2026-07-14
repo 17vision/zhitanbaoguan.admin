@@ -129,7 +129,7 @@ const request = async (config: AxiosRequestConfig) => {
         }
     }
     for (const key in config.data) {
-        if (config.data[key] === undefined || config.data[key] === null || config.data[key] === '') {
+        if (config.data[key] === undefined || config.data[key] === null) {
             delete config.data[key]
         }
     }

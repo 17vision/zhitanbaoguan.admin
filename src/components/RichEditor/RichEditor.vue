@@ -27,7 +27,7 @@ watch(() => props.modelValue, (val) => {
 const toolbarConfig = ref({
     toolbarKeys: [
         'bold', 'underline', 'italic', 'through',
-        'fontSize', 'fontFamily', 'bgColor',
+        'fontSize', 'fontFamily',
         'lineHeight', 'justifyLeft', 'justifyCenter', 'justifyRight',
         'bulletedList', 'numberedList',
         'indent', 'delIndent',
