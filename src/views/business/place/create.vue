@@ -206,7 +206,6 @@ const submitRole = () => {
         }
         const api = data.id ? placesApi.put : placesApi.create
         try {
-            console.log(data)
             await api(data)
             ElNotification.success({ title: '成功', message: ruleForm.id ? '修改成功' : '创建成功' })
             setTimeout(() => goBack(), 800)
