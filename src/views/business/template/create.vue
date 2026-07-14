@@ -96,7 +96,7 @@ const initialForm = (): RuleForm => ({
 })
 
 const combine_album_id = computed(() => {
-    return +(route.query.id as string || '')
+    return +(route.query.combine_album_id as string || '')
 })
 
 const ruleForm = reactive<RuleForm>(initialForm())

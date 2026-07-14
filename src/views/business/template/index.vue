@@ -13,7 +13,7 @@
 
         <div class="bg-white rounded-lg shadow-md p-4">
             <div class="flex   items-center justify-between  w-full mb-4">
-                <div class="text-lg font-semibold">模版列表</div>
+                <div class="text-lg font-semibold">{{ title }}</div>
 
                 <div class=" ml-auto space-x-5 ">
                     <el-select v-model="req.status" placeholder="全部状态" clearable style="width: 200px;">
@@ -125,6 +125,7 @@ const req = reactive({
 })
 
 const combine_album_id = computed(() => route.query.venue_id)
+const title = computed(() => route.query.title || '模版列表')
 
 // 获取列表
 const fetchData = async () => {
@@ -164,7 +165,7 @@ const setQrcode = async (row: any) => {
         ElNotification.success({ title: '成功', message: '小程序码生成成功' })
         fetchData()
     } catch (err) {
-        ElNotification.error({ title: '失败', message: '小程序码生成失败，请稍后重试' })
+        console.error(err)
     }
 }
 
@@ -302,11 +303,6 @@ const handleGenerate = async () => {
         })
         fetchData()
 
-    }).catch(() => {
-        ElNotification.error({
-            title: '失败',
-            message: '小程序码生成失败，请稍后重试'
-        })
     })
 }
 
@@ -369,7 +365,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .cover-img {
-    width: 80px;
+    width: 60px;
     border-radius: 6px;
     overflow: hidden;
 

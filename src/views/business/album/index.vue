@@ -157,7 +157,7 @@ function goEdit(value: any): void {
     }
 }
 function goPlacet(value: any): void {
-    if (value?.id) router.push({ name: 'template.index', query: { venue_id: value.id } })
+    if (value?.id) router.push({ name: 'template.index', query: { venue_id: value.id,title: value.name } })
 }
 
 
