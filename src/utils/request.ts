@@ -128,6 +128,11 @@ const request = async (config: AxiosRequestConfig) => {
             delete config.params[key]
         }
     }
+    for (const key in config.data) {
+        if (config.data[key] === undefined || config.data[key] === null || config.data[key] === '') {
+            delete config.data[key]
+        }
+    }
 
     return axios(config).finally(() => {
         if (Loading && config.url) {

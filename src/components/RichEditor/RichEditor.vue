@@ -32,7 +32,7 @@ const toolbarConfig = ref({
         'bulletedList', 'numberedList',
         'indent', 'delIndent',
         'insertLink', 'editLink', 'unLink',
-        'insertImage', // 👈 图片按钮
+        'insertImage', 
         'insertTable', 'codeBlock', 'divider',
         'undo', 'redo', 'clearStyle'
     ]
