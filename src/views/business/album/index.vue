@@ -20,7 +20,7 @@
                     :header-cell-style="{ background: '#F5F6FA', color: '#666666' }" :max-height="maxHeight">
 
                     <el-table-column label="名称" prop="name" />
-                    <el-table-column label="场馆封面" prop="cover">
+                    <el-table-column label="封面" prop="cover">
                         <template #default="scope">
                             <div v-if="scope.row.cover" class="logo-wrap">
                                 <img :src="scope.row.cover" alt="" @click="handleClick(scope.row.cover)" />
@@ -269,7 +269,7 @@ const confirm = async (list: any) => {
 .logo-wrap,
 .title-wrap {
     img {
-        width: 160px;
+        width: 60px;
     }
 
     .el-icon {
