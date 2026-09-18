@@ -33,7 +33,12 @@
                         </template>
                     </el-table-column>
 
-                    <el-table-column label="状态" prop="status_str" width="100" />
+                    <el-table-column label="状态" prop="status_str" width="100" >
+                        <template #default="scope">
+                            <el-tag v-if="scope.row.status !== 2" type="success" size="small">已上线</el-tag>
+                            <el-tag v-else type="info" size="small">已下线</el-tag>
+                        </template>
+                    </el-table-column>
 
                     <el-table-column label="介绍" prop="content" >
                         <template #default="scope">
@@ -50,9 +55,9 @@
                         label="操作" align="center" fixed="right" width="280">
                         <template #default="scope">
                             <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 2" link
-                                size="small" type="primary" text @click="goPublish(scope.row)">上线</el-button>
-                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status == 1" link
-                                size="small" type="danger" text @click="goPublish(scope.row)">下线</el-button>
+                                size="small" type="primary" text @click="goPublish(scope.row,1)">上线</el-button>
+                            <el-button v-if="includes(app.routeNames, ['place.update']) && scope.row.status != 2" link
+                                size="small" type="danger" text @click="goPublish(scope.row, 2)">下线</el-button>
                             <el-button v-if="includes(app.routeNames, ['place.audio'])" link size="small" type="primary"
                                 text @click="goEdit(scope.row)">编辑</el-button>
                             <el-button v-if="includes(app.routeNames, ['place.delete'])" link size="small" type="danger"
@@ -175,10 +180,9 @@ const deleteFn = async (item: any) => {
 }
 
 // 上线 / 下线切换
-const goPublish = async (row: { id: string; status: number }) => {
+const goPublish = async (row: { id: string; status: number }, targetStatus: number) => {
     if (!row?.id) return
 
-    const targetStatus = row.status === 1 ? 2 : 1
     const actionText = targetStatus === 1 ? '上线' : '下线'
 
     // 确认弹窗
