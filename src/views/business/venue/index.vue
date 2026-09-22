@@ -39,7 +39,12 @@
                     <el-table-column label="手机号码" prop="phone" />
                     <el-table-column label="场馆地址" prop="address" />
 
-                    <el-table-column label="状态" prop="status_str" />
+                    <el-table-column label="状态" prop="status_str" >
+                        <template #default="scope">
+                            <el-tag v-if="scope.row.status === 1" type="success">已发布</el-tag>
+                            <el-tag v-else type="danger">未发布</el-tag>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="场馆介绍" prop="introduction">
                         <template #default="scope">
                             <div class="line-clamp-3 text-gray-500 text-xs" :title="scope.row.introduction"

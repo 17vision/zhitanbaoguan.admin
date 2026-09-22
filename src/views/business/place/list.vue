@@ -45,7 +45,12 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" prop="status_str" width="100" />
+                          <el-table-column label="状态" prop="status_str" width="100">
+            <template #default="scope">
+              <el-tag v-if="scope.row.status === 1" type="success">已发布</el-tag>
+              <el-tag v-else type="danger">未发布</el-tag>
+            </template>
+          </el-table-column>
 
                 <el-table-column label="介绍" prop="introduction">
                     <template #default="scope">
